@@ -1,0 +1,12 @@
+---
+import type { InlineMarkdown } from '../content/types'
+import { renderInline } from '../lib/inline'
+
+interface Props {
+  readonly text: InlineMarkdown
+}
+
+const html = renderInline(Astro.props.text)
+---
+
+<Fragment set:html={html} />

@@ -1,0 +1,49 @@
+---
+import type { PageCopy } from '../content/types'
+import Bibtex from './Bibtex.astro'
+import Inline from './Inline.astro'
+
+interface Props {
+  readonly copy: PageCopy
+}
+
+const { copy } = Astro.props
+---
+
+{
+  copy.sections.map((section) => (
+    <section id={section.id} aria-labelledby={`${section.id}-heading`}>
+      <h2 id={`${section.id}-heading`}>{section.heading}</h2>
+      {section.blocks.map((block) => {
+        switch (block.type) {
+          case 'paragraph':
+            return (
+              <p>
+                <Inline text={block.text} />
+              </p>
+            )
+          case 'bibtex':
+            return <Bibtex copy={copy} />
+        }
+      })}
+    </section>
+  ))
+}
+
+<style>
+  section {
+    margin-top: 3.25rem;
+    scroll-margin-top: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.375rem;
+    font-weight: 650;
+    letter-spacing: -0.005em;
+  }
+
+  p {
+    max-width: var(--measure);
+    margin-top: 0.9rem;
+  }
+</style>

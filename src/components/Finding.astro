@@ -1,0 +1,20 @@
+---
+import type { PageCopy } from '../content/types'
+import Inline from './Inline.astro'
+
+interface Props {
+  readonly copy: PageCopy
+}
+
+const { copy } = Astro.props
+---
+
+<p class="finding" data-finding><Inline text={copy.finding} /></p>
+
+<style>
+  .finding {
+    max-width: var(--measure);
+    font-size: 1.1875rem;
+    line-height: 1.6;
+  }
+</style>

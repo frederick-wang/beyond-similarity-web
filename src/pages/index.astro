@@ -1,0 +1,85 @@
+---
+import Finding from '../components/Finding.astro'
+import Glance from '../components/Glance.astro'
+import PageNav from '../components/PageNav.astro'
+import Sections from '../components/Sections.astro'
+import TitleBlock from '../components/TitleBlock.astro'
+import { en } from '../content/en'
+import { pages } from '../data/paper'
+import Page from '../layouts/Page.astro'
+---
+
+<Page copy={en} path={pages.en.path}>
+  <div class="front">
+    <div class="lead">
+      <TitleBlock copy={en} />
+      <Finding copy={en} />
+    </div>
+    <div class="margin">
+      <Glance copy={en} />
+    </div>
+    <div class="nav">
+      <PageNav copy={en} />
+    </div>
+  </div>
+  <div class="body">
+    <div class="column">
+      <Sections copy={en} />
+    </div>
+  </div>
+</Page>
+
+<style>
+  .front,
+  .body {
+    max-width: calc(var(--column) + var(--margin-column) + 5rem + 2 * var(--gutter));
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  .front {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'lead'
+      'margin'
+      'nav';
+    row-gap: 2rem;
+    padding-top: 2.5rem;
+  }
+
+  .lead {
+    grid-area: lead;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .margin {
+    grid-area: margin;
+  }
+
+  .nav {
+    grid-area: nav;
+  }
+
+  .column {
+    max-width: var(--column);
+  }
+
+  @media (min-width: 68rem) {
+    .front {
+      grid-template-columns: minmax(0, var(--column)) var(--margin-column);
+      grid-template-areas:
+        'lead margin'
+        'nav margin';
+      column-gap: 5rem;
+      align-items: start;
+    }
+
+    .margin {
+      border-left: 1px solid var(--rule);
+      padding-left: 1.75rem;
+      margin-top: 0.4rem;
+    }
+  }
+</style>
