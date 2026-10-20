@@ -8,6 +8,10 @@ The public website for the paper *Beyond Similarity: Grounded Agentic Extraction
 This website, the public page that presents the paper to readers.
 _Avoid_: project page, landing page, homepage (the homepage is the first author's personal site)
 
+**Explorer**（互文图谱）:
+The public interactive site 《论语》×二十四史互文图谱, which shows every intertextual pair from the Twenty-Four Histories run in its textual context.
+_Avoid_: platform, demo, visualization site, viz site
+
 ## Texts and units
 
 **Twenty-Four Histories**（二十四史）:
@@ -21,6 +25,16 @@ _Avoid_: segment, unit, passage, 组块
 **Chunk pair**（文本块对）:
 One *Analects* chunk paired with one history chunk; each chunk pair is one extraction task.
 _Avoid_: task pair, text pair
+
+## Method
+
+**Grounded agentic extraction**（落地化智能体抽取）:
+The paper's method: an LLM agent reads two chunks whole and may record an intertextual pair only after grounding both fragments in exact spans through a checked tool interface. The Chinese title of the paper is 超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测.
+_Avoid_: grounded extraction pipeline, 接地抽取
+
+**Grounding**（落地）:
+Tying a proposed reuse to exact spans on both sides, verified character for character when the pair is committed.
+_Avoid_: anchoring, 锚定 (reserved for verbatim-anchored pairs in the paper's retrieval analysis)
 
 ## Intertextual pairs
 
