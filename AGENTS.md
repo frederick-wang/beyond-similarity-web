@@ -4,6 +4,12 @@
 
 本仓库公开。提交、Issue、PR 与站点内容只写读者能公开获取的信息：论文一律按 arXiv 预印本描述，出版信息以 arXiv 页面为准；托管环境的说明在仓库之外维护，仓库只包含站点源码与构建流程。
 
+## 导航
+
+- 写代码、写文案、做评审之前读 `CODING_STANDARDS.md`，其中包括公开内容检查和中英文写作规范。
+- 产品事实在 `PRODUCT.md`；页面结构与视觉方向的契约在 `.impeccable/surfaces/`，改页面前先读。
+- 部署说明和公开内容检查规则只存在于维护者本机的 `.private/`（被 git 忽略）。
+
 ## Agent skills
 
 ### Issue tracker
