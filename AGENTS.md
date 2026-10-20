@@ -9,6 +9,8 @@
 - 写代码、写文案、做评审之前读 `CODING_STANDARDS.md`，其中包括公开内容检查和中英文写作规范。
 - 产品事实在 `PRODUCT.md`；页面结构与视觉方向的契约在 `.impeccable/surfaces/`，改页面前先读。
 - 部署说明和公开内容检查规则只存在于维护者本机的 `.private/`（被 git 忽略）。
+- 公开内容检查：工作区用 `pnpm check:public`，Issue 与 PR 正文发出前用 `node scripts/check-public.mjs <文件>`。每个克隆执行一次 `git config core.hooksPath .githooks`，推送前会自动检查。
+- 本地验证：`pnpm check`（类型检查）、`pnpm build`、`pnpm test`（Playwright 访问本地预览）。设置 `BASE_URL` 后，同一套测试改为访问该地址。
 
 ## Agent skills
 

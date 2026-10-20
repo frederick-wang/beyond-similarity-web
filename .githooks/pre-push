@@ -1,0 +1,4 @@
+#!/bin/sh
+# Blocks a push whose tree or commit messages match the maintainer's private
+# public-content rules. Enable once per clone: git config core.hooksPath .githooks
+exec node "$(git rev-parse --show-toplevel)/scripts/check-public.mjs" --pre-push
