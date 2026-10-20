@@ -35,9 +35,14 @@ test('copies the BibTeX entry with one click', async ({ page, context }) => {
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('still shows the title, the abstract and a selectable BibTeX entry, with no dead button', async ({ page }) => {
+  test('still shows the whole first screen, the abstract and a selectable BibTeX entry, with no dead button', async ({ page }) => {
     await page.goto('/')
     expect(normalize(await page.locator('h1').innerText())).toBe(TITLE)
+    await expect(page.locator('[data-author-name]')).toHaveCount(3)
+    await expect(page.locator('[data-author-corresponding]')).toHaveCount(1)
+    await expect(page.locator('[data-affiliation]')).toHaveCount(2)
+    await expect(page.locator('[data-finding]')).toContainText('2,533 expert-adjudicated pairs')
+    await expect(page.locator('[data-glance]')).toContainText('55.9%–92.9%')
     expect(normalize(await page.locator('section#abstract p').first().innerText())).toContain('Computational approaches')
     await expect(page.locator('section#cite pre')).toContainText('@misc{wang2026beyond,')
     await expect(page.getByRole('button', { name: 'Copy BibTeX' })).toBeHidden()
