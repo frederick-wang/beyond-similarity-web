@@ -89,6 +89,8 @@ export const paper = {
 export const stats = {
   benchmarkPairs: 2533,
   models: 12,
+  /** The most precise of the twelve models, and the most expensive per valid pair (Table 2). */
+  mostPreciseModel: 'doubao-2.1-turbo',
   deploymentModel: 'deepseek-v4-flash',
   /** Precision gap, in percentage points, between the most precise model and the deployment model. */
   precisionGapPoints: 4.9,

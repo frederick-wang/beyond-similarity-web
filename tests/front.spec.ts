@@ -65,7 +65,7 @@ test.describe('English page, first screen', () => {
     const glance = page.locator('[data-glance]')
     await expect(glance.getByRole('heading', { name: 'At a glance' })).toBeVisible()
     const text = normalize(await glance.innerText())
-    for (const expected of [BENCHMARK_PAIRS, 'Analects', 'Book of Han', PRECISION_RANGE, '12 LLMs', '51×', '4.9 points', '5,766', '65,380', 'If the 88.0% precision measured on the Book of Han holds', 'about 1 in 8']) {
+    for (const expected of [BENCHMARK_PAIRS, 'Analects', 'Book of Han', PRECISION_RANGE, '12 LLMs', '51×', 'doubao-2.1-turbo', 'deepseek-v4-flash', '4.9 points less precise', '5,766', '65,380', 'If the 88.0% precision measured on the Book of Han holds', 'about 1 in 8']) {
       expect(text).toContain(expected)
     }
   })
