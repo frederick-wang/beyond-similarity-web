@@ -152,17 +152,6 @@ a:hover {
   text-decoration-color: currentColor;
 }
 
-/* Figures and tables too wide for the reading column also use the page
-   margin on wide screens; on narrower screens tables scroll instead. The
-   width is capped at the page body's content width (100cqi of the body
-   container), because between 68rem and about 73rem the gutters leave less
-   room than the column, gap and margin together. */
-@media (min-width: 68rem) {
-  .span-margin {
-    width: min(calc(var(--column) + var(--column-gap) + var(--margin-column)), 100cqi);
-  }
-}
-
 /* The shared page frame: masthead, content and footer align on one width. */
 .page-width {
   max-width: var(--page-width);

@@ -55,14 +55,24 @@ import Page from '../layouts/Page.astro'
     grid-area: nav;
   }
 
-  /* The query container for .span-margin, which may reach past the column
-     into the page margin but never past this box. */
+  .column {
+    max-width: var(--column);
+  }
+
+  /* Figures and tables too wide for the reading column (.span-margin) reach
+     into the page margin on wide screens: they span the content box of the
+     body, which is column, gap and margin at full width and narrower between
+     68rem and about 73rem, where the gutters leave less room. The body is the
+     query container that 100cqi measures. On narrower screens wide tables
+     scroll instead. */
   .body {
     container-type: inline-size;
   }
 
-  .column {
-    max-width: var(--column);
+  @media (min-width: 68rem) {
+    .body :global(.span-margin) {
+      width: 100cqi;
+    }
   }
 
   @media (min-width: 68rem) {
