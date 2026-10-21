@@ -6,6 +6,8 @@ import {
   AUTHORS,
   BENCHMARK_PAIRS,
   EXPLORER,
+  FIRST_HISTORY,
+  LAST_HISTORY,
   PRECISION_RANGE,
   TITLE,
   normalize,
@@ -49,6 +51,7 @@ test.describe('English page, first screen', () => {
     const finding = normalize(await page.locator('[data-finding]').innerText())
     expect(finding).toContain(`${BENCHMARK_PAIRS} expert-adjudicated pairs`)
     expect(finding).toContain('no systematic change')
+    expect(finding).toContain(`from ${FIRST_HISTORY} to ${LAST_HISTORY}`)
     expect(finding).not.toMatch(/\b(novel|powerful|significant(ly)?|robust(ly)?|comprehensive(ly)?|stable|stability)\b/i)
   })
 
@@ -57,7 +60,7 @@ test.describe('English page, first screen', () => {
     const glance = page.locator('[data-glance]')
     await expect(glance.getByRole('heading', { name: 'At a glance' })).toBeVisible()
     const text = normalize(await glance.innerText())
-    for (const expected of [BENCHMARK_PAIRS, 'Analects', 'Book of Han', PRECISION_RANGE, '12 LLMs', '51×', '4.9 points', '5,766', '65,380', '88.0% precision measured on the Book of Han', 'one in eight']) {
+    for (const expected of [BENCHMARK_PAIRS, 'Analects', 'Book of Han', PRECISION_RANGE, '12 LLMs', '51×', '4.9 points', '5,766', '65,380', 'If the 88.0% precision measured on the Book of Han holds', 'about 12%']) {
       expect(text).toContain(expected)
     }
   })

@@ -16,8 +16,15 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 
+// Pushed blobs can be large (figures); the default 1 MB buffer is too small.
+const maxBuffer = 256 * 1024 * 1024
+
 function git(args, cwd) {
-  return execFileSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 })
+  return execFileSync('git', args, { cwd, encoding: 'utf8', maxBuffer })
+}
+
+function gitBlob(sha, cwd) {
+  return execFileSync('git', ['cat-file', 'blob', sha], { cwd, maxBuffer })
 }
 
 const checkoutRoot = git(['rev-parse', '--show-toplevel'], process.cwd()).trim()
@@ -26,20 +33,20 @@ const checkoutRoot = git(['rev-parse', '--show-toplevel'], process.cwd()).trim()
 const mainRoot = dirname(git(['rev-parse', '--path-format=absolute', '--git-common-dir'], checkoutRoot).trim())
 const rulesPath = join(mainRoot, '.private', 'public-check-patterns.txt')
 
-function fail(message) {
+function exitWithSetupError(message) {
   console.error(message)
   process.exit(2)
 }
 
 function loadRules() {
   if (!existsSync(rulesPath)) {
-    fail(`公开内容检查规则缺失：${rulesPath}。请在维护者本机放置规则文件后重试。`)
+    exitWithSetupError(`公开内容检查规则缺失：${rulesPath}。请在维护者本机放置规则文件后重试。`)
   }
   let lines
   try {
     lines = readFileSync(rulesPath, 'utf8').split('\n')
   } catch (error) {
-    fail(`公开内容检查规则无法读取：${rulesPath}（${error.message}）`)
+    exitWithSetupError(`公开内容检查规则无法读取：${rulesPath}（${error.message}）`)
   }
   const rules = []
   lines.forEach((raw, index) => {
@@ -50,11 +57,11 @@ function loadRules() {
     try {
       rules.push({ line: index + 1, pattern: new RegExp(line, 'iu') })
     } catch {
-      fail(`公开内容检查规则第 ${index + 1} 行不是合法的正则表达式：${rulesPath}`)
+      exitWithSetupError(`公开内容检查规则第 ${index + 1} 行不是合法的正则表达式：${rulesPath}`)
     }
   })
   if (rules.length === 0) {
-    fail(`公开内容检查规则为空：${rulesPath}`)
+    exitWithSetupError(`公开内容检查规则为空：${rulesPath}`)
   }
   return rules
 }
@@ -106,7 +113,7 @@ function scanNewObjects(revisionArgs, rules) {
     if (git(['cat-file', '-t', object.sha], checkoutRoot).trim() !== 'blob') {
       continue
     }
-    const content = execFileSync('git', ['cat-file', 'blob', object.sha], { cwd: checkoutRoot, maxBuffer: 256 * 1024 * 1024 })
+    const content = gitBlob(object.sha, checkoutRoot)
     hits.push(...scanText(`${object.sha.slice(0, 7)} ${object.path}`, content.toString('utf8'), rules))
   }
   return hits
@@ -151,7 +158,7 @@ function scanFiles(paths, rules) {
   const hits = []
   for (const path of paths) {
     if (!existsSync(path)) {
-      fail(`文件不存在：${path}`)
+      exitWithSetupError(`文件不存在：${path}`)
     }
     hits.push(...scanText(path, readFileSync(path).toString('utf8'), rules))
   }

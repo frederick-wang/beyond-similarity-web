@@ -15,13 +15,14 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme })
     await page.goto('/')
     const results = await new AxeBuilder({ page }).analyze()
-    const severe = (impact: string | null | undefined) => impact === 'serious' || impact === 'critical'
+    const severe = (impact: (typeof results.violations)[number]['impact']) => impact === 'serious' || impact === 'critical'
     const blocking = results.violations.filter((violation) => severe(violation.impact))
     expect(blocking.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([])
-    // "Needs review" results count too, except colour contrast: axe cannot
-    // determine the background of the code inside the horizontally scrolling
-    // BibTeX region. That text is ink on the wash colour: 16.3:1 light, 14.6:1 dark.
-    const unresolved = results.incomplete.filter((result) => severe(result.impact) && result.id !== 'color-contrast')
+    // "Needs review" results count too. The one region left out is the
+    // horizontally scrolling BibTeX block: axe cannot determine the background
+    // behind its code, which is ink on the wash colour (16.3:1 light, 14.6:1 dark).
+    const reviewable = await new AxeBuilder({ page }).exclude('#cite [role="region"]').analyze()
+    const unresolved = reviewable.incomplete.filter((result) => severe(result.impact))
     expect(unresolved.map((result) => `${result.id}: ${result.help}`)).toEqual([])
   })
 }
