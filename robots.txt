@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://beyond-similarity.zhaoji.ac.cn/sitemap.xml
