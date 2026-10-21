@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
+import { PUBLISHED, SITE } from './paper-literals'
 import { readPngHeader, type PngHeader } from './png'
 
 async function attribute(page: Page, selector: string, name: string): Promise<string> {
@@ -59,5 +60,47 @@ test.describe('favicons drawn from the scroll seal', () => {
     await page.goto('/')
     const header = await fetchPng(request, await attribute(page, 'link[rel="apple-touch-icon"]', 'href'))
     expect(header).toEqual({ width: 180, height: 180, transparency: false })
+  })
+})
+
+test.describe('files for crawlers', () => {
+  test('robots.txt admits every crawler, training crawlers included, and declares the sitemap', async ({ request }) => {
+    const response = await request.get('/robots.txt')
+    expect(response.status()).toBe(200)
+    expect(response.headers()['content-type']).toContain('text/plain')
+    const lines = (await response.text()).split('\n').map((line) => line.trim())
+    expect(lines).toContain('User-agent: *')
+    expect(lines.filter((line) => /^disallow\s*:\s*\S/i.test(line))).toEqual([])
+    expect(lines).toContain(`Sitemap: ${SITE}sitemap.xml`)
+  })
+
+  test('sitemap.xml lists the page with the date of its last substantive update', async ({ page, request }) => {
+    const response = await request.get('/sitemap.xml')
+    expect(response.status()).toBe(200)
+    expect(response.headers()['content-type']).toContain('xml')
+    const sitemap = await page.evaluate((text) => {
+      const namespace = 'http://www.sitemaps.org/schemas/sitemap/0.9'
+      const document = new DOMParser().parseFromString(text, 'application/xml')
+      const child = (parent: Element, name: string) => parent.getElementsByTagNameNS(namespace, name)[0]?.textContent ?? null
+      return {
+        wellFormed: document.querySelector('parsererror') === null,
+        namespace: document.documentElement.namespaceURI,
+        name: document.documentElement.localName,
+        urls: Array.from(document.getElementsByTagNameNS(namespace, 'url'), (url) => ({ loc: child(url, 'loc'), lastmod: child(url, 'lastmod') })),
+      }
+    }, await response.text())
+    expect(sitemap).toMatchObject({ wellFormed: true, namespace: 'http://www.sitemaps.org/schemas/sitemap/0.9', name: 'urlset' })
+    expect(sitemap.urls.map((url) => url.loc)).toEqual([SITE])
+    const { builtAt } = (await (await request.get('/build.json')).json()) as { builtAt: string }
+    for (const { loc, lastmod } of sitemap.urls) {
+      if (lastmod === null) {
+        throw new Error(`${loc} has no lastmod`)
+      }
+      expect(lastmod).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      // The page cannot have changed before the paper existed, nor after this
+      // build: the date has to have begun somewhere (UTC+14) by build time.
+      expect(lastmod >= PUBLISHED, `${lastmod} precedes the arXiv v1 date`).toBe(true)
+      expect(new Date(`${lastmod}T00:00:00+14:00`) <= new Date(builtAt), `${lastmod} is after the build`).toBe(true)
+    }
   })
 })

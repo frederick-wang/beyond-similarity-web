@@ -3,7 +3,12 @@
 // the title block, the finding, "At a glance", the meta description and the
 // BibTeX entry.
 
-export type PageLanguage = 'en'
+/** The language pages, as BCP 47 tags. */
+export const pageLanguages = ['en'] as const
+export type PageLanguage = (typeof pageLanguages)[number]
+
+/** A calendar date written YYYY-MM-DD. */
+export type IsoDate = `${number}-${number}-${number}`
 
 /** Affiliation numbers as printed in the paper; the tuple fixes their order. */
 export const affiliationIds = [1, 2] as const
@@ -33,6 +38,12 @@ export type Quantity =
 
 export interface PageFacts {
   readonly path: string
+  /**
+   * The date of the page's last substantive change: new or corrected text,
+   * numbers, figures or tables, not styling or code. sitemap.xml gives it as
+   * the page's lastmod.
+   */
+  readonly updated: IsoDate
 }
 
 // A Record keyed by every AffiliationId, so dropping an affiliation that an
@@ -151,7 +162,7 @@ export const icpNumber = '蜀ICP备19032431号-3'
 export const copyrightYear = 2026
 
 export const pages = {
-  en: { path: '/' },
+  en: { path: '/', updated: '2026-10-21' },
 } as const satisfies Readonly<Record<PageLanguage, PageFacts>>
 
 /** Resolves a site path against `site` in astro.config.mjs, the only place the origin is written. */
