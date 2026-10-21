@@ -1,16 +1,14 @@
 # Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories
 
-This repository holds the source of the paper page for the arXiv preprint arXiv:2607.27595 by Zhaoji Wang, Wanyu Si, and Jun Wang.
+This repository holds the source of the paper page for the arXiv preprint by Zhaoji Wang, Wanyu Si, and Jun Wang.
 
-- Paper page: <https://beyond-similarity.zhaoji.ac.cn/> (English) and <https://beyond-similarity.zhaoji.ac.cn/zh/> (Chinese)
+- Paper page: <https://beyond-similarity.zhaoji.ac.cn/>
 - arXiv record: <https://arxiv.org/abs/2607.27595>
 - Explorer (in Chinese), which shows every intertextual pair from the Twenty-Four Histories run in its textual context: <https://analects-24histories-intertext.pkudh.net/>
 
 ## The paper
 
-Similarity scores and parallel-passage lists show where one text reuses another but not how or why. In the paper, an LLM agent reads one book of the *Analects* and one scroll of a history in full, and it may record an intertextual pair only after grounding both fragments in exact character spans through a checked tool interface. Each pair is labelled under a five-dimension typology of reuse: form, aspect, source-marking, function, and stance.
-
-On the *Analects* and the *Book of Han*, two experts judged the candidate pairs proposed by twelve LLMs and a third adjudicated, producing an expert-adjudicated benchmark of 2,533 intertextual pairs. Expert agreement traces a reliability gradient: form and source-marking, legible on the textual surface, are annotated consistently, while function and stance, which require inferring intent, are contested. Against the benchmark, the twelve LLMs reach 55.9% to 92.9% precision. The most precise of them, `doubao-2.1-turbo`, costs 51 times as much per valid pair as the deployment model, `deepseek-v4-flash`, whose precision is 4.9 points lower. Over the Twenty-Four Histories, the deployment model extracted 5,766 intertextual pairs from 65,380 comparisons. Across official histories composed from 91 BCE to 1739 CE, no systematic change is detected in the share of direct quotation or of reuse that leaves its source unmarked, yet later-compiled histories tend to quote the same passage less literally.
+Similarity scores and parallel-passage lists show where one text reuses another but not how or why. In the paper, an LLM agent reads one book of the *Analects* and one scroll of a history in full, may record an intertextual pair only after grounding both fragments in exact character spans, and labels each pair under a five-dimension typology of reuse. Against an expert-adjudicated benchmark of 2,533 intertextual pairs between the *Analects* and the *Book of Han*, 12 LLMs reach 55.9% to 92.9% precision. The deployment model then extracted 5,766 intertextual pairs from 65,380 comparisons over the Twenty-Four Histories. Across them, no systematic change is detected in the share of direct quotation or of reuse that leaves its source unmarked, while later-compiled histories tend to quote the same passage less literally.
 
 ## Cite
 

@@ -1,13 +1,60 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
+import { normalize } from './paper-literals'
 
-// README.md keeps a copy of the BibTeX entry for readers of the repository.
-// The copy is compared with what the page serves, so editing the entry in the
-// facts module without updating the README fails here.
-test('the README cites the paper with the BibTeX entry the page serves', async ({ page }) => {
-  const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8')
-  const entries = [...readme.matchAll(/^```bibtex\n([\s\S]*?)\n```$/gm)].map((match) => match[1])
-  expect(entries).toHaveLength(1)
-  await page.goto('/')
-  expect(entries[0]).toBe(await page.locator('section#cite pre').innerText())
+// README.md restates the paper's title, authors, arXiv link, numbers and
+// BibTeX entry for readers of the repository. It cannot import the facts
+// module, so each restated fact is compared with what the page serves.
+const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8')
+
+/** The README up to a level-2 heading. */
+function readmeBefore(heading: string): string {
+  const end = readme.indexOf(`\n## ${heading}\n`)
+  if (end === -1) {
+    throw new Error(`README.md has no "## ${heading}" section`)
+  }
+  return readme.slice(0, end)
+}
+
+/** Numbers as prose writes them: 12, 2,533, 55.9%. */
+function numbers(text: string): string[] {
+  return text.match(/\d+(?:[.,]\d+)*%?/g) ?? []
+}
+
+test.describe('README', () => {
+  test('carries the title the page shows', async ({ page }) => {
+    await page.goto('/')
+    expect(/^# (.+)$/m.exec(readme)?.[1]).toBe(normalize(await page.locator('h1').innerText()))
+  })
+
+  test('names the authors the page lists, in their order', async ({ page }) => {
+    await page.goto('/')
+    const names = (await page.locator('[data-author-name]').allInnerTexts()).map(normalize)
+    const list = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' }).format(names)
+    expect(readmeBefore('The paper')).toContain(`by ${list}.`)
+  })
+
+  test('links to the arXiv record the page links to', async ({ page }) => {
+    await page.goto('/')
+    const href = await page.locator('[data-links] a[href^="https://arxiv.org/abs/"]').getAttribute('href')
+    const links = readme.match(/https:\/\/arxiv\.org\/abs\/[^\s>)}]+/g)
+    expect(new Set(links)).toEqual(new Set([href]))
+  })
+
+  test('states only numbers that the page states', async ({ page }) => {
+    await page.goto('/')
+    const served = new Set(numbers(await page.locator('main').innerText()))
+    // Everything before the Cite section is prose about the paper; link
+    // targets carry digits that are not stated numbers.
+    const stated = numbers(readmeBefore('Cite').replace(/<https?:\/\/[^>]+>/g, ''))
+    expect(stated.length).toBeGreaterThan(0)
+    expect(stated.filter((number) => !served.has(number))).toEqual([])
+  })
+
+  test('cites the paper with the BibTeX entry the page serves', async ({ page }) => {
+    const entries = [...readme.matchAll(/^```bibtex\n([\s\S]*?)\n```$/gm)].map((match) => match[1])
+    expect(entries).toHaveLength(1)
+    await page.goto('/')
+    expect(entries[0]).toBe(await page.locator('section#cite pre').innerText())
+  })
 })
