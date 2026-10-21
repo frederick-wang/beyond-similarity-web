@@ -52,6 +52,11 @@ test.describe('English page, first screen', () => {
     expect(finding).toContain(`${BENCHMARK_PAIRS} expert-adjudicated pairs`)
     expect(finding).toContain('no systematic change')
     expect(finding).toContain(`from ${FIRST_HISTORY} to ${LAST_HISTORY}`)
+    // The raw text keeps a no-break space between each year and its era, so a
+    // year never wraps away from "BCE" or "CE".
+    const raw = await page.locator('[data-finding]').textContent()
+    expect(raw).toContain(FIRST_HISTORY.replace(' ', '\u00a0'))
+    expect(raw).toContain(LAST_HISTORY.replace(' ', '\u00a0'))
     expect(finding).not.toMatch(/\b(novel|powerful|significant(ly)?|robust(ly)?|comprehensive(ly)?|stable|stability)\b/i)
   })
 
