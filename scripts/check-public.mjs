@@ -22,13 +22,18 @@
 //
 // Exit codes: 0 clean; 1 hits found; 2 repository not found, a rule file
 // missing, unreadable, invalid or empty, an input file missing, a PNG that
-// does not parse, or no dist/ under --ci.
+// does not parse, no dist/ under --ci, or a fault in this script or its
+// environment, a module that fails to load included.
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { isPng, PngFormatError, readPngWords } from './png.ts'
+
+// png.ts is imported dynamically so that a module that fails to load ends
+// through exitWithFault with code 2. A static import that fails ends the
+// process before any code here runs, with Node's code 1, which means hits.
+const { isPng, PngFormatError, readPngWords } = await import('./png.ts').catch(exitWithFault)
 
 // Pushed blobs can be large (figures); the default 1 MB buffer is too small.
 const maxBuffer = 256 * 1024 * 1024
@@ -407,13 +412,22 @@ function main() {
   console.log('公开内容检查通过。')
 }
 
-// Exit code 1 means hits were found, so an unexpected error, a fault in this
-// script or its environment rather than in what it checks, has to end with 2.
-// The script's own messages never include bytes from the checked files, so
-// printing the message and the stack is safe.
+/**
+ * Ends the run for a fault in this script or its environment rather than in
+ * what it checks, with exit code 2, since 1 means hits. It prints only the
+ * stack, which opens with the message. An error from execFileSync also
+ * carries the child's output in error.stdout and error.stderr, and stdout can
+ * hold bytes of a checked file, such as a blob from git cat-file, so the whole
+ * error object must never be printed. The messages of git and Node errors name
+ * the command, git's diagnostic, a path or an error code.
+ */
+function exitWithFault(error) {
+  console.error(`检查脚本出错：${error instanceof Error ? error.stack : String(error)}`)
+  process.exit(2)
+}
+
 try {
   main()
 } catch (error) {
-  console.error(`检查脚本出错：${error instanceof Error ? `${error.message}\n${error.stack}` : String(error)}`)
-  process.exit(2)
+  exitWithFault(error)
 }
