@@ -3,6 +3,7 @@ import { getImage, Picture } from 'astro:assets'
 import type { PageCopy } from '../content/types'
 import { figures, type FigureId } from '../data/figures'
 import { pdfPageUrl } from '../data/paper'
+import { punctuationFor } from '../lib/format'
 import Inline from './Inline.astro'
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 const { copy, figure } = Astro.props
 const data = figures[figure]
 const text = copy.figures.items[figure]
+const marks = punctuationFor(copy.lang)
 
 // Column figures render at most 640 CSS px wide, the wide framework figure at
 // the full page width (67.5rem); srcset widths cover 1x and 2x screens.
@@ -36,9 +38,8 @@ const full = await getImage({ src: data.image, width: data.image.width, format: 
     />
   </a>
   <figcaption class="caption">
-    <span class="label">{text.label}.</span>{' '}
-    <Inline text={text.caption} lang={copy.lang} />{' '}
-    <span class="figure-links">
+    <span class="label">{text.label}{marks.labelEnd}</span>{' '}
+    <Inline text={text.caption} lang={copy.lang} />{marks.join}<span class="figure-links">
       <a class="quiet-link" href={full.src}>{copy.figures.openFull}</a>
       <span aria-hidden="true">·</span>
       <a class="quiet-link" href={pdfPageUrl(data.page)}>{copy.sources.pages([data.page])}</a>

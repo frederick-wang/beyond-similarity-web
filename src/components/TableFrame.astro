@@ -2,6 +2,7 @@
 import type { InlineMarkdown, PageCopy } from '../content/types'
 import { pdfPageUrl } from '../data/paper'
 import { tableLayouts, tablePages, type TableId } from '../data/tables'
+import { punctuationFor } from '../lib/format'
 import Inline from './Inline.astro'
 
 interface Props {
@@ -15,6 +16,7 @@ const { copy, table, label, caption } = Astro.props
 const layout = tableLayouts[table]
 const captionId = `table-${table}-caption`
 const page = tablePages[table]
+const marks = punctuationFor(copy.lang)
 
 // The caption sits outside the scrolling region so it never scrolls away; the
 // region is focusable and named after the table so keyboard users can scroll
@@ -23,9 +25,8 @@ const page = tablePages[table]
 
 <figure class:list={['table-figure', { 'span-margin': layout === 'wide' }]} id={`table-${table}`} data-table={table}>
   <figcaption class="caption" id={captionId}>
-    <span class="label">{label}.</span>{' '}
-    <Inline text={caption} lang={copy.lang} />{' '}
-    <a class="quiet-link page-link" href={pdfPageUrl(page)}>{copy.sources.pages([page])}</a>
+    <span class="label">{label}{marks.labelEnd}</span>{' '}
+    <Inline text={caption} lang={copy.lang} />{marks.join}<a class="quiet-link page-link" href={pdfPageUrl(page)}>{copy.sources.pages([page])}</a>
   </figcaption>
   <div class="scroll" role="region" tabindex="0" aria-label={copy.tables.scrollRegion(label)}>
     <table aria-describedby={captionId}>

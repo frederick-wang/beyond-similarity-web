@@ -1,12 +1,14 @@
 ---
 import type { PageCopy } from '../content/types'
 import { affiliationIds, affiliations, authors, links } from '../data/paper'
+import { punctuationFor } from '../lib/format'
 
 interface Props {
   readonly copy: PageCopy
 }
 
 const { copy } = Astro.props
+const marks = punctuationFor(copy.lang)
 ---
 
 <header class="title-block">
@@ -28,7 +30,7 @@ const { copy } = Astro.props
               <abbr title={copy.correspondingNote}>*</abbr>
             </sup>
           )}
-          {index < authors.length - 1 && <span class="separator">, </span>}
+          {index < authors.length - 1 && <span class="separator">{marks.authorSeparator}</span>}
         </span>
       ))
     }

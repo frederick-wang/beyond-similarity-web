@@ -15,6 +15,32 @@ const yearFormat: Readonly<Record<PageLanguage, (year: number) => string>> = {
   en: (year) => (year < 0 ? `${-year}\u00a0BCE` : `${year}\u00a0CE`),
 }
 
+/** Punctuation that a component places between pieces of copy. */
+export interface Punctuation {
+  /** Ends a sentence the component completes, as in "Maintained by Zhaoji Wang." */
+  readonly fullStop: string
+  /**
+   * Joins a sentence, or a lead such as "Source:", to the text after it: a
+   * space in English, nothing in Chinese, whose full-width punctuation at the
+   * end of the first piece carries its own spacing.
+   */
+  readonly join: string
+  /** Separates the author names in the title block. */
+  readonly authorSeparator: string
+  /** Separates two source links after a paragraph. */
+  readonly sourceSeparator: string
+  /** Closes the label of a figure or table caption, as the period in "Figure 1.". */
+  readonly labelEnd: string
+}
+
+const punctuation: Readonly<Record<PageLanguage, Punctuation>> = {
+  en: { fullStop: '.', join: ' ', authorSeparator: ', ', sourceSeparator: '; ', labelEnd: '.' },
+}
+
+export function punctuationFor(lang: PageLanguage): Punctuation {
+  return punctuation[lang]
+}
+
 export function formatCount(value: number): string {
   return value.toLocaleString('en-US')
 }
