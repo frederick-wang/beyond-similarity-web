@@ -1,0 +1,63 @@
+---
+import type { PageCopy } from '../content/types'
+import { glance, glanceIds } from '../data/paper'
+import { formatQuantity } from '../lib/format'
+import Inline from './Inline.astro'
+
+interface Props {
+  readonly copy: PageCopy
+}
+
+const { copy } = Astro.props
+---
+
+<aside class="glance" aria-labelledby="glance-heading" data-glance>
+  <h2 id="glance-heading">{copy.glanceHeading}</h2>
+  <dl>
+    {
+      glanceIds.map((id) => (
+        <div class="entry">
+          <dt>{formatQuantity(glance[id], copy.lang)}</dt>
+          <dd>
+            <Inline text={copy.glance[id]} />
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</aside>
+
+<style>
+  .glance h2 {
+    font-size: 1rem;
+    font-weight: 650;
+    color: var(--ink);
+  }
+
+  dl {
+    margin: 0;
+    display: grid;
+    gap: 1.15rem;
+    margin-top: 0.9rem;
+  }
+
+  .entry {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  dt {
+    font-size: 1.6rem;
+    font-weight: 650;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.01em;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+</style>

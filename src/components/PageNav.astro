@@ -1,0 +1,79 @@
+---
+import type { PageCopy } from '../content/types'
+import SectionList from './SectionList.astro'
+
+interface Props {
+  readonly copy: PageCopy
+}
+
+const { copy } = Astro.props
+
+// Wide screens show the list open; narrow screens show it in a closed
+// <details> so the title block and findings are not pushed further down.
+// The two renderings are switched by CSS alone, which keeps the page free of
+// scripts other than the BibTeX copy button. The hidden one is display:none
+// and therefore absent from the accessibility tree.
+---
+
+<nav class="page-nav" aria-label={copy.navHeading}>
+  <div class="wide">
+    <h2>{copy.navHeading}</h2>
+    <SectionList sections={copy.sections} />
+  </div>
+  <details class="narrow">
+    <summary><h2>{copy.navHeading}</h2></summary>
+    <SectionList sections={copy.sections} />
+  </details>
+</nav>
+
+<style>
+  .page-nav {
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+  }
+
+  .narrow {
+    display: none;
+  }
+
+  @media (max-width: 47.99rem) {
+    .wide {
+      display: none;
+    }
+
+    .narrow {
+      display: block;
+    }
+  }
+
+  summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.25rem;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 1.5px solid var(--ink-muted);
+    border-bottom: 1.5px solid var(--ink-muted);
+    transform: translateY(-2px) rotate(45deg);
+  }
+
+  details[open] summary::after {
+    transform: translateY(2px) rotate(-135deg);
+  }
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 650;
+  }
+</style>

@@ -1,0 +1,29 @@
+{
+  "name": "beyond-similarity-web",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.10.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview --host 127.0.0.1 --port 4321",
+    "check": "astro check",
+    "test": "playwright test",
+    "check:public": "node scripts/check-public.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.3.8",
+    "marked": "^18.1.1",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^24.19.2",
+    "typescript": "~6.0.3"
+  }
+}

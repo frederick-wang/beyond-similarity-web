@@ -1,0 +1,55 @@
+---
+import { getImage } from 'astro:assets'
+import seal from '../assets/seal.png'
+import sealDark from '../assets/seal-dark.png'
+import { paper } from '../data/paper'
+
+// The seal is the Explorer's mark: a vermilion square with a white handscroll.
+// It renders at 28 CSS px; 1x and 2x files cover standard and dense screens.
+const size = 28
+const light1x = await getImage({ src: seal, width: size, format: 'webp' })
+const light2x = await getImage({ src: seal, width: size * 2, format: 'webp' })
+const dark1x = await getImage({ src: sealDark, width: size, format: 'webp' })
+const dark2x = await getImage({ src: sealDark, width: size * 2, format: 'webp' })
+---
+
+<header class="masthead">
+  <div class="masthead-inner page-width">
+    <a class="brand" href="/">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset={`${dark1x.src} 1x, ${dark2x.src} 2x`} />
+        <img src={light1x.src} srcset={`${light1x.src} 1x, ${light2x.src} 2x`} width={size} height={size} alt="" />
+      </picture>
+      <span>{paper.shortTitle}</span>
+    </a>
+  </div>
+</header>
+
+<style>
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .masthead-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 3.5rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    letter-spacing: 0.005em;
+    text-decoration: none;
+  }
+
+  .brand img {
+    display: block;
+    transform: translateY(1px);
+  }
+</style>

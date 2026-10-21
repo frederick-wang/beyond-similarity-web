@@ -1,0 +1,134 @@
+/*
+ * The Explorer's collation palette: white paper, ink text, indigo annotation
+ * for links and the reader's position. Values are the Explorer's oklch tokens
+ * converted to sRGB. Every text pair below clears WCAG AA in both themes.
+ */
+:root {
+  color-scheme: light dark;
+
+  --paper: #ffffff;
+  --wash: #f0f3f7;
+  --ink: #13161c;
+  --ink-muted: #525862;
+  --indigo: #1c50a7;
+  --indigo-wash: #e7edf7;
+  --rule: #dfe2e7;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC',
+    'Microsoft YaHei', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --column: 45rem;
+  --margin-column: 17.5rem;
+  --column-gap: 5rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --page-width: calc(var(--column) + var(--column-gap) + var(--margin-column) + 2 * var(--gutter));
+  --measure: 68ch;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0b0e14;
+    --wash: #13171f;
+    --ink: #e5e8ed;
+    --ink-muted: #9ca2ab;
+    --indigo: #78a5ef;
+    --indigo-wash: #222935;
+    --rule: #292e36;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--indigo) 40%, transparent);
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/*
+ * Identifiers in running text, such as model names, are code spans. They keep
+ * the reading face and never break at their hyphens ("deepseek-v4-flash").
+ */
+:not(pre) > code {
+  font-family: inherit;
+  font-size: inherit;
+  white-space: nowrap;
+}
+
+::selection {
+  background: var(--indigo-wash);
+  color: var(--ink);
+}
+
+/* The shared page frame: masthead, content and footer align on one width. */
+.page-width {
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: -3rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  z-index: 10;
+}
+
+.skip-link:focus-visible {
+  top: 0.75rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

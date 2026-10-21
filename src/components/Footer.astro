@@ -1,0 +1,45 @@
+---
+import type { PageCopy } from '../content/types'
+import { authors, copyrightYear, icpNumber, links, maintainer } from '../data/paper'
+import { formatList } from '../lib/format'
+
+interface Props {
+  readonly copy: PageCopy
+}
+
+const { copy } = Astro.props
+const holders = formatList(
+  authors.map((author) => author.nameEn),
+  copy.lang,
+)
+---
+
+<footer class="site-footer">
+  <div class="inner page-width">
+    <p>© {copyrightYear} {holders}. {copy.footer.rights}</p>
+    <p>
+      {copy.footer.maintainedBy}{' '}
+      {maintainer.homepage === null ? maintainer.nameEn : <a href={maintainer.homepage}>{maintainer.nameEn}</a>}.
+    </p>
+    <p><a href={links.icpRegistry} rel="nofollow" lang="zh-Hans">{icpNumber}</a></p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .inner {
+    padding-block: 1.5rem 2.5rem;
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+  }
+
+  a {
+    color: var(--ink-muted);
+  }
+</style>

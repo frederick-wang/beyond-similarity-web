@@ -1,0 +1,56 @@
+import type { GlanceId, PageLanguage } from '../data/paper'
+
+/**
+ * Inline Markdown: emphasis (`*Analects*`), links (`[text](url)`) and code
+ * spans for identifiers such as model names. Kept as Markdown so the same
+ * string can feed both the HTML page and the Markdown mirror without a second
+ * copy of the prose.
+ */
+export type InlineMarkdown = string
+
+export type SectionId = 'abstract' | 'cite'
+
+export type Block =
+  | { readonly type: 'paragraph'; readonly text: InlineMarkdown }
+  | { readonly type: 'bibtex' }
+
+export interface Section {
+  readonly id: SectionId
+  readonly heading: string
+  readonly blocks: readonly Block[]
+}
+
+export interface LinkLabels {
+  readonly arxiv: string
+  readonly pdf: string
+  readonly explorer: string
+  readonly cite: string
+}
+
+export interface CopyButtonLabels {
+  readonly idle: string
+  readonly done: string
+  readonly failed: string
+}
+
+export interface FooterCopy {
+  readonly rights: string
+  readonly maintainedBy: string
+}
+
+export interface PageCopy {
+  readonly lang: PageLanguage
+  readonly title: string
+  readonly description: string
+  readonly skipLink: string
+  readonly correspondingNote: string
+  readonly finding: InlineMarkdown
+  readonly glanceHeading: string
+  readonly glance: Readonly<Record<GlanceId, InlineMarkdown>>
+  readonly navHeading: string
+  readonly links: LinkLabels
+  readonly copyButton: CopyButtonLabels
+  readonly bibtexLabel: string
+  readonly sections: readonly Section[]
+  readonly footer: FooterCopy
+}

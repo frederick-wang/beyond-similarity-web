@@ -2,3 +2,14 @@
 node_modules/
 dist/
 .astro/
+
+# 维护者本机的私有部署说明与公开内容检查规则
+/.private/
+
+# impeccable 的临时草图与评审截图
+/.impeccable/mocks/
+/.impeccable/review/
+
+# Playwright 产物
+/test-results/
+/playwright-report/
