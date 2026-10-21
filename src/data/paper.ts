@@ -11,12 +11,10 @@ export type AffiliationId = (typeof affiliationIds)[number]
 
 export interface Affiliation {
   readonly nameEn: string
-  readonly nameZh: string
 }
 
 export interface Author {
   readonly nameEn: string
-  readonly nameZh: string
   readonly givenNameEn: string
   readonly familyNameEn: string
   readonly affiliations: readonly AffiliationId[]
@@ -40,20 +38,13 @@ export interface PageFacts {
 // A Record keyed by every AffiliationId, so dropping an affiliation that an
 // author still cites fails the type check instead of rendering a dangling mark.
 export const affiliations = {
-  1: {
-    nameEn: 'Department of Information Management, Peking University, Beijing, China',
-    nameZh: '北京大学信息管理系',
-  },
-  2: {
-    nameEn: 'Research Center for Digital Humanities, Peking University, Beijing, China',
-    nameZh: '北京大学数字人文研究中心',
-  },
+  1: { nameEn: 'Department of Information Management, Peking University, Beijing, China' },
+  2: { nameEn: 'Research Center for Digital Humanities, Peking University, Beijing, China' },
 } as const satisfies Readonly<Record<AffiliationId, Affiliation>>
 
 export const authors = [
   {
     nameEn: 'Zhaoji Wang',
-    nameZh: '王兆基',
     givenNameEn: 'Zhaoji',
     familyNameEn: 'Wang',
     affiliations: [1, 2],
@@ -62,7 +53,6 @@ export const authors = [
   },
   {
     nameEn: 'Wanyu Si',
-    nameZh: '司宛玉',
     givenNameEn: 'Wanyu',
     familyNameEn: 'Si',
     affiliations: [1, 2],
@@ -71,7 +61,6 @@ export const authors = [
   },
   {
     nameEn: 'Jun Wang',
-    nameZh: '王军',
     givenNameEn: 'Jun',
     familyNameEn: 'Wang',
     affiliations: [1, 2],
@@ -86,7 +75,6 @@ export const maintainer: Author = authors[0]
 export const paper = {
   titleEn:
     'Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories',
-  titleZh: '超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测',
   shortTitle: 'Beyond Similarity',
   arxivId: '2607.27595',
   arxivVersion: 'v1',
@@ -108,6 +96,8 @@ export const stats = {
   deploymentPrecision: 88.0,
   corpusComparisons: 65380,
   corpusPairs: 5766,
+  /** Composition years of the earliest and latest of the Twenty-Four Histories; negative years are BCE. */
+  compositionYears: { first: -91, last: 1739 },
 } as const
 
 export const glance = {

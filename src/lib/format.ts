@@ -6,6 +6,9 @@ import type { PageLanguage, Quantity } from '../data/paper'
 const rangeSeparator: Readonly<Record<PageLanguage, string>> = { en: '–' }
 const multipleSuffix: Readonly<Record<PageLanguage, string>> = { en: '×' }
 const listLocale: Readonly<Record<PageLanguage, string>> = { en: 'en' }
+const eraSuffix: Readonly<Record<PageLanguage, { readonly bce: string; readonly ce: string }>> = {
+  en: { bce: ' BCE', ce: ' CE' },
+}
 
 export function formatCount(value: number): string {
   return value.toLocaleString('en-US')
@@ -20,6 +23,11 @@ export function formatQuantity(quantity: Quantity, lang: PageLanguage): string {
     case 'multiple':
       return `${quantity.value}${multipleSuffix[lang]}`
   }
+}
+
+/** A calendar year with its era, as in "91 BCE" or "1739 CE"; negative years are BCE. */
+export function formatYear(year: number, lang: PageLanguage): string {
+  return year < 0 ? `${-year}${eraSuffix[lang].bce}` : `${year}${eraSuffix[lang].ce}`
 }
 
 export function formatList(items: readonly string[], lang: PageLanguage): string {

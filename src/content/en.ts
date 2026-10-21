@@ -1,5 +1,5 @@
 import { paper, stats } from '../data/paper'
-import { formatCount } from '../lib/format'
+import { formatCount, formatYear } from '../lib/format'
 import type { PageCopy } from './types'
 
 // First-screen copy takes its numbers from the facts module; the verbatim
@@ -7,6 +7,11 @@ import type { PageCopy } from './types'
 // tests against the paper.
 const benchmarkPairs = formatCount(stats.benchmarkPairs)
 const corpusComparisons = formatCount(stats.corpusComparisons)
+const firstHistory = formatYear(stats.compositionYears.first, 'en')
+const lastHistory = formatYear(stats.compositionYears.last, 'en')
+// The share expected to be spurious if the deployment model's precision on the
+// Book of Han held across the corpus run, as the paper itself estimates.
+const expectedSpurious = (100 - stats.deploymentPrecision).toFixed(0)
 
 export const en: PageCopy = {
   lang: 'en',
@@ -14,13 +19,13 @@ export const en: PageCopy = {
   description: `An LLM agent grounds each reuse of the Analects in exact character spans and labels how it is reused, validated on ${benchmarkPairs} expert-adjudicated pairs.`,
   skipLink: 'Skip to content',
   correspondingNote: 'Corresponding author',
-  finding: `We make an LLM agent ground every reuse it proposes in exact character spans and label how the source is reused, and we validate it on ${benchmarkPairs} expert-adjudicated pairs from the *Analects* and the *Book of Han*. Across eighteen centuries of official histories we detect no systematic change in how often the *Analects* is quoted directly or named as the source, while later-compiled histories tend to quote the same passage less literally.`,
+  finding: `We make an LLM agent ground every reuse it proposes in exact character spans and label how the source is reused, and we validate it on ${benchmarkPairs} expert-adjudicated pairs from the *Analects* and the *Book of Han*. Across official histories composed from ${firstHistory} to ${lastHistory} we detect no systematic change in how often the *Analects* is quoted directly or named as the source, while later-compiled histories tend to quote the same passage less literally.`,
   glanceHeading: 'At a glance',
   glance: {
     benchmark: 'expert-adjudicated intertextual pairs between the *Analects* and the *Book of Han*',
     precision: `precision of ${stats.models} LLMs against that benchmark`,
     costSpread: `lower cost per valid pair for ${stats.deploymentModel} than for the most precise model, at ${stats.precisionGapPoints} points lower precision`,
-    corpusRun: `intertextual pairs from ${corpusComparisons} comparisons over the Twenty-Four Histories. At the ${stats.deploymentPrecision.toFixed(1)}% precision measured on the *Book of Han*, about one in eight is expected to be spurious.`,
+    corpusRun: `intertextual pairs from ${corpusComparisons} comparisons over the Twenty-Four Histories. If the ${stats.deploymentPrecision.toFixed(1)}% precision measured on the *Book of Han* holds, about ${expectedSpurious}% of them would be spurious.`,
   },
   navHeading: 'On this page',
   links: {
