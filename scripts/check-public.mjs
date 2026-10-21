@@ -47,11 +47,24 @@ function gitBlob(sha, cwd) {
 // untracked files, so the private rules are read from the main checkout, the
 // parent of the common git directory. The status rules are tracked, so each
 // checkout uses its own version.
+//
+// githooks(5): git exports GIT_DIR and related variables to a hook, and a hook
+// that runs git in another repository or working tree should clear them. In
+// a linked worktree the pre-push hook receives GIT_DIR (its
+// .git/worktrees/<name>) and no GIT_WORK_TREE, and `git rev-parse
+// --show-toplevel` run from scripts/ then answers scripts/ itself: with
+// GIT_DIR alone, git takes the current directory as the top of the working
+// tree (git-config(1), core.worktree). In the main checkout the hook receives
+// neither variable. The lookup therefore runs with both cleared.
 function locateRepository() {
   const scriptDirectory = dirname(fileURLToPath(import.meta.url))
+  // process.env is a dictionary whose keys are only known at run time, so it
+  // is copied whole; the two variables are then removed.
+  const env = { ...process.env, GIT_DIR: undefined, GIT_WORK_TREE: undefined }
+  const locate = (args, cwd) => execFileSync('git', args, { cwd, env, encoding: 'utf8' }).trim()
   try {
-    const checkoutRoot = git(['rev-parse', '--show-toplevel'], scriptDirectory).trim()
-    const commonDirectory = git(['rev-parse', '--path-format=absolute', '--git-common-dir'], checkoutRoot).trim()
+    const checkoutRoot = locate(['rev-parse', '--show-toplevel'], scriptDirectory)
+    const commonDirectory = locate(['rev-parse', '--path-format=absolute', '--git-common-dir'], checkoutRoot)
     return { checkoutRoot, mainRoot: dirname(commonDirectory) }
   } catch (error) {
     exitWithSetupError(`无法定位脚本所在的仓库：${error.message}`)
