@@ -206,7 +206,7 @@ The share of all reuse in the texts that a method finds. The candidate pool hold
 _Avoid_: 查全率
 
 **Cost per valid pair**（每个有效互文对的成本）:
-Billed API cost divided by the model's valid pairs. Cost (成本) is always the billed API cost, in USD.
+The total cost in US dollars that Table 2 reports for a model, divided by its valid pairs.
 _Avoid_: 费用
 
 **Efficient frontier**（有效前沿）:
