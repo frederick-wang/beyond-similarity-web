@@ -289,10 +289,10 @@ The deployment model's extraction over the *Analects* paired with every scroll o
 _Avoid_: production run, 全量抽取
 
 **Composition year**（成书年份）:
-The single year with which a history enters the analysis, although several histories took decades to compile. Every computed relation and every cut-off takes it: a correlation with composition year, the split at 659 and 945 CE, a trend over composition year.
+The single year with which a history enters the analysis, although several histories took decades to compile. Every computed relation and every cut-off takes it: a correlation with composition year, the split at 659 and 945 CE, a trend over composition year. English copy follows the paper's own sentences: Figure 4's caption and the limitations paragraph use "composition date" for the year itself. The 成书年份 / 成书年代 distinction governs the Chinese wording only.
 
 **Composition date**（成书年代）:
-A history's time of composition as an ordering or a span, in phrases such as 较晚成书 and 成书年代相隔越远; a computed relation or a cut-off takes composition year instead.
+A history's time of composition as an ordering or a span, in phrases such as 较晚成书 and 成书年代相隔越远; a computed relation or a cut-off takes composition year instead. English copy follows the paper's own sentences: Figure 4's caption and the limitations paragraph use "composition date" for the year itself. The 成书年份 / 成书年代 distinction governs the Chinese wording only.
 
 **Diachronic analysis**（历时分析）:
 An analysis of change across the histories' composition years.
