@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { occurrences } from './numbers'
 import { ARXIV_PDF_V1, FIGURE_ALT_PHRASES, FIGURE_PAGES, PAGES, type FigureId } from './paper-literals'
 
 const figures = [
@@ -32,7 +33,8 @@ for (const [figure, label] of figures) {
 
 for (const { path, lang } of PAGES) {
   // Phrases pin what the number checks cannot: single digits, and numbers
-  // whose order carries the meaning, such as the two strata of Figure 4.
+  // whose order carries the meaning, such as the two strata of Figure 4 and
+  // the confidence buckets of Figure 3. Each occurs once in its text alternative.
   test(`${path} ties single digits and paired numbers to their objects in the text alternatives`, async ({ page }) => {
     await page.goto(path)
     const phrases: Readonly<Partial<Record<FigureId, readonly string[]>>> = FIGURE_ALT_PHRASES[lang]
@@ -40,8 +42,11 @@ for (const { path, lang } of PAGES) {
       const image = page.locator(`figure[data-figure="${figure}"] img`)
       await expect(image).toHaveCount(1)
       const alt = await image.getAttribute('alt')
+      if (alt === null) {
+        throw new Error(`The ${figure} figure has no text alternative`)
+      }
       for (const phrase of expected) {
-        expect(alt, `${figure}: ${phrase}`).toContain(phrase)
+        expect(occurrences(alt, phrase), `${figure}: ${phrase}`).toHaveLength(1)
       }
     }
   })

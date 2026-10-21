@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { multiDigitNumbers } from './numbers'
+import { multiDigitNumbers, numbersOutside, occurrences } from './numbers'
 import {
   GRANT_NUMBERS,
   HEADING_FIGURES,
@@ -10,6 +10,7 @@ import {
   SECTION_WORD_FIGURES,
   normalize,
   type PageLanguage,
+  type ProseSectionId,
   type SectionId,
 } from './paper-literals'
 
@@ -19,10 +20,11 @@ import {
 // be exactly the literals copied from the paper: a wrong number fails, and so
 // does a number added to the prose without being checked against the paper.
 // Both language pages are held to the same lists. Numbers written as words,
-// single digits and numbers whose order carries the meaning are checked as
-// phrases copied from each page.
+// single digits and paired numbers are checked as the phrases
+// tests/paper-literals.ts lists, and every number written in digits must lie
+// inside one of them, so a number cannot change or move unnoticed.
 
-type Section = keyof typeof SECTION_FIGURES
+type Section = ProseSectionId
 
 /** The figures a section states on the page in `lang`: the paper's, with the Chinese page's one declared change of form. */
 function expectedFigures(section: Section, lang: PageLanguage): readonly string[] {
@@ -68,24 +70,24 @@ for (const { path, lang } of PAGES) {
           )
         const text = normalize(parts.join(' '))
         expect(multiDigitNumbers(text).sort()).toEqual([...expectedFigures(section, lang)].sort())
-        const wordFigures: Readonly<Partial<Record<SectionId, readonly string[]>>> = SECTION_WORD_FIGURES[lang]
-        for (const word of wordFigures[section] ?? []) {
-          expect(text, `figure ${word}`).toContain(word)
+        const wordFigures: Readonly<Partial<Record<ProseSectionId, readonly string[]>>> = SECTION_WORD_FIGURES[lang]
+        const sectionPhrases: Readonly<Partial<Record<ProseSectionId, readonly string[]>>> = SECTION_PHRASES[lang]
+        const phrases = (wordFigures[section] ?? []).concat(sectionPhrases[section] ?? [])
+        // Once each: a phrase found twice would let one of its places change unnoticed.
+        for (const phrase of phrases) {
+          expect(occurrences(text, phrase), `phrase ${phrase}`).toHaveLength(1)
         }
-        const phrases: Readonly<Partial<Record<SectionId, readonly string[]>>> = SECTION_PHRASES[lang]
-        for (const phrase of phrases[section] ?? []) {
-          expect(text, `phrase ${phrase}`).toContain(phrase)
-        }
+        expect(numbersOutside(text, phrases), 'numbers outside every listed phrase').toEqual([])
       })
     }
 
     const headingFigures: Readonly<Partial<Record<SectionId, readonly string[]>>> = HEADING_FIGURES[lang]
     for (const [section, figures] of Object.entries(headingFigures)) {
-      test(`states the paper's figures in the ${section} heading`, async ({ page }) => {
+      test(`states the paper's figures in the ${section} headings`, async ({ page }) => {
         await page.goto(path)
-        const heading = normalize(await page.locator(`section#${section} > h2`).innerText())
+        const headings = normalize((await page.locator(`section#${section} > h2, section#${section} > h3`).allInnerTexts()).join(' '))
         for (const figure of figures) {
-          expect(heading).toContain(figure)
+          expect(occurrences(headings, figure), `heading figure ${figure}`).toHaveLength(1)
         }
       })
     }
