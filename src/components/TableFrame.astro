@@ -72,6 +72,14 @@ const marks = punctuationFor(copy.lang)
     text-align: left;
   }
 
+  /* On a screen narrower than the table, the row labels stay in view while
+     the numbers scroll under them. */
+  table :global(tr > :first-child) {
+    position: sticky;
+    left: 0;
+    background: var(--paper);
+  }
+
   table :global(thead th) {
     font-weight: 600;
     color: var(--ink);

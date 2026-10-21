@@ -13,7 +13,7 @@ const entry = bibtex()
 ---
 
 <div class="bibtex" data-copy-done={copy.copyButton.done} data-copy-failed={copy.copyButton.failed}>
-  <div class="entry" role="region" aria-label={copy.bibtexLabel} tabindex="0">
+  <div class="entry" role="region" aria-label={copy.bibtexLabel}>
     <pre lang="en"><code>{entry}</code></pre>
   </div>
   <div class="actions">
@@ -60,13 +60,14 @@ const entry = bibtex()
   }
 
   .entry {
-    overflow-x: auto;
     background: var(--wash);
     border: 1px solid var(--rule);
     border-radius: 8px;
-    scrollbar-color: var(--rule) transparent;
   }
 
+  /* Long fields wrap inside the frame rather than scroll, so the whole entry
+     reads on a narrow screen; copying takes the text, not the line breaks the
+     browser draws. */
   pre {
     margin: 0;
     padding: 1rem 1.1rem;
@@ -74,6 +75,8 @@ const entry = bibtex()
     font-size: 0.8125rem;
     line-height: 1.6;
     color: var(--ink);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 
   .actions {

@@ -53,7 +53,7 @@ test('cites the pages that hold the evidence for the opening example and the pre
   const prefilter = page.locator('p', { hasText: '0.3% combined' })
   await expect(prefilter.locator('[data-sources] a')).toHaveAttribute('href', `${ARXIV_PDF_V1}#page=1`)
   const gradientExample = page.locator('p', { hasText: '345 items' })
-  await expect(gradientExample.locator('[data-sources] a')).toHaveText(/PDF pp\. 4–5$/)
+  await expect(gradientExample.locator('[data-sources] a')).toHaveText(/PDF pp\.\s4–5$/)
 })
 
 test('states the corpus-run caveat and the reliability bound in the text', async ({ page }) => {

@@ -2,6 +2,7 @@ import { Lexer, marked, type Token } from 'marked'
 import type { InlineMarkdown } from '../content/types'
 import type { PageLanguage } from '../data/paper'
 import { quotationIds, quotations, type Quotation, type QuotationId } from '../data/quotations'
+import { tieUnits } from './typography'
 
 // Quotation marks around a classical Chinese quotation follow the language of
 // the page it sits in: curly quotes in English prose, as the paper prints
@@ -42,7 +43,7 @@ function replaceQuotations(
  */
 export function renderInline(text: InlineMarkdown, lang: PageLanguage): string {
   const html = replaceQuotations(
-    text,
+    tieUnits(text),
     lang,
     (id, quotation) => `<span class="classical" lang="zh-${quotation.script}" data-quotation="${id}">${quotation.text}</span>`,
   )
