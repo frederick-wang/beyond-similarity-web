@@ -112,7 +112,7 @@ export const TABLE_1_DIMENSIONS = [
 export const TABLE_3_DIMENSIONS = ['Form', 'Aspect', 'Source-marking', 'Function', 'Stance'] as const
 
 /** Numbers that section headings state, in words or digits (the prose test reads answers and paragraphs only). */
-export const HEADING_FIGURES = { histories: ['eighteen centuries'] } as const
+export const HEADING_FIGURES = { models: ['twelve LLMs'], histories: ['eighteen centuries'] } as const
 
 /** Grant numbers in the acknowledgments, as printed on p. 8. */
 export const GRANT_NUMBERS = ['2025YFC3309300', '72010107003'] as const
