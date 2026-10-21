@@ -1,6 +1,7 @@
 import type { FigureId } from '../data/figures'
 import type { GlanceId, PageLanguage, PdfPage } from '../data/paper'
 import type { DimensionId, DominantCategoryId, TableId } from '../data/tables'
+import type { PngImage } from '../lib/images'
 
 /**
  * Inline Markdown: emphasis (`*Analects*`), links (`[text](url)`), code spans
@@ -135,10 +136,24 @@ export interface TablesCopy {
   readonly diachronic: DiachronicTableCopy
 }
 
+/** A locale as Open Graph writes it, language_TERRITORY, such as en_US. */
+export type OpenGraphLocale = `${Lowercase<string>}_${Uppercase<string>}`
+
+/** The card that link previews show for the page (og:image), made by scripts/make-site-images.ts. */
+export interface ShareImage {
+  readonly image: PngImage
+  /** Text alternative built from shareCardWords() in src/data/paper.ts, the words the card shows. */
+  readonly alt: string
+}
+
 export interface PageCopy {
   readonly lang: PageLanguage
   readonly title: string
   readonly description: string
+  /** The site's name in the page's language, for link previews (og:site_name). */
+  readonly siteName: string
+  readonly openGraphLocale: OpenGraphLocale
+  readonly shareImage: ShareImage
   readonly skipLink: string
   readonly correspondingNote: string
   readonly finding: InlineMarkdown

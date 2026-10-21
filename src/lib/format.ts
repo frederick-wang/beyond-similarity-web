@@ -1,3 +1,5 @@
+// Node runs this module unbundled for scripts/make-site-images.ts; a CI step imports the image scripts to check it.
+
 import type { PageLanguage, Quantity } from '../data/paper'
 
 // Per-language number typography. English ranges take an en dash and
@@ -40,6 +42,15 @@ export function formatYear(year: number, lang: PageLanguage): string {
 
 export function formatList(items: readonly string[], lang: PageLanguage): string {
   return new Intl.ListFormat(listLocale[lang], { type: 'conjunction' }).format(items)
+}
+
+/**
+ * The share card's author line, an English list such as "A, B, and C": the
+ * card is in English on every page. scripts/make-site-images.ts renders it,
+ * and each page's alt text for the card uses it too.
+ */
+export function shareCardByline(authors: readonly string[]): string {
+  return formatList(authors, 'en')
 }
 
 // Table cells follow the paper's typesetting in both languages: a true minus

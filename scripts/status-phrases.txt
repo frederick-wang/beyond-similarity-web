@@ -1,0 +1,49 @@
+# Generic wording that would state the paper's standing with a venue or
+# publisher. The site describes the paper only as an arXiv preprint, so no
+# tracked file, commit message or built page may contain any of these.
+# scripts/check-public.mjs applies the rules in every mode, and on their own
+# in CI with --ci, to the tracked files and dist/. This file is the only one
+# exempt from them; the maintainer's private rules still apply to it.
+#
+# When prose trips a rule, rephrase the prose; do not weaken the rule.
+#
+# One regular expression per line. The loader adds the flags i and u, so
+# rules ignore case and read Unicode, and g to find every match; (?-i:...)
+# marks a part that must match case exactly. Lines starting with # and blank
+# lines are ignored.
+#
+# A rule matches each line as written, and each paragraph of the text with its
+# hard wraps undone. A comment block is a run of consecutive lines that open,
+# after indentation, with the same leader: //, #, * or >. Inside a block the
+# leader is removed before lines are joined; a line's leader counts only when
+# the line before it opens with the same one. A whitespace run with exactly
+# one line break is a wrap: removed between two Chinese or Japanese
+# characters and after a hyphen that follows a letter or digit, one space
+# elsewhere. A run with two or more line breaks, an empty comment line inside
+# a block included, is a paragraph break, and no match crosses it.
+
+double[- ]blind
+camera[- ]ready
+under review
+\bin review\b
+peer[- ]review
+\b(in|under) submission\b
+submitted to
+submitted for publication
+conditionally accepted
+accepted for publication
+\baccepted (at|to)\b
+\baccepted by (the )?(?-i:[A-Z])
+to appear (in|at)
+forthcoming (in|at)
+\bin press\b
+main conference
+审稿
+投稿中|已投稿|投稿(至|于|到|给)
+送审
+在审
+录用
+已接收
+被.{0,20}接收
+即将(发表|刊出)
+待发表

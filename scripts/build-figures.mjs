@@ -23,7 +23,14 @@ import { createHash } from 'node:crypto'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { crc32 } from 'node:zlib'
+import { provenanceTexts, withTextChunks } from './png.ts'
+
+// import.meta.main, which keeps the work below from running when CI only
+// imports this file, exists from Node 24.2.0 on. Earlier Node leaves it
+// undefined, and the script would exit having written nothing.
+if (typeof import.meta.main !== 'boolean') {
+  throw new Error('scripts/build-figures.mjs needs Node 24.2 or later')
+}
 
 const sourcePackage = {
   url: 'https://arxiv.org/e-print/2607.27595v1',
@@ -82,61 +89,48 @@ function renderPage(pdfPath, outputBase, options) {
   return `${outputBase}.png`
 }
 
-/** Returns the PNG with tEXt chunks inserted right after the IHDR chunk. */
-function withTextChunks(png, entries) {
-  const signatureLength = 8
-  const ihdrLength = png.readUInt32BE(signatureLength)
-  const afterIhdr = signatureLength + 12 + ihdrLength
-  const chunks = entries.map(([keyword, text]) => {
-    const type = Buffer.from('tEXt', 'latin1')
-    const data = Buffer.concat([Buffer.from(keyword, 'latin1'), Buffer.from([0]), Buffer.from(text, 'latin1')])
-    const length = Buffer.alloc(4)
-    length.writeUInt32BE(data.length)
-    const crc = Buffer.alloc(4)
-    crc.writeUInt32BE(crc32(Buffer.concat([type, data])))
-    return Buffer.concat([length, type, data, crc])
-  })
-  return Buffer.concat([png.subarray(0, afterIhdr), ...chunks, png.subarray(afterIhdr)])
-}
-
 function writeFigure(renderedPath, outputName, origin) {
-  const png = withTextChunks(readFileSync(renderedPath), [
-    ['Source', origin.source],
-    ['Description', origin.description],
-    ['impeccable:prompt', `Sourced, not generated. ${origin.description} Source: ${origin.source}.`],
-  ])
+  const png = withTextChunks(
+    readFileSync(renderedPath),
+    provenanceTexts({ method: 'Sourced, not generated.', description: origin.description, source: origin.source }),
+  )
   writeFileSync(new URL(outputName, outputDirectory), png)
   console.log(`wrote src/assets/figures/${outputName}`)
 }
 
-const workDirectory = mkdtempSync(join(tmpdir(), 'beyond-similarity-figures-'))
-try {
-  const packagePath = join(workDirectory, 'source.tar.gz')
-  writeFileSync(packagePath, await download(sourcePackage))
-  execFileSync('tar', ['-xzf', packagePath, '-C', workDirectory])
-  const pdfPath = join(workDirectory, 'paper.pdf')
-  writeFileSync(pdfPath, await download(paperPdf))
+// The figures are made only when Node runs this file. CI imports it without
+// running it (see .github/workflows/ci.yml), which fails on any import in its
+// graph that plain Node cannot resolve.
+if (import.meta.main) {
+  const workDirectory = mkdtempSync(join(tmpdir(), 'beyond-similarity-figures-'))
+  try {
+    const packagePath = join(workDirectory, 'source.tar.gz')
+    writeFileSync(packagePath, await download(sourcePackage))
+    execFileSync('tar', ['-xzf', packagePath, '-C', workDirectory])
+    const pdfPath = join(workDirectory, 'paper.pdf')
+    writeFileSync(pdfPath, await download(paperPdf))
 
-  const framework = renderPage(pdfPath, join(workDirectory, 'framework'), {
-    page: frameworkCrop.page,
-    dpi: frameworkCrop.dpi,
-    crop: frameworkCrop,
-  })
-  writeFigure(framework, 'framework.png', {
-    source: paperPdf.url,
-    description: `Figure 1 of arXiv:2607.27595v1, cropped from PDF page ${frameworkCrop.page} at ${frameworkCrop.dpi} dpi by scripts/build-figures.mjs.`,
-  })
+    const framework = renderPage(pdfPath, join(workDirectory, 'framework'), {
+      page: frameworkCrop.page,
+      dpi: frameworkCrop.dpi,
+      crop: frameworkCrop,
+    })
+    writeFigure(framework, 'framework.png', {
+      source: paperPdf.url,
+      description: `Figure 1 of arXiv:2607.27595v1, cropped from PDF page ${frameworkCrop.page} at ${frameworkCrop.dpi} dpi by scripts/build-figures.mjs.`,
+    })
 
-  for (const figure of vectorFigures) {
-    const rendered = renderPage(join(workDirectory, figure.file), join(workDirectory, figure.output.replace('.png', '')), {
-      page: 1,
-      dpi: vectorDpi,
-    })
-    writeFigure(rendered, figure.output, {
-      source: sourcePackage.url,
-      description: `${figure.label} of arXiv:2607.27595v1, rendered from ${figure.file} in the source package at ${vectorDpi} dpi by scripts/build-figures.mjs.`,
-    })
+    for (const figure of vectorFigures) {
+      const rendered = renderPage(join(workDirectory, figure.file), join(workDirectory, figure.output.replace('.png', '')), {
+        page: 1,
+        dpi: vectorDpi,
+      })
+      writeFigure(rendered, figure.output, {
+        source: sourcePackage.url,
+        description: `${figure.label} of arXiv:2607.27595v1, rendered from ${figure.file} in the source package at ${vectorDpi} dpi by scripts/build-figures.mjs.`,
+      })
+    }
+  } finally {
+    rmSync(workDirectory, { recursive: true, force: true })
   }
-} finally {
-  rmSync(workDirectory, { recursive: true, force: true })
 }

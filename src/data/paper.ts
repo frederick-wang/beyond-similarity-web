@@ -1,9 +1,31 @@
 // The single source of paper facts, following arXiv:2607.27595v1. Everything
 // the page states as a fact outside long-form section prose reads from here:
-// the title block, the finding, "At a glance", the meta description and the
-// BibTeX entry.
+// the title block, the finding, "At a glance", the meta description, the
+// BibTeX entry, the citation tags, the structured data, the share card and the
+// sitemap.
+// Node runs this module unbundled for scripts/make-site-images.ts; a CI step imports the image scripts to check it.
 
-export type PageLanguage = 'en'
+/** The language pages, as BCP 47 tags. */
+export const pageLanguages = ['en'] as const
+export type PageLanguage = (typeof pageLanguages)[number]
+
+declare const isoDateBrand: unique symbol
+
+/** A real calendar date written YYYY-MM-DD. Only isoDate() makes one. */
+export type IsoDate = string & { readonly [isoDateBrand]: true }
+
+function isIsoDate(value: string): value is IsoDate {
+  const parsed = new Date(`${value}T00:00:00Z`)
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
+}
+
+/** The date, checked; anything that is not a real YYYY-MM-DD date stops the build. */
+export function isoDate(value: string): IsoDate {
+  if (!isIsoDate(value)) {
+    throw new Error(`"${value}" is not a calendar date written YYYY-MM-DD`)
+  }
+  return value
+}
 
 /** Affiliation numbers as printed in the paper; the tuple fixes their order. */
 export const affiliationIds = [1, 2] as const
@@ -33,6 +55,12 @@ export type Quantity =
 
 export interface PageFacts {
   readonly path: string
+  /**
+   * The date of the page's last substantive change: new or corrected text,
+   * numbers, figures or tables, not styling or code. sitemap.xml gives it as
+   * the page's lastmod.
+   */
+  readonly updated: IsoDate
 }
 
 // A Record keyed by every AffiliationId, so dropping an affiliation that an
@@ -80,8 +108,10 @@ export const paper = {
   arxivVersion: 'v1',
   primaryClass: 'cs.CL',
   doi: '10.48550/arXiv.2607.27595',
-  /** arXiv v1 submission date (YYYY-MM-DD). */
-  published: '2026-07-30',
+  /** arXiv v1 submission date. */
+  published: isoDate('2026-07-30'),
+  /** The language the paper is written in (BCP 47), the same on every language page. */
+  language: 'en',
   bibtexKey: 'wang2026beyond',
 } as const
 
@@ -129,6 +159,7 @@ export const glance = {
 } as const satisfies Readonly<Record<GlanceId, Quantity>>
 
 export const links = {
+  doi: `https://doi.org/${paper.doi}`,
   arxivAbs: `https://arxiv.org/abs/${paper.arxivId}`,
   pdf: `https://arxiv.org/pdf/${paper.arxivId}${paper.arxivVersion}`,
   explorer: 'https://analects-24histories-intertext.pkudh.net/',
@@ -148,7 +179,7 @@ export const icpNumber = '蜀ICP备19032431号-3'
 export const copyrightYear = 2026
 
 export const pages = {
-  en: { path: '/' },
+  en: { path: '/', updated: isoDate('2026-10-21') },
 } as const satisfies Readonly<Record<PageLanguage, PageFacts>>
 
 /** Resolves a site path against `site` in astro.config.mjs, the only place the origin is written. */
@@ -160,8 +191,13 @@ export function absoluteUrl(path: string): string {
   return new URL(path, origin).href
 }
 
+/** "Family, Given", the order BibTeX and citation metadata both take. */
+export function familyFirst(author: Author): string {
+  return `${author.familyNameEn}, ${author.givenNameEn}`
+}
+
 export function bibtex(): string {
-  const authorList = authors.map((author) => `${author.familyNameEn}, ${author.givenNameEn}`).join(' and ')
+  const authorList = authors.map(familyFirst).join(' and ')
   const fields: readonly (readonly [string, string])[] = [
     ['title', paper.titleEn],
     ['author', authorList],
@@ -175,4 +211,26 @@ export function bibtex(): string {
   const width = Math.max(...fields.map(([name]) => name.length))
   const body = fields.map(([name, value]) => `  ${name.padEnd(width)} = {${value}}`).join(',\n')
   return `@misc{${paper.bibtexKey},\n${body}\n}`
+}
+
+/** The words on the share card, in reading order. */
+export interface ShareCardWords {
+  readonly shortTitle: string
+  readonly title: string
+  readonly authors: readonly string[]
+  readonly arxivId: string
+}
+
+/**
+ * The one source of the share card's words: scripts/make-site-images.ts
+ * renders them and records them in the image, and each page builds the
+ * image's alt text from them, so the card and its text alternative agree.
+ */
+export function shareCardWords(): ShareCardWords {
+  return {
+    shortTitle: paper.shortTitle,
+    title: paper.titleEn,
+    authors: authors.map((author) => author.nameEn),
+    arxivId: paper.arxivId,
+  }
 }

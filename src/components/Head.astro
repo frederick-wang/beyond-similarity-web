@@ -1,0 +1,55 @@
+---
+// The one <head> of every language page. A page supplies only its language
+// copy; its address comes from the page facts for that language, and
+// everything about the paper itself from the facts module, so the English and
+// Chinese pages describe the same paper.
+import type { PageCopy } from '../content/types'
+import { appleTouchIcon, pngIcons, svgIcon } from '../data/icons'
+import { absoluteUrl, authors, familyFirst, pages, paper } from '../data/paper'
+import { languageAlternates } from '../lib/alternates'
+import { serializeJsonLd, webPage } from '../lib/structured-data'
+
+interface Props {
+  readonly copy: PageCopy
+}
+
+const { copy } = Astro.props
+const canonical = absoluteUrl(pages[copy.lang].path)
+const share = copy.shareImage
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<title>{copy.title}</title>
+<meta name="description" content={copy.description} />
+<link rel="canonical" href={canonical} />
+{languageAlternates().map((alternate) => <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />)}
+
+<link rel="icon" href={svgIcon} type="image/svg+xml" />
+{pngIcons.map((icon) => <link rel="icon" href={icon.path} type="image/png" sizes={`${icon.size}x${icon.size}`} />)}
+<link rel="apple-touch-icon" href={appleTouchIcon.path} />
+
+{/* Zotero reads og:type: "article" keeps the saved item a journal article with its DOI, "website" would make it a web page. */}
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content={paper.published} />
+<meta property="og:site_name" content={copy.siteName} />
+<meta property="og:title" content={copy.title} />
+<meta property="og:description" content={copy.description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={copy.openGraphLocale} />
+<meta property="og:image" content={absoluteUrl(share.image.src)} />
+<meta property="og:image:type" content={`image/${share.image.format}`} />
+<meta property="og:image:width" content={String(share.image.width)} />
+<meta property="og:image:height" content={String(share.image.height)} />
+<meta property="og:image:alt" content={share.alt} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image:alt" content={share.alt} />
+
+<meta name="citation_title" content={paper.titleEn} />
+{authors.map((author) => <meta name="citation_author" content={familyFirst(author)} />)}
+<meta name="citation_publication_date" content={paper.published.replaceAll('-', '/')} />
+<meta name="citation_doi" content={paper.doi} />
+<meta name="citation_arxiv_id" content={paper.arxivId} />
+
+<script type="application/ld+json" set:html={serializeJsonLd(webPage(copy, canonical))} />

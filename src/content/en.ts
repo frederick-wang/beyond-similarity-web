@@ -1,5 +1,7 @@
-import { links, paper, stats } from '../data/paper'
-import { formatCount, formatIdentifier, formatYear } from '../lib/format'
+import shareCardImage from '../assets/share-en.png'
+import { links, paper, shareCardWords, stats } from '../data/paper'
+import { formatCount, formatIdentifier, formatYear, shareCardByline } from '../lib/format'
+import { pngImage } from '../lib/images'
 import type { PageCopy } from './types'
 
 // First-screen copy takes its numbers from the facts module. The verbatim
@@ -11,11 +13,18 @@ const mostPreciseModel = formatIdentifier(stats.mostPreciseModel)
 const deploymentModel = formatIdentifier(stats.deploymentModel)
 const firstHistory = formatYear(stats.compositionYears.first, 'en')
 const lastHistory = formatYear(stats.compositionYears.last, 'en')
+const card = shareCardWords()
 
 export const en: PageCopy = {
   lang: 'en',
   title: paper.titleEn,
   description: `An LLM agent grounds each reuse of the Analects in exact character spans and labels how it is reused, validated on ${benchmarkPairs} expert-adjudicated pairs.`,
+  siteName: paper.shortTitle,
+  openGraphLocale: 'en_US',
+  shareImage: {
+    image: pngImage(shareCardImage),
+    alt: `${card.title}. ${shareCardByline(card.authors)}. arXiv:${card.arxivId}`,
+  },
   skipLink: 'Skip to content',
   correspondingNote: 'Corresponding author',
   finding: `We make an LLM agent ground every reuse it proposes in exact character spans and label how the source is reused, and we validate it on ${benchmarkPairs} expert-adjudicated pairs from the *Analects* and the *Book of Han*. Across official histories composed from ${firstHistory} to ${lastHistory} we detect no systematic change in the share of direct quotation or of reuse that leaves its source unmarked, while later-compiled histories tend to quote the same passage less literally.`,
