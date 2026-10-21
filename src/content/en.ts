@@ -16,13 +16,13 @@ export const en: PageCopy = {
   description: `An LLM agent grounds each reuse of the Analects in exact character spans and labels how it is reused, validated on ${benchmarkPairs} expert-adjudicated pairs.`,
   skipLink: 'Skip to content',
   correspondingNote: 'Corresponding author',
-  finding: `We make an LLM agent ground every reuse it proposes in exact character spans and label how the source is reused, and we validate it on ${benchmarkPairs} expert-adjudicated pairs from the *Analects* and the *Book of Han*. Across official histories composed from ${firstHistory} to ${lastHistory} we detect no systematic change in the share of direct quotation or of unattributed reuse, while later-compiled histories tend to quote the same passage less literally.`,
+  finding: `We make an LLM agent ground every reuse it proposes in exact character spans and label how the source is reused, and we validate it on ${benchmarkPairs} expert-adjudicated pairs from the *Analects* and the *Book of Han*. Across official histories composed from ${firstHistory} to ${lastHistory} we detect no systematic change in the share of direct quotation or of reuse that leaves its source unmarked, while later-compiled histories tend to quote the same passage less literally.`,
   glanceHeading: 'At a glance',
   glance: {
     benchmark: 'expert-adjudicated intertextual pairs between the *Analects* and the *Book of Han*',
     precision: `precision of ${stats.models} LLMs against that benchmark`,
     costSpread: `cost per valid pair of the most precise model, ${stats.mostPreciseModel}, relative to ${stats.deploymentModel}, which is ${stats.precisionGapPoints} points less precise`,
-    corpusRun: `intertextual pairs from ${corpusComparisons} comparisons over the Twenty-Four Histories. If the ${stats.deploymentPrecision.toFixed(1)}% precision measured on the *Book of Han* holds, about 1 in ${stats.expectedSpuriousOneIn} of them would be spurious.`,
+    corpusRun: `intertextual pairs that ${stats.deploymentModel} extracted from ${corpusComparisons} comparisons over the Twenty-Four Histories. If its ${stats.deploymentPrecision.toFixed(1)}% precision on the *Book of Han* holds, about 1 in ${stats.expectedSpuriousOneIn} of them would be spurious.`,
   },
   navHeading: 'On this page',
   links: {
