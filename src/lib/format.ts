@@ -7,7 +7,8 @@ const rangeSeparator: Readonly<Record<PageLanguage, string>> = { en: '–' }
 const multipleSuffix: Readonly<Record<PageLanguage, string>> = { en: '×' }
 const listLocale: Readonly<Record<PageLanguage, string>> = { en: 'en' }
 const eraSuffix: Readonly<Record<PageLanguage, { readonly bce: string; readonly ce: string }>> = {
-  en: { bce: ' BCE', ce: ' CE' },
+  // A no-break space keeps the year and its era on one line.
+  en: { bce: '\u00a0BCE', ce: '\u00a0CE' },
 }
 
 export function formatCount(value: number): string {
