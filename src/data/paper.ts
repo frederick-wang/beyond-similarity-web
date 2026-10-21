@@ -126,7 +126,7 @@ export const paper = {
   titleEn:
     'Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories',
   shortTitleEn: 'Beyond Similarity',
-  titleZh: '超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测',
+  titleZh: '超越相似度：中国古代史书互文的智能体抽取与专家评测',
   shortTitleZh: '超越相似度',
   arxivId: '2607.27595',
   arxivVersion: 'v1',

@@ -36,13 +36,13 @@ _Avoid_: 固定分段
 
 ## Method
 
-**Grounded agentic extraction**（落地化智能体抽取）:
-The paper's method: an LLM agent reads two chunks whole and may record an intertextual pair only after grounding both fragments in exact spans through a checked tool interface. The Chinese title of the paper is 超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测.
-_Avoid_: grounded extraction pipeline, 接地抽取
+**Grounded agentic extraction**（智能体抽取）:
+The paper's method: an LLM agent reads two chunks whole and may record an intertextual pair only after grounding both fragments in exact spans through a checked tool interface. Chinese copy says what grounding does (每条结果都能回到原文核对) instead of naming it. The Chinese title of the paper is 超越相似度：中国古代史书互文的智能体抽取与专家评测.
+_Avoid_: grounded extraction pipeline, 落地化智能体抽取, 接地抽取
 
-**Grounding**（落地）:
-Tying a proposed reuse to exact spans on both sides, verified character for character when the pair is committed.
-_Avoid_: anchoring, 锚定 (reserved for verbatim-anchored pairs in the paper's retrieval analysis)
+**Grounding**（定位到原文）:
+Tying a proposed reuse to exact spans on both sides, verified character for character when the pair is committed. Chinese copy writes it as a verb phrase: 定位到两侧原文的字符区间.
+_Avoid_: anchoring, 落地, 接地, 锚定 (reserved for verbatim-anchored pairs in the paper's retrieval analysis)
 
 **LLM**（大语言模型）:
 A large language model. The Chinese page introduces the abbreviation at its first mention as 大语言模型（LLM, Large Language Model）.
@@ -52,21 +52,24 @@ _Avoid_: 大型语言模型
 The LLM that works through one extraction task, acting on the text only through the protocol's tools.
 _Avoid_: 代理 or 智能代理
 
-**Span-grounded relation extraction**（区间落地的关系抽取）:
+**Span-grounded relation extraction**（关系抽取任务，括注 span-grounded relation extraction）:
 The paper's framing of intertextuality: locate each reused fragment on both sides as an exact span, then label the pair by the kind of reuse.
+_Avoid_: 区间落地的关系抽取
 
 **Positioning tool**（定位工具）:
 The exact substring search (`find_position`) that returns a wording's offsets with 30 characters of context on each side.
 
-**Re-slice check**（逐字回切）:
+**Re-slice check**（逐字比对）:
 The check at commit time that cuts both chunks at the stated offsets and rejects the pair unless each fragment reproduces character for character.
+_Avoid_: 逐字回切, 重新切片
 
-**Stop guard**（停止守卫）:
-The rule that keeps an agent from ending a task before it calls `submit`.
+**Stop guard**（stop guard）:
+The rule that keeps an agent from ending a task before it calls `submit`. Chinese prose states the rule (调用 `submit` 之前不能结束任务) rather than naming it; the figure's own English label is kept where the alt text describes the figure.
+_Avoid_: 停止守卫
 
-**Abstention**（弃权）:
+**Abstention**（声明无匹配）:
 A task's explicit declaration that its chunk pair holds no reuse, a defined outcome distinct from a failed task.
-_Avoid_: 拒答
+_Avoid_: 弃权, 拒答
 
 **Match, no match**（匹配、无匹配）:
 The two statuses a task can declare when it calls `submit`: a match needs at least one committed pair, a declaration of no match needs none.
@@ -88,9 +91,9 @@ The tools and checks under which every extraction task runs.
 **Extractor**（抽取器）:
 An LLM running under the extraction protocol; the deployment model is the extractor chosen on the benchmark.
 
-**Pipeline**（管线）:
+**Pipeline**（流程）:
 A fixed sequence of processing steps, such as the validate-then-scale design or a retrieve-then-judge baseline.
-_Avoid_: 流水线
+_Avoid_: 管线, 流水线
 
 **Text-reuse detector**（文本复用检测器）:
 A tool that finds passages resembling a source, by string matching or retrieval, without saying how the source is reused.
@@ -162,13 +165,13 @@ The 3,489 distinct intertextual pairs proposed by twelve LLMs on the *Analects*�
 **Candidate**（候选）:
 One distinct pair in the candidate pool, proposed by at least one model and not yet judged.
 
-**Arbiter**（仲裁人）:
-The third expert, who resolved every disagreement between the two judging experts.
-_Avoid_: 仲裁者
+**Arbiter**（第三位专家）:
+The third expert, who resolved every disagreement between the two judging experts. Resolving a disagreement is 裁定.
+_Avoid_: 仲裁人, 仲裁者, 仲裁
 
-**Expert-adjudicated benchmark**（专家仲裁基准）:
+**Expert-adjudicated benchmark**（专家裁定的基准）:
 The 2,533 intertextual pairs of the candidate pool that adjudication accepted. Two experts judged every candidate, and the third expert settled every disagreement between them, whether over validity or over labels; the 716 pairs that both experts accepted with matching labels never went to the arbiter. Later mentions shorten it to the benchmark (基准).
-_Avoid_: dataset, ground truth, corpus, 金标 or 仲裁金标
+_Avoid_: dataset, ground truth, corpus, 专家仲裁基准, 金标 or 仲裁金标
 
 **Valid pair**（有效互文对）:
 A candidate that expert adjudication accepts; precision and cost per valid pair count these.
@@ -205,7 +208,7 @@ _Avoid_: 准确率 (accuracy, which the page uses for label accuracy), 查准率
 The share of all reuse in the texts that a method finds. The candidate pool holds only pairs that some model proposed, so the benchmark measures precision, not recall.
 _Avoid_: 查全率
 
-**Cost per valid pair**（每个有效互文对的成本）:
+**Cost per valid pair**（每条有效互文对的成本）:
 The total cost in US dollars that Table 2 reports for a model, divided by its valid pairs.
 _Avoid_: 费用
 
@@ -256,7 +259,7 @@ In the retrieval analysis, a pair anchored by wording its two fragments share ve
 Retrieval by embedding similarity, tested in the paper with BGE-M3.
 _Avoid_: 密集检索
 
-**Retrieve-then-judge pipeline**（先检索后判读的管线）:
+**Retrieve-then-judge pipeline**（先检索、后判读的流程）:
 A baseline in which retrieval proposes the source and a model judges only what retrieval surfaces.
 
 **Prefilter**（预过滤）:
@@ -271,10 +274,10 @@ _Avoid_: 数据泄露
 The pattern in expert agreement: dimensions legible on the textual surface (form, source-marking) are annotated consistently, while those that require inferring intent (function, stance) are contested.
 _Avoid_: agreement gap
 
-**Validate-then-scale**（先验证后规模化）:
+**Validate-then-scale**（先验证、后扩展）:
 The study design: validate extraction against the expert-adjudicated benchmark, then apply the chosen extractor to all Twenty-Four Histories.
 
-**Cultural attraction**（文化吸引）:
+**Cultural attraction**（文化吸引理论）:
 An account of cultural transmission in which items change as they are passed on yet converge on a few stable forms. The paper reads the absence of a detectable change in the mix of reuse types, alongside drifting individual passages, in these terms.
 _Avoid_: cultural evolution, attractor theory
 
@@ -305,8 +308,9 @@ _Avoid_: 传统分期
 **Dominant category**（主导类别）:
 The most frequent category of a dimension; the diachronic analysis follows its share across the histories.
 
-**Usage profile**（用法画像）:
+**Usage profile**（复用类型分布）:
 The mix of reuse types in one history; the paper compares the profiles of two histories by Jensen–Shannon divergence.
+_Avoid_: 用法画像
 
 **Citation density**（引用密度）:
 How often a history cites the *Analects*, a count-level measure that needs no typology and on which the paper rests no claim.
