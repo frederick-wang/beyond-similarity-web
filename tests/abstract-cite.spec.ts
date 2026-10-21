@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ABSTRACT, ARXIV_ABS, DOI, TITLE, normalize } from './paper-literals'
+import { ABSTRACT, ARXIV_ABS, BENCHMARK_PAIRS, BIBTEX_OPENING, DOI, PRECISION_RANGE, TITLE, normalize } from './paper-literals'
 
 test('reproduces the arXiv abstract word for word', async ({ page }) => {
   await page.goto('/')
@@ -11,7 +11,7 @@ test('reproduces the arXiv abstract word for word', async ({ page }) => {
 test('offers a BibTeX entry for the arXiv preprint', async ({ page }) => {
   await page.goto('/')
   const entry = await page.locator('section#cite pre').innerText()
-  expect(entry).toMatch(/^@misc\{wang2026beyond,/)
+  expect(entry.startsWith(BIBTEX_OPENING)).toBe(true)
   expect(normalize(entry)).toContain(`title = {${TITLE}}`)
   expect(entry).toMatch(/author\s*=\s*\{Wang, Zhaoji and Si, Wanyu and Wang, Jun\}/)
   expect(entry).toMatch(/year\s*=\s*\{2026\}/)
@@ -41,10 +41,10 @@ test.describe('without JavaScript', () => {
     await expect(page.locator('[data-author-name]')).toHaveCount(3)
     await expect(page.locator('[data-author-corresponding]')).toHaveCount(1)
     await expect(page.locator('[data-affiliation]')).toHaveCount(2)
-    await expect(page.locator('[data-finding]')).toContainText('2,533 expert-adjudicated pairs')
-    await expect(page.locator('[data-glance]')).toContainText('55.9%–92.9%')
+    await expect(page.locator('[data-finding]')).toContainText(`${BENCHMARK_PAIRS} expert-adjudicated pairs`)
+    await expect(page.locator('[data-glance]')).toContainText(PRECISION_RANGE)
     expect(normalize(await page.locator('section#abstract p').first().innerText())).toContain('Computational approaches')
-    await expect(page.locator('section#cite pre')).toContainText('@misc{wang2026beyond,')
+    await expect(page.locator('section#cite pre')).toContainText(BIBTEX_OPENING)
     await expect(page.getByRole('button', { name: 'Copy BibTeX' })).toBeHidden()
   })
 })

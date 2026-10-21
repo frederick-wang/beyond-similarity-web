@@ -15,7 +15,13 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme })
     await page.goto('/')
     const results = await new AxeBuilder({ page }).analyze()
-    const blocking = results.violations.filter((violation) => violation.impact === 'serious' || violation.impact === 'critical')
+    const severe = (impact: string | null | undefined) => impact === 'serious' || impact === 'critical'
+    const blocking = results.violations.filter((violation) => severe(violation.impact))
     expect(blocking.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([])
+    // "Needs review" results count too, except colour contrast: axe cannot
+    // determine the background of the code inside the horizontally scrolling
+    // BibTeX region. That text is ink on the wash colour: 16.3:1 light, 14.6:1 dark.
+    const unresolved = results.incomplete.filter((result) => severe(result.impact) && result.id !== 'color-contrast')
+    expect(unresolved.map((result) => `${result.id}: ${result.help}`)).toEqual([])
   })
 }

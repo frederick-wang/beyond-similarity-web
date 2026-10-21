@@ -1,5 +1,15 @@
 import { expect, test } from '@playwright/test'
-import { AFFILIATIONS, ARXIV_ABS, ARXIV_PDF_V1, AUTHORS, EXPLORER, TITLE, normalize } from './paper-literals'
+import {
+  AFFILIATIONS,
+  ARXIV_ABS,
+  ARXIV_PDF_V1,
+  AUTHORS,
+  BENCHMARK_PAIRS,
+  EXPLORER,
+  PRECISION_RANGE,
+  TITLE,
+  normalize,
+} from './paper-literals'
 
 test.describe('English page, first screen', () => {
   test('shows the paper title as the only h1', async ({ page }) => {
@@ -37,7 +47,7 @@ test.describe('English page, first screen', () => {
   test('states the finding without evaluative words and with the bounded result', async ({ page }) => {
     await page.goto('/')
     const finding = normalize(await page.locator('[data-finding]').innerText())
-    expect(finding).toContain('2,533 expert-adjudicated pairs')
+    expect(finding).toContain(`${BENCHMARK_PAIRS} expert-adjudicated pairs`)
     expect(finding).toContain('no systematic change')
     expect(finding).not.toMatch(/\b(novel|powerful|significant(ly)?|robust(ly)?|comprehensive(ly)?|stable|stability)\b/i)
   })
@@ -47,7 +57,7 @@ test.describe('English page, first screen', () => {
     const glance = page.locator('[data-glance]')
     await expect(glance.getByRole('heading', { name: 'At a glance' })).toBeVisible()
     const text = normalize(await glance.innerText())
-    for (const expected of ['2,533', 'Analects', 'Book of Han', '55.9%–92.9%', 'twelve LLMs', '51×', '4.9 points', '5,766', '65,380', 'one in eight']) {
+    for (const expected of [BENCHMARK_PAIRS, 'Analects', 'Book of Han', PRECISION_RANGE, '12 LLMs', '51×', '4.9 points', '5,766', '65,380', '88.0% precision measured on the Book of Han', 'one in eight']) {
       expect(text).toContain(expected)
     }
   })
