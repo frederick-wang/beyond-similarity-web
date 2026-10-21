@@ -94,6 +94,8 @@ export const stats = {
   precisionGapPoints: 4.9,
   /** Deployment model precision on the Analects–Book of Han benchmark, in percent. */
   deploymentPrecision: 88.0,
+  /** The paper's estimate (PDF p. 5): at that precision, roughly one corpus-run pair in eight is spurious. */
+  expectedSpuriousOneIn: 8,
   corpusComparisons: 65380,
   corpusPairs: 5766,
   /** Composition years of the earliest and latest of the Twenty-Four Histories; negative years are BCE. */

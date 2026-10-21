@@ -9,9 +9,6 @@ const benchmarkPairs = formatCount(stats.benchmarkPairs)
 const corpusComparisons = formatCount(stats.corpusComparisons)
 const firstHistory = formatYear(stats.compositionYears.first, 'en')
 const lastHistory = formatYear(stats.compositionYears.last, 'en')
-// The share expected to be spurious if the deployment model's precision on the
-// Book of Han held across the corpus run, as the paper itself estimates.
-const expectedSpurious = (100 - stats.deploymentPrecision).toFixed(0)
 
 export const en: PageCopy = {
   lang: 'en',
@@ -25,7 +22,7 @@ export const en: PageCopy = {
     benchmark: 'expert-adjudicated intertextual pairs between the *Analects* and the *Book of Han*',
     precision: `precision of ${stats.models} LLMs against that benchmark`,
     costSpread: `lower cost per valid pair for ${stats.deploymentModel} than for the most precise model, at ${stats.precisionGapPoints} points lower precision`,
-    corpusRun: `intertextual pairs from ${corpusComparisons} comparisons over the Twenty-Four Histories. If the ${stats.deploymentPrecision.toFixed(1)}% precision measured on the *Book of Han* holds, about ${expectedSpurious}% of them would be spurious.`,
+    corpusRun: `intertextual pairs from ${corpusComparisons} comparisons over the Twenty-Four Histories. If the ${stats.deploymentPrecision.toFixed(1)}% precision measured on the *Book of Han* holds, about 1 in ${stats.expectedSpuriousOneIn} of them would be spurious.`,
   },
   navHeading: 'On this page',
   links: {

@@ -6,9 +6,11 @@ import type { PageLanguage, Quantity } from '../data/paper'
 const rangeSeparator: Readonly<Record<PageLanguage, string>> = { en: '–' }
 const multipleSuffix: Readonly<Record<PageLanguage, string>> = { en: '×' }
 const listLocale: Readonly<Record<PageLanguage, string>> = { en: 'en' }
-const eraSuffix: Readonly<Record<PageLanguage, { readonly bce: string; readonly ce: string }>> = {
-  // A no-break space keeps the year and its era on one line.
-  en: { bce: '\u00a0BCE', ce: '\u00a0CE' },
+// Year formats differ in shape, not only in suffix (Chinese puts the era
+// first), so each language supplies a function. A no-break space keeps an
+// English year and its era on one line.
+const yearFormat: Readonly<Record<PageLanguage, (year: number) => string>> = {
+  en: (year) => (year < 0 ? `${-year}\u00a0BCE` : `${year}\u00a0CE`),
 }
 
 export function formatCount(value: number): string {
@@ -28,7 +30,7 @@ export function formatQuantity(quantity: Quantity, lang: PageLanguage): string {
 
 /** A calendar year with its era, as in "91 BCE" or "1739 CE"; negative years are BCE. */
 export function formatYear(year: number, lang: PageLanguage): string {
-  return year < 0 ? `${-year}${eraSuffix[lang].bce}` : `${year}${eraSuffix[lang].ce}`
+  return yearFormat[lang](year)
 }
 
 export function formatList(items: readonly string[], lang: PageLanguage): string {
