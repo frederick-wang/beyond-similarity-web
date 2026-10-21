@@ -5,6 +5,9 @@
 export const TITLE =
   'Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories'
 
+/** The short title, the site's name in the masthead and in link previews. */
+export const SHORT_TITLE = 'Beyond Similarity'
+
 export const AUTHORS = ['Zhaoji Wang', 'Wanyu Si', 'Jun Wang'] as const
 
 /** The authors as "Family, Given", the form arXiv's own citation metadata uses. */
@@ -17,6 +20,7 @@ export const AFFILIATIONS = [
 
 /** The Chinese title, author names and affiliations, as the SPEC gives them for the Chinese page. */
 export const TITLE_ZH = '超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测'
+export const SHORT_TITLE_ZH = '超越相似度'
 export const AUTHORS_ZH = ['王兆基', '司宛玉', '王军'] as const
 export const AFFILIATIONS_ZH = ['北京大学信息管理系', '北京大学数字人文研究中心'] as const
 
@@ -26,6 +30,22 @@ export const PAGES = [
   { path: '/zh/', lang: 'zh-Hans' },
 ] as const
 export type PageLanguage = (typeof PAGES)[number]['lang']
+
+/** The sections of each language page in the SPEC's order, by the anchor both pages give them. */
+export const SECTION_IDS = [
+  'abstract',
+  'gap',
+  'method',
+  'benchmark',
+  'similarity',
+  'models',
+  'histories',
+  'limitations',
+  'using',
+  'cite',
+  'acknowledgments',
+] as const
+export type SectionId = (typeof SECTION_IDS)[number]
 
 export const ABSTRACT =
   'Computational approaches to intertextuality have advanced from string matching to neural retrieval, yet their outputs, similarity scores and parallel-passage lists, identify where texts reuse one another without characterizing how or why. We recast fine-grained intertextuality extraction as an agentic task in which a large language model (LLM) reads two text units in full and, through a constrained tool interface, must ground each proposed reuse in exact character spans on both sides and label it under a five-dimension typology of reuse (form, aspect, source-marking, function, stance). We validate the approach on an exhaustive comparison of the Analects with the Book of Han, where three domain experts adjudicate a pooled multi-model candidate set into a benchmark of 2,533 intertextual pairs. Against this standard we study twelve LLMs, reporting precision (56%–93%), a 51× cost spread at comparable quality, and how well their confidence is calibrated. Expert agreement traces a reliability gradient: dimensions legible on the textual surface are annotated consistently, while those requiring inference of intent are contested, delimiting the claims such annotation supports. Scaling the validated extractor to the full Twenty-Four Histories (65,380 comparisons, 5,766 pairs) recovers corpus-level structure a similarity score cannot express. The interpretive composition of citation shows no systematic change across eighteen centuries, yet the same passage is quoted less and less literally. Stability in the aggregate with drift in the individual case is what a cultural-attraction account expects. We release the extraction protocol and the expert-adjudicated benchmark.'
@@ -63,6 +83,112 @@ export const PAGE_UPDATED = {
 } as const
 export const ICP_NUMBER = '蜀ICP备19032431号-3'
 export const ICP_REGISTRY = 'https://beian.miit.gov.cn/'
+
+/** What a test that runs on both language pages expects each page to say. */
+export interface PageText {
+  readonly title: string
+  readonly shortTitle: string
+  readonly authors: readonly string[]
+  /** Each author entry of the title block as read: name, affiliation marks, and the separator after it. */
+  readonly authorEntries: readonly string[]
+  readonly affiliations: readonly string[]
+  /** Phrases the finding states, with its bounded result. */
+  readonly finding: readonly string[]
+  /** The first and last composition years with their era, kept on one line by no-break spaces. */
+  readonly findingYears: readonly string[]
+  /** Evaluative words, and the claim of stability the evidence does not support. */
+  readonly findingAvoids: RegExp
+  readonly glanceHeading: string
+  /** Numbers of "At a glance" with the objects and qualifiers that go with them. */
+  readonly glance: readonly string[]
+  /** The precision range of the twelve models, as the page writes a range. */
+  readonly precisionRange: string
+  readonly navHeading: string
+  readonly abstractHeading: string
+  readonly citeHeading: string
+  readonly abstractOpening: string
+  readonly copyButton: string
+  readonly copied: string
+  /** The footer's copyright and maintainer sentences, in full. */
+  readonly footer: readonly [string, string]
+}
+
+/**
+ * Each language page's text for the tests that run on both pages. Titles,
+ * names, affiliations and figures are the paper's and the SPEC's; headings
+ * and button labels are the page's own.
+ */
+export const PAGE_TEXT = {
+  en: {
+    title: TITLE,
+    shortTitle: SHORT_TITLE,
+    authors: AUTHORS,
+    authorEntries: ['Zhaoji Wang1,2,', 'Wanyu Si1,2,', 'Jun Wang1,2*'],
+    affiliations: AFFILIATIONS,
+    finding: [`${BENCHMARK_PAIRS} expert-adjudicated pairs`, 'no systematic change', `from ${FIRST_HISTORY} to ${LAST_HISTORY}`],
+    findingYears: [FIRST_HISTORY, LAST_HISTORY],
+    findingAvoids: /\b(novel|powerful|significant(ly)?|robust(ly)?|comprehensive(ly)?|stable|stability)\b/i,
+    glanceHeading: 'At a glance',
+    // The cost ratio names its base, and the 1-in-8 estimate keeps its premise.
+    glance: [
+      BENCHMARK_PAIRS,
+      'Analects',
+      'Book of Han',
+      PRECISION_RANGE,
+      '12 LLMs',
+      '51×',
+      'doubao-2.1-turbo, relative to deepseek-v4-flash',
+      '4.9 points less precise',
+      '5,766',
+      'deepseek-v4-flash extracted',
+      '65,380',
+      '88.0% precision on the Book of Han',
+      'about 1 in 8',
+    ],
+    precisionRange: PRECISION_RANGE,
+    navHeading: 'On this page',
+    abstractHeading: 'Abstract',
+    citeHeading: 'Cite',
+    abstractOpening: 'Computational approaches',
+    copyButton: 'Copy BibTeX',
+    copied: 'Copied',
+    footer: ['© 2026 Zhaoji Wang, Wanyu Si, and Jun Wang. Page text and figures: all rights reserved. Code: MIT License.', 'Maintained by Zhaoji Wang.'],
+  },
+  'zh-Hans': {
+    title: TITLE_ZH,
+    shortTitle: SHORT_TITLE_ZH,
+    authors: AUTHORS_ZH,
+    // Chinese separates the names with 、, not with an English comma.
+    authorEntries: ['王兆基1,2、', '司宛玉1,2、', '王军1,2*'],
+    affiliations: AFFILIATIONS_ZH,
+    finding: [`${BENCHMARK_PAIRS} 条专家仲裁互文对`, '未检出系统性变化', '同一原文在较晚成书的史书中字面忠实度总体较低', `成书于${FIRST_HISTORY_ZH}至 ${LAST_HISTORY_ZH}`],
+    findingYears: [FIRST_HISTORY_ZH, LAST_HISTORY_ZH],
+    findingAvoids: /保持稳定|显著|强大|全面|巧妙/,
+    glanceHeading: '一览',
+    glance: [
+      BENCHMARK_PAIRS,
+      '《论语》',
+      '《汉书》',
+      PRECISION_RANGE_ZH,
+      '12 个大语言模型',
+      COST_SPREAD_ZH,
+      'doubao-2.1-turbo 与 deepseek-v4-flash 每个有效互文对的成本之比',
+      '4.9 个百分点',
+      '5,766',
+      'deepseek-v4-flash 在二十四史上经 65,380 次比对抽取',
+      '《汉书》上 88.0% 的精确率',
+      '约每 8 条就有 1 条',
+    ],
+    precisionRange: PRECISION_RANGE_ZH,
+    navHeading: '本页内容',
+    abstractHeading: '摘要',
+    citeHeading: '引用',
+    abstractOpening: '互文性的计算方法',
+    copyButton: '复制 BibTeX',
+    copied: '已复制',
+    footer: ['© 2026 王兆基、司宛玉和王军。页面文字与插图保留所有权利。代码采用 MIT 许可证。', '维护者：王兆基。'],
+  },
+} as const satisfies Record<PageLanguage, PageText>
 
 /** Collapses whitespace so rendered text can be compared with a literal. */
 export function normalize(text: string): string {
@@ -149,19 +275,20 @@ export const TABLE_3_DIMENSIONS = ['Form', 'Aspect', 'Source-marking', 'Function
 export const HEADING_FIGURES = {
   en: { models: ['twelve LLMs'], histories: ['eighteen centuries'] },
   'zh-Hans': { models: ['十二个大语言模型'], histories: ['十八个世纪'] },
-} as const satisfies Record<PageLanguage, Readonly<Record<string, readonly string[]>>>
+} as const satisfies Record<PageLanguage, Partial<Record<SectionId, readonly string[]>>>
 
 /** Grant numbers in the acknowledgments, as printed on p. 8. */
 export const GRANT_NUMBERS = ['2025YFC3309300', '72010107003'] as const
 
 /**
  * Every number of two or more digits that the answers and paragraphs of each
- * section state, copied from the paper's text. Tables and captions are checked
- * separately. Digits read the same in both languages, so the Chinese page is
- * held to the same lists, except for the one figure in
- * SECTION_FIGURES_ZH_OVERRIDES.
+ * section state, the abstract included, copied from the paper's text. Tables
+ * and captions are checked separately. Digits read the same in both
+ * languages, so the Chinese page is held to the same lists, except for the one
+ * figure in SECTION_FIGURES_ZH_OVERRIDES.
  */
 export const SECTION_FIGURES = {
+  abstract: ['2,533', '56%', '93%', '51', '65,380', '5,766'],
   gap: ['260'],
   method: ['30', '319,465', '11', '39%', '15%', '81%'],
   benchmark: [
@@ -241,7 +368,7 @@ export const SECTION_FIGURES = {
     '117',
   ],
   limitations: ['0.9', '55.3%', '96.1%'],
-} as const
+} as const satisfies Partial<Record<SectionId, readonly string[]>>
 
 /**
  * The figures of SECTION_FIGURES that the Chinese page writes in another form,
@@ -249,7 +376,7 @@ export const SECTION_FIGURES = {
  * in Chinese, which counts large numbers in 万 (ten thousand) rather than in
  * millions. No other figure is converted.
  */
-export const SECTION_FIGURES_ZH_OVERRIDES: Readonly<Partial<Record<keyof typeof SECTION_FIGURES, Readonly<Record<string, string>>>>> = {
+export const SECTION_FIGURES_ZH_OVERRIDES: Readonly<Partial<Record<SectionId, Readonly<Record<string, string>>>>> = {
   histories: { '28.5': '2,850' },
 }
 
@@ -260,6 +387,7 @@ export const SECTION_FIGURES_ZH_OVERRIDES: Readonly<Partial<Record<keyof typeof 
  */
 export const SECTION_WORD_FIGURES = {
   en: {
+    abstract: ['three domain experts', 'twelve LLMs', 'eighteen centuries'],
     method: ['a quarter', 'two-thirds', 'ninefold', 'fivefold', 'five dimensions'],
     benchmark: ['factor of two', 'twelve models'],
     similarity: ['a quarter', 'top ten'],
@@ -267,10 +395,11 @@ export const SECTION_WORD_FIGURES = {
     histories: ['one pair in eight', 'a third', 'three quarters', 'five dimensions', 'five distinct'],
   },
   'zh-Hans': {
+    abstract: ['三位领域专家', '十二个大语言模型', '十八个世纪'],
     method: ['四分之一', '三分之二', '九倍', '五倍', '五个维度'],
     benchmark: ['两倍', '十二个模型'],
     similarity: ['四分之一', '前十'],
     models: ['十二个模型中有八个', '51 倍'],
     histories: ['八条中有一条', '三分之一', '四分之三', '五个维度', '五个不同'],
   },
-} as const satisfies Record<PageLanguage, Readonly<Partial<Record<keyof typeof SECTION_FIGURES, readonly string[]>>>>
+} as const satisfies Record<PageLanguage, Partial<Record<SectionId, readonly string[]>>>

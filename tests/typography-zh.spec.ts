@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { lintFor } from 'autocorrect-node'
-import { FIGURE_PAGES, QUOTATIONS } from './paper-literals'
+import { FIGURE_PAGES, ICP_REGISTRY, QUOTATIONS } from './paper-literals'
 
 // Chinese typography on /zh/ as served, per CODING_STANDARDS.md: corner
 // brackets for quotation marks, no 「——」 dash, full-width punctuation with no
@@ -72,11 +72,14 @@ test('labels figures and tables without a period and sets no space beside full-w
     await expect(page.locator(`#table-${table} figcaption .label`)).toHaveText(`表 ${number}`)
   }
   // Every caption and every paragraph with sources ends its sentence with
-  // full-width punctuation, and the links follow it directly.
-  const joins = await page.locator('main figcaption, main p:has([data-sources])').evaluateAll((elements) =>
-    elements.map((element) => element.textContent ?? ''),
-  )
+  // full-width punctuation, and the links follow it directly. The footer's
+  // copyright and maintainer sentences are joined by the same rule; the ICP
+  // filing number is a registry identifier, not a sentence, and stays out.
+  const joins = await page
+    .locator(`main figcaption, main p:has([data-sources]), footer p:not(:has(a[href="${ICP_REGISTRY}"]))`)
+    .evaluateAll((elements) => elements.map((element) => element.textContent ?? ''))
   expect(joins.length).toBeGreaterThan(20)
+  expect(joins.filter((text) => text.startsWith('©') || text.startsWith('维护者'))).toHaveLength(2)
   for (const text of joins) {
     expect(text).not.toMatch(/[，。；：、？！）」》]\s|\s[，。；：、？！（「《]/)
   }

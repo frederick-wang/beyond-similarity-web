@@ -4,9 +4,13 @@ import { benchmarkPairs, corpusComparisons, deploymentModel, mostPreciseModel, s
 import type { PageCopy } from './types'
 
 // First-screen copy takes its numbers from the facts module, through ./shared
-// for the values every page states alike. The verbatim abstract and the
-// section prose state numbers as text; tests/prose-figures.spec.ts checks
-// every number of two or more digits against literals copied from the paper.
+// for the values every page states alike. The abstract and the section prose
+// state numbers as text, as the paper prints them: tests/prose-figures.spec.ts
+// checks every number of two or more digits in each section, the abstract
+// included, and the numbers written as words, against literals copied from
+// the paper, and tests/abstract-cite.spec.ts checks the abstract word for word
+// against arXiv. tests/parity.spec.ts compares the numbers of figure text
+// alternatives, captions and the abstract with the Chinese page's.
 const firstHistory = formatYear(stats.compositionYears.first, 'en')
 const lastHistory = formatYear(stats.compositionYears.last, 'en')
 

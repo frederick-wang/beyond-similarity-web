@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { multiDigitNumbers } from './numbers'
 import {
   GRANT_NUMBERS,
   HEADING_FIGURES,
@@ -8,24 +9,15 @@ import {
   SECTION_WORD_FIGURES,
   normalize,
   type PageLanguage,
+  type SectionId,
 } from './paper-literals'
 
 // Section prose states the paper's numbers as text rather than reading them
-// from the facts module. For each section, the numbers in its answer and
-// paragraphs (tables and captions are tested elsewhere) must be exactly the
-// literals copied from the paper: a wrong number fails, and so does a number
-// added to the prose without being checked against the paper. Both language
-// pages are held to the same lists.
-
-// A number token: digits with optional thousands separators and decimals, or a
-// decimal without a leading zero (".12"), with an optional minus sign, percent
-// sign and superscript exponent ("10⁻³").
-const numberToken = /[−]?(?:\d+(?:,\d{3})*(?:\.\d+)?|(?<!\d)\.\d+)%?[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]*/g
-
-function multiDigitNumbers(text: string): string[] {
-  const tokens = text.match(numberToken) ?? []
-  return [...new Set(tokens.filter((token) => token.replace(/\D/g, '').length >= 2))]
-}
+// from the facts module. For each section, the abstract included, the numbers
+// in its answer and paragraphs (tables and captions are tested elsewhere) must
+// be exactly the literals copied from the paper: a wrong number fails, and so
+// does a number added to the prose without being checked against the paper.
+// Both language pages are held to the same lists.
 
 type Section = keyof typeof SECTION_FIGURES
 
@@ -73,14 +65,14 @@ for (const { path, lang } of PAGES) {
           )
         const text = normalize(parts.join(' '))
         expect(multiDigitNumbers(text).sort()).toEqual([...expectedFigures(section, lang)].sort())
-        const wordFigures: Readonly<Partial<Record<Section, readonly string[]>>> = SECTION_WORD_FIGURES[lang]
+        const wordFigures: Readonly<Partial<Record<SectionId, readonly string[]>>> = SECTION_WORD_FIGURES[lang]
         for (const word of wordFigures[section] ?? []) {
           expect(text, `figure ${word}`).toContain(word)
         }
       })
     }
 
-    const headingFigures: Readonly<Record<string, readonly string[]>> = HEADING_FIGURES[lang]
+    const headingFigures: Readonly<Partial<Record<SectionId, readonly string[]>>> = HEADING_FIGURES[lang]
     for (const [section, figures] of Object.entries(headingFigures)) {
       test(`states the paper's figures in the ${section} heading`, async ({ page }) => {
         await page.goto(path)

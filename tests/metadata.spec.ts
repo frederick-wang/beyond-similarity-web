@@ -10,26 +10,24 @@ import {
   DOI_URL,
   PUBLISHED,
   PUBLISHED_SLASHED,
+  SHORT_TITLE,
   SITE,
   TITLE,
 } from './paper-literals'
 import { readPngHeader, readPngTexts } from '../scripts/png.ts'
-import { attributeValues, only } from './head'
+import { attributeValues, isRecord, jsonLd, only } from './head'
 
 /** The author names of the paper in the page's JSON-LD, checked field by field. */
-function authorNames(jsonLd: unknown): string[] {
-  if (typeof jsonLd !== 'object' || jsonLd === null || !('mainEntity' in jsonLd)) {
-    throw new Error('The JSON-LD has no mainEntity')
-  }
-  const article = jsonLd.mainEntity
-  if (typeof article !== 'object' || article === null || !('author' in article) || !Array.isArray(article.author)) {
+function authorNames(data: Record<string, unknown>): string[] {
+  const article = data['mainEntity']
+  if (!isRecord(article) || !Array.isArray(article['author'])) {
     throw new Error('The JSON-LD mainEntity has no author list')
   }
-  return article.author.map((author: unknown) => {
-    if (typeof author !== 'object' || author === null || !('name' in author) || typeof author.name !== 'string') {
+  return article['author'].map((author: unknown) => {
+    if (!isRecord(author) || typeof author['name'] !== 'string') {
       throw new Error('A JSON-LD author has no name')
     }
-    return author.name
+    return author['name']
   })
 }
 
@@ -52,9 +50,7 @@ test.describe('citation metadata for Google Scholar and reference managers', () 
 test.describe('structured data', () => {
   test('describes the page as a WebPage whose main entity is the paper as a ScholarlyArticle', async ({ page }) => {
     await page.goto('/')
-    const blocks = await page.locator('script[type="application/ld+json"]').allTextContents()
-    expect(blocks).toHaveLength(1)
-    const data: unknown = JSON.parse(blocks.join(''))
+    const data = await jsonLd(page)
     const description = only(await attributeValues(page, 'meta[name="description"]', 'content'), 'description')
     expect(data).toMatchObject({
       '@context': 'https://schema.org',
@@ -92,7 +88,7 @@ test.describe('link previews on social platforms', () => {
     // "article" lets Zotero save a journal article with its DOI; "website" would make it a web page.
     expect(await openGraph('og:type')).toEqual(['article'])
     expect(await openGraph('article:published_time')).toEqual([PUBLISHED])
-    expect(await openGraph('og:site_name')).toEqual(['Beyond Similarity'])
+    expect(await openGraph('og:site_name')).toEqual([SHORT_TITLE])
     expect(await openGraph('og:title')).toEqual([TITLE])
     expect(await openGraph('og:description')).toEqual([description])
     expect(await openGraph('og:url')).toEqual([SITE])
@@ -121,11 +117,11 @@ test.describe('link previews on social platforms', () => {
     if (words === undefined || others.length > 0) {
       throw new Error('The share image must carry exactly one "Card words" text chunk')
     }
-    const jsonLd: unknown = JSON.parse(only(await page.locator('script[type="application/ld+json"]').allTextContents(), 'JSON-LD block'))
+    const data = await jsonLd(page)
     expect(JSON.parse(words.text)).toEqual({
       shortTitle: only(await attributeValues(page, 'meta[property="og:site_name"]', 'content'), 'og:site_name'),
       title: only(await attributeValues(page, 'meta[name="citation_title"]', 'content'), 'citation_title'),
-      authors: authorNames(jsonLd),
+      authors: authorNames(data),
       arxivId: only(await attributeValues(page, 'meta[name="citation_arxiv_id"]', 'content'), 'citation_arxiv_id'),
     })
   })

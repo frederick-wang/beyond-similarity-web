@@ -1,21 +1,12 @@
 import { expect, test } from '@playwright/test'
-import { attributeValues, only } from './head'
-import { PAGES, SITE, TITLE_ZH } from './paper-literals'
+import { attributeValues, jsonLd, only } from './head'
+import { PAGES, SHORT_TITLE, SHORT_TITLE_ZH, SITE, TITLE_ZH } from './paper-literals'
 
 // The two language pages declare each other: each is its own canonical page,
 // both list every language version (itself included) and x-default, and the
 // masthead of each links to the other.
 
 const CHINESE_PAGE = new URL('zh/', SITE).href
-
-/** The page's JSON-LD block, parsed. */
-async function jsonLd(page: import('@playwright/test').Page): Promise<Record<string, unknown>> {
-  const data: unknown = JSON.parse(only(await page.locator('script[type="application/ld+json"]').allTextContents(), 'JSON-LD block'))
-  if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-    throw new Error('The JSON-LD block is not an object')
-  }
-  return Object.fromEntries(Object.entries(data))
-}
 
 for (const { path } of PAGES) {
   test(`${path} is its own canonical page and lists every language version, itself included`, async ({ page }) => {
@@ -42,7 +33,7 @@ test('the Chinese page previews in Chinese for link previews', async ({ page }) 
   expect(await openGraph('og:locale')).toEqual(['zh_CN'])
   expect(await openGraph('og:url')).toEqual([CHINESE_PAGE])
   expect(await openGraph('og:title')).toEqual([TITLE_ZH])
-  expect(await openGraph('og:site_name')).toEqual(['超越相似度'])
+  expect(await openGraph('og:site_name')).toEqual([SHORT_TITLE_ZH])
   // The share card is the English card on both pages, and its text alternative says so.
   expect(only(await openGraph('og:image:alt'), 'og:image:alt')).toMatch(/^英文分享卡片/)
 })
@@ -84,8 +75,8 @@ test.describe('language switch in the masthead', () => {
 
   test('the site name in the masthead is in the page language and leads to the page itself', async ({ page }) => {
     for (const [path, name] of [
-      ['/', 'Beyond Similarity'],
-      ['/zh/', '超越相似度'],
+      ['/', SHORT_TITLE],
+      ['/zh/', SHORT_TITLE_ZH],
     ] as const) {
       await page.goto(path)
       const brand = page.getByRole('banner').getByRole('link', { name, exact: true })

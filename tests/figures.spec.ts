@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ARXIV_PDF_V1, FIGURE_PAGES } from './paper-literals'
+import { ARXIV_PDF_V1, FIGURE_PAGES, PAGES } from './paper-literals'
 
 const figures = [
   ['framework', 'Figure 1.'],
@@ -30,10 +30,12 @@ for (const [figure, label] of figures) {
   })
 }
 
-test('reports the calibration bars in the text alternative of Figure 3', async ({ page }) => {
-  await page.goto('/')
-  const alt = await page.locator('figure[data-figure="calibration"] img').getAttribute('alt')
-  for (const value of ['41%', '56%', '74%', '91%', '99%']) {
-    expect(alt).toContain(value)
-  }
-})
+for (const { path } of PAGES) {
+  test(`${path} reports the calibration bars in the text alternative of Figure 3`, async ({ page }) => {
+    await page.goto(path)
+    const alt = await page.locator('figure[data-figure="calibration"] img').getAttribute('alt')
+    for (const value of ['41%', '56%', '74%', '91%', '99%']) {
+      expect(alt).toContain(value)
+    }
+  })
+}

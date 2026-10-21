@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { attributeValues, only } from './head'
-import { ICP_NUMBER, ICP_REGISTRY, SITE, TITLE } from './paper-literals'
+import { AUTHORS, AUTHORS_ZH, ICP_NUMBER, ICP_REGISTRY, PAGES, PAGE_TEXT, SITE, TITLE, normalize } from './paper-literals'
 
 test('declares language, title, description and a self canonical', async ({ page }) => {
   await page.goto('/')
@@ -12,13 +12,17 @@ test('declares language, title, description and a self canonical', async ({ page
   expect(await attributeValues(page, 'link[rel="canonical"]', 'href')).toEqual([SITE])
 })
 
-test('carries copyright, the maintainer and the ICP filing number in the footer', async ({ page }) => {
-  await page.goto('/')
-  const footer = page.locator('footer')
-  await expect(footer).toContainText('© 2026')
-  await expect(footer).toContainText('Zhaoji Wang, Wanyu Si, and Jun Wang')
-  await expect(footer).toContainText('all rights reserved')
-  await expect(footer.locator('a[href="https://www.zhaoji.ac.cn/"]')).toHaveCount(1)
-  const icp = footer.getByRole('link', { name: ICP_NUMBER })
-  await expect(icp).toHaveAttribute('href', ICP_REGISTRY)
-})
+/** The maintainer, the first author, as each page names him. */
+const maintainer = { en: AUTHORS[0], 'zh-Hans': AUTHORS_ZH[0] } as const
+
+for (const { path, lang } of PAGES) {
+  test(`${path} carries copyright, the maintainer and the ICP filing number in the footer, in the page language`, async ({ page }) => {
+    await page.goto(path)
+    const footer = page.locator('footer')
+    const [copyright, maintainedBy] = await footer.locator('p').allInnerTexts()
+    expect([copyright, maintainedBy].map((sentence) => normalize(sentence ?? ''))).toEqual([...PAGE_TEXT[lang].footer])
+    await expect(footer.getByRole('link', { name: maintainer[lang], exact: true })).toHaveAttribute('href', 'https://www.zhaoji.ac.cn/')
+    const icp = footer.getByRole('link', { name: ICP_NUMBER })
+    await expect(icp).toHaveAttribute('href', ICP_REGISTRY)
+  })
+}

@@ -1,10 +1,18 @@
 import { expect, test, type Page } from '@playwright/test'
-import { normalize } from './paper-literals'
+import { multiDigitNumbers } from './numbers'
+import { BIBTEX_OPENING, SECTION_IDS, normalize } from './paper-literals'
 
-// The Chinese page is a full counterpart of the English page (ADR 0004): the
-// same sections, anchors, figures, tables, quotations and source pages. Each
-// test reads the same structure from both pages as served and compares them,
-// so a block added to one language and forgotten in the other fails.
+// The Chinese page is a full counterpart of the English page (ADR 0004). Each
+// test reads one structure from both pages as served and requires it to be
+// the same: the sections, their order, kind and anchors (in the SPEC's order);
+// the sequence of blocks in each section, a block known by its element, its
+// id and whether it is the BibTeX block; the question numbers and the answer
+// that opens each question; the page navigation; the subheading anchors; the
+// figures and tables with their PDF pages; the PDF pages each paragraph links
+// to; the classical quotations with their text and script; the BibTeX entry;
+// the numbers in every table cell; and the multi-digit numbers of each
+// figure's text alternative and caption, each table caption and the abstract.
+// Only the words around them are compared by other tests, per language.
 
 /** Reads a structure from a page as served. */
 async function fromPage<T>(page: Page, path: string, read: (page: Page) => Promise<T>): Promise<T> {
@@ -25,7 +33,33 @@ test('has the same sections in the same order, each of the same kind', async ({ 
       sections.map((section) => ({ id: section.id, question: section.classList.contains('section-question') })),
     ),
   )
-  expect(en.length).toBeGreaterThan(0)
+  expect(en.map((section) => section.id)).toEqual([...SECTION_IDS])
+  expect(zh).toEqual(en)
+})
+
+test('has the same blocks in each section, in the same order', async ({ page }) => {
+  const { en, zh } = await bothPages(page, (page) =>
+    page.locator('main section.section').evaluateAll((sections) =>
+      sections.map((section) => ({
+        id: section.id,
+        // The copy button's script sits inside the BibTeX section; it is code, not a block.
+        blocks: Array.from(section.children)
+          .filter((block) => block.localName !== 'script')
+          .map((block) => ({ element: block.localName, id: block.id, bibtex: block.classList.contains('bibtex') })),
+      })),
+    ),
+  )
+  expect(en.find((section) => section.id === 'cite')?.blocks.some((block) => block.bibtex)).toBe(true)
+  expect(zh).toEqual(en)
+})
+
+test('offers the same BibTeX entry, marked as English, on both pages', async ({ page }) => {
+  const { en, zh } = await bothPages(page, async (page) => {
+    const entry = page.locator('section#cite pre')
+    return { text: await entry.innerText(), lang: await entry.getAttribute('lang') }
+  })
+  expect(en.text.startsWith(BIBTEX_OPENING)).toBe(true)
+  expect(en.lang).toBe('en')
   expect(zh).toEqual(en)
 })
 
@@ -150,4 +184,59 @@ test('gives every table the same numbers, under headers in its own language', as
       expect(label).toMatch(/\p{Script=Han}/u)
     }
   }
+})
+
+test('states the same multi-digit numbers in figure text alternatives, captions and the abstract', async ({ page }) => {
+  // Years, labels and figures share their digits across the two languages:
+  // 「659 年」 and "659 CE", 「表 2」 and "Table 2", 「51 倍」 and "51×". Model
+  // names count too, written the same in both. Links in figure captions are
+  // navigation ("Open full size", "PDF p. 2") and are left out.
+  const { en, zh } = await bothPages(page, (page) =>
+    page.evaluate(() => {
+      const required = <T,>(value: T | null | undefined, what: string): T => {
+        if (value === null || value === undefined) {
+          throw new Error(`Missing ${what}`)
+        }
+        return value
+      }
+      const withoutLinks = (element: Element): string => {
+        const copy = element.cloneNode(true)
+        if (!(copy instanceof Element)) {
+          throw new Error('A caption did not clone as an element')
+        }
+        for (const link of copy.querySelectorAll('a')) {
+          link.remove()
+        }
+        return required(copy.textContent, 'caption text')
+      }
+      const places: { readonly place: string; readonly text: string }[] = []
+      for (const figure of document.querySelectorAll('main figure[data-figure]')) {
+        places.push({ place: `${figure.id} text alternative`, text: required(figure.querySelector('img')?.getAttribute('alt'), `${figure.id} alt`) })
+        places.push({ place: `${figure.id} caption`, text: withoutLinks(required(figure.querySelector('figcaption'), `${figure.id} caption`)) })
+      }
+      for (const table of document.querySelectorAll('main figure[data-table]')) {
+        places.push({ place: `${table.id} caption`, text: required(table.querySelector('figcaption')?.textContent, `${table.id} caption`) })
+      }
+      places.push({ place: 'abstract', text: required(document.querySelector('section#abstract')?.textContent, 'abstract') })
+      return places
+    }),
+  )
+  const numbers = (places: readonly { readonly place: string; readonly text: string }[]) =>
+    places.map(({ place, text }) => ({ place, numbers: multiDigitNumbers(text).sort() }))
+  const english = numbers(en)
+  expect(english.map(({ place }) => place)).toEqual([
+    'figure-framework text alternative',
+    'figure-framework caption',
+    'figure-models text alternative',
+    'figure-models caption',
+    'figure-calibration text alternative',
+    'figure-calibration caption',
+    'figure-fidelity text alternative',
+    'figure-fidelity caption',
+    'table-agreement caption',
+    'table-models caption',
+    'table-diachronic caption',
+    'abstract',
+  ])
+  expect(numbers(zh)).toEqual(english)
 })
