@@ -110,7 +110,7 @@ export const maintainer: Author = authors[0]
 export const paper = {
   titleEn:
     'Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories',
-  shortTitle: 'Beyond Similarity',
+  shortTitleEn: 'Beyond Similarity',
   titleZh: '超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测',
   shortTitleZh: '超越相似度',
   arxivId: '2607.27595',
@@ -259,7 +259,7 @@ export interface ShareCardWords {
  */
 export function shareCardWords(): ShareCardWords {
   return {
-    shortTitle: paper.shortTitle,
+    shortTitle: paper.shortTitleEn,
     title: paper.titleEn,
     authors: authors.map((author) => author.nameEn),
     arxivId: paper.arxivId,

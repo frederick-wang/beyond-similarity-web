@@ -19,7 +19,7 @@ export const en: PageCopy = {
   lang: 'en',
   title: paper.titleEn,
   description: `An LLM agent grounds each reuse of the Analects in exact character spans and labels how it is reused, validated on ${benchmarkPairs} expert-adjudicated pairs.`,
-  siteName: paper.shortTitle,
+  siteName: paper.shortTitleEn,
   openGraphLocale: 'en_US',
   shareImage: {
     image: pngImage(shareCardImage),
