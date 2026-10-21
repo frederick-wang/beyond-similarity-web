@@ -31,9 +31,19 @@ export function isoDate(value: string): IsoDate {
 export const affiliationIds = [1, 2] as const
 export type AffiliationId = (typeof affiliationIds)[number]
 
-export interface Affiliation {
+/** A university or other body that affiliations belong to. */
+export interface Institution {
   readonly nameEn: string
   readonly nameZh: string
+  /** The city and country that an English affiliation ends with. */
+  readonly placeEn: string
+}
+
+export interface Affiliation {
+  /** The department or centre, as in "Department of Information Management". */
+  readonly unitEn: string
+  readonly unitZh: string
+  readonly institution: Institution
 }
 
 export interface Author {
@@ -67,11 +77,13 @@ export interface PageFacts {
   readonly updated: IsoDate
 }
 
+const pekingUniversity = { nameEn: 'Peking University', nameZh: '北京大学', placeEn: 'Beijing, China' } as const satisfies Institution
+
 // A Record keyed by every AffiliationId, so dropping an affiliation that an
 // author still cites fails the type check instead of rendering a dangling mark.
 export const affiliations = {
-  1: { nameEn: 'Department of Information Management, Peking University, Beijing, China', nameZh: '北京大学信息管理系' },
-  2: { nameEn: 'Research Center for Digital Humanities, Peking University, Beijing, China', nameZh: '北京大学数字人文研究中心' },
+  1: { unitEn: 'Department of Information Management', unitZh: '信息管理系', institution: pekingUniversity },
+  2: { unitEn: 'Research Center for Digital Humanities', unitZh: '数字人文研究中心', institution: pekingUniversity },
 } as const satisfies Readonly<Record<AffiliationId, Affiliation>>
 
 export const authors = [
@@ -214,15 +226,25 @@ export function authorName(author: Author, lang: PageLanguage): string {
   }
 }
 
-/** The affiliation's name as the page in `lang` shows it. */
+/**
+ * The affiliation's name as the page in `lang` shows it: unit, institution
+ * and place in English, as the paper prints it; institution then unit in
+ * Chinese, as in 北京大学信息管理系.
+ */
 export function affiliationName(id: AffiliationId, lang: PageLanguage): string {
   const affiliation: Affiliation = affiliations[id]
   switch (lang) {
     case 'en':
-      return affiliation.nameEn
+      return `${affiliation.unitEn}, ${affiliation.institution.nameEn}, ${affiliation.institution.placeEn}`
     case 'zh-Hans':
-      return affiliation.nameZh
+      return `${affiliation.institution.nameZh}${affiliation.unitZh}`
   }
+}
+
+/** The institutions of the authors' affiliations, each once, in order of first mention. */
+export function institutions(): readonly Institution[] {
+  const mentioned = authors.flatMap((author) => author.affiliations.map((id): Institution => affiliations[id].institution))
+  return mentioned.filter((institution, index) => mentioned.indexOf(institution) === index)
 }
 
 /** The affiliation numbers after an author's name, as in "1,2". */

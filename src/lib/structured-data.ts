@@ -5,7 +5,7 @@
 
 import { en } from '../content/en'
 import type { PageCopy } from '../content/types'
-import { affiliations, authors, links, paper, type IsoDate, type PageLanguage } from '../data/paper'
+import { affiliationName, authors, links, paper, type IsoDate, type PageLanguage } from '../data/paper'
 import { plainText } from './inline'
 
 interface OrganizationNode {
@@ -77,7 +77,7 @@ function scholarlyArticle(): ScholarlyArticleNode {
         name: author.nameEn,
         givenName: author.givenNameEn,
         familyName: author.familyNameEn,
-        affiliation: author.affiliations.map((id): OrganizationNode => ({ '@type': 'Organization', name: affiliations[id].nameEn })),
+        affiliation: author.affiliations.map((id): OrganizationNode => ({ '@type': 'Organization', name: affiliationName(id, 'en') })),
       }),
     ),
     datePublished: paper.published,
