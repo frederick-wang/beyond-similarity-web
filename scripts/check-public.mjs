@@ -15,6 +15,7 @@
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 // Pushed blobs can be large (figures); the default 1 MB buffer is too small.
 const maxBuffer = 256 * 1024 * 1024
@@ -27,10 +28,23 @@ function gitBlob(sha, cwd) {
   return execFileSync('git', ['cat-file', 'blob', sha], { cwd, maxBuffer })
 }
 
-const checkoutRoot = git(['rev-parse', '--show-toplevel'], process.cwd()).trim()
-// Linked worktrees share the repository but not untracked files, so the rules
-// are read from the main checkout, the parent of the common git directory.
-const mainRoot = dirname(git(['rev-parse', '--path-format=absolute', '--git-common-dir'], checkoutRoot).trim())
+// The script lives in the working tree it checks, so its own location finds
+// the repository even when it runs from elsewhere, such as .git/scratch/ where
+// issue and PR drafts are kept. Linked worktrees share the repository but not
+// untracked files, so the rules are read from the main checkout, the parent of
+// the common git directory.
+function locateRepository() {
+  const scriptDirectory = dirname(fileURLToPath(import.meta.url))
+  try {
+    const checkoutRoot = git(['rev-parse', '--show-toplevel'], scriptDirectory).trim()
+    const commonDirectory = git(['rev-parse', '--path-format=absolute', '--git-common-dir'], checkoutRoot).trim()
+    return { checkoutRoot, mainRoot: dirname(commonDirectory) }
+  } catch (error) {
+    exitWithSetupError(`无法定位脚本所在的仓库：${error.message}`)
+  }
+}
+
+const { checkoutRoot, mainRoot } = locateRepository()
 const rulesPath = join(mainRoot, '.private', 'public-check-patterns.txt')
 
 function exitWithSetupError(message) {
