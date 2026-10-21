@@ -42,6 +42,15 @@ export function formatList(items: readonly string[], lang: PageLanguage): string
   return new Intl.ListFormat(listLocale[lang], { type: 'conjunction' }).format(items)
 }
 
+/**
+ * The share card's author line, an English list such as "A, B, and C": the
+ * card is in English on every page. scripts/make-site-images.ts renders it,
+ * and each page's alt text for the card uses it too.
+ */
+export function shareCardByline(authors: readonly string[]): string {
+  return formatList(authors, 'en')
+}
+
 // Table cells follow the paper's typesetting in both languages: a true minus
 // sign (U+2212) for negative values and p-values without a leading zero.
 

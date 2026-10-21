@@ -1,6 +1,6 @@
 import shareCardImage from '../assets/share-en.png'
 import { links, paper, shareCardWords, stats } from '../data/paper'
-import { formatCount, formatIdentifier, formatList, formatYear } from '../lib/format'
+import { formatCount, formatIdentifier, formatYear, shareCardByline } from '../lib/format'
 import { pngImage } from '../lib/images'
 import type { PageCopy } from './types'
 
@@ -23,7 +23,7 @@ export const en: PageCopy = {
   openGraphLocale: 'en_US',
   shareImage: {
     image: pngImage(shareCardImage),
-    alt: `${card.title}. ${formatList(card.authors, 'en')}. arXiv:${card.arxivId}`,
+    alt: `${card.title}. ${shareCardByline(card.authors)}. arXiv:${card.arxivId}`,
   },
   skipLink: 'Skip to content',
   correspondingNote: 'Corresponding author',

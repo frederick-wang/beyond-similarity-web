@@ -33,6 +33,7 @@ import sharp, { type Sharp } from 'sharp'
 import { appleTouchIcon, pngIcons, svgIcon } from '../src/data/icons.ts'
 import { shareCardWords, type ShareCardWords } from '../src/data/paper.ts'
 import { escapeMarkupText } from '../src/lib/escape.ts'
+import { shareCardByline } from '../src/lib/format.ts'
 import { provenanceTexts, withTextChunks, type TextEntry } from './png.ts'
 
 const root = new URL('../', import.meta.url)
@@ -120,7 +121,7 @@ function shareCardHtml(words: ShareCardWords): string {
       </header>
       <h1>${escapeMarkupText(words.title)}</h1>
       <footer class="byline">
-        <span>${escapeMarkupText(words.authors.join(', '))}</span>
+        <span>${escapeMarkupText(shareCardByline(words.authors))}</span>
         <span>arXiv:${escapeMarkupText(words.arxivId)}</span>
       </footer>
     </main>
