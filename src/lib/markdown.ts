@@ -125,11 +125,13 @@ function titleBlock(copy: PageCopy): readonly string[] {
 }
 
 function glanceBlocks(copy: PageCopy): readonly string[] {
+  const marks = punctuationFor(copy.lang)
   return [
     `## ${markdownLiteral(copy.glanceHeading, 'The glance heading')}`,
     markdownList(
       glanceIds.map(
-        (id) => `**${markdownLiteral(formatQuantity(glance[id], copy.lang), 'A glance quantity')}** ${markdownText(copy.glance[id], copy.lang)}`,
+        (id) =>
+          `**${markdownLiteral(formatQuantity(glance[id], copy.lang), 'A glance quantity')}**${marks.glanceJoin}${markdownText(copy.glance[id], copy.lang)}`,
       ),
     ),
   ]

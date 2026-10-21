@@ -34,11 +34,17 @@ export interface Punctuation {
   readonly sourceSeparator: string
   /** Closes the label of a figure or table caption, as the period in "Figure 1.". */
   readonly labelEnd: string
+  /**
+   * Joins a quantity of "At a glance" to its text in the Markdown version,
+   * where no layout sets them apart: a space in English, and a full-width
+   * colon in Chinese, which does not separate characters with spaces.
+   */
+  readonly glanceJoin: string
 }
 
 const punctuation: Readonly<Record<PageLanguage, Punctuation>> = {
-  en: { fullStop: '.', join: ' ', authorSeparator: ', ', sourceSeparator: '; ', labelEnd: '.' },
-  'zh-Hans': { fullStop: '。', join: '', authorSeparator: '、', sourceSeparator: '；', labelEnd: '' },
+  en: { fullStop: '.', join: ' ', authorSeparator: ', ', sourceSeparator: '; ', labelEnd: '.', glanceJoin: ' ' },
+  'zh-Hans': { fullStop: '。', join: '', authorSeparator: '、', sourceSeparator: '；', labelEnd: '', glanceJoin: '：' },
 }
 
 export function punctuationFor(lang: PageLanguage): Punctuation {
