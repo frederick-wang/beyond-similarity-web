@@ -1,6 +1,9 @@
-// Expected values copied by hand from arXiv:2607.27595v1 (PDF). Tests compare
-// the served pages against these literals, never against the facts module,
-// so a wrong fact cannot pass by agreeing with itself.
+// Expected values for the tests. Numbers and facts about the paper are copied
+// by hand from arXiv:2607.27595v1 (PDF); the Chinese title, names and
+// affiliations are taken from the SPEC; the phrases that bind numbers to what
+// they count, and the page's own labels, are copied from the pages as served.
+// No value here is derived from the facts module, so a wrong fact cannot pass
+// by agreeing with itself.
 
 export const TITLE =
   'Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories'

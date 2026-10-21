@@ -56,7 +56,7 @@ test('has the same blocks in each section, in the same order', async ({ page }) 
 test('offers the same BibTeX entry, marked as English, on both pages', async ({ page }) => {
   const { en, zh } = await bothPages(page, async (page) => {
     const entry = page.locator('section#cite pre')
-    // A missing entry fails here at once; innerText() would wait out the test timeout.
+    // A missing entry fails within the 5 s assertion timeout, naming the element; innerText() would wait out the 30 s test timeout.
     await expect(entry).toHaveCount(1)
     return { text: await entry.innerText(), lang: await entry.getAttribute('lang') }
   })
