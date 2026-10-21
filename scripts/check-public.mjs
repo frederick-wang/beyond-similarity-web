@@ -419,7 +419,9 @@ function main() {
  * carries the child's output in error.stdout and error.stderr, and stdout can
  * hold bytes of a checked file, such as a blob from git cat-file, so the whole
  * error object must never be printed. The messages of git and Node errors name
- * the command, git's diagnostic, a path or an error code.
+ * the command, git's diagnostic, a path or an error code. A module that fails
+ * to load also quotes its failing source line, which is this script's own
+ * tracked code, never a checked file.
  */
 function exitWithFault(error) {
   console.error(`检查脚本出错：${error instanceof Error ? error.stack : String(error)}`)
