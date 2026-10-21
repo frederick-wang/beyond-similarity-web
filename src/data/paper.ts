@@ -160,8 +160,13 @@ export function absoluteUrl(path: string): string {
   return new URL(path, origin).href
 }
 
+/** "Family, Given", the order BibTeX and citation metadata both take. */
+export function familyFirst(author: Author): string {
+  return `${author.familyNameEn}, ${author.givenNameEn}`
+}
+
 export function bibtex(): string {
-  const authorList = authors.map((author) => `${author.familyNameEn}, ${author.givenNameEn}`).join(' and ')
+  const authorList = authors.map(familyFirst).join(' and ')
   const fields: readonly (readonly [string, string])[] = [
     ['title', paper.titleEn],
     ['author', authorList],

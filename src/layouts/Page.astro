@@ -1,9 +1,9 @@
 ---
 import '../styles/global.css'
 import Footer from '../components/Footer.astro'
+import Head from '../components/Head.astro'
 import Masthead from '../components/Masthead.astro'
 import type { PageCopy } from '../content/types'
-import { absoluteUrl } from '../data/paper'
 
 interface Props {
   readonly copy: PageCopy
@@ -16,12 +16,7 @@ const { copy, path } = Astro.props
 <!doctype html>
 <html lang={copy.lang}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <title>{copy.title}</title>
-    <meta name="description" content={copy.description} />
-    <link rel="canonical" href={absoluteUrl(path)} />
+    <Head copy={copy} path={path} />
   </head>
   <body>
     <a class="skip-link" href="#main">{copy.skipLink}</a>
