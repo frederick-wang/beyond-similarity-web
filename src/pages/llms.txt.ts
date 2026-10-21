@@ -1,4 +1,4 @@
 import type { APIRoute } from 'astro'
 import { llmsText } from '../lib/markdown'
 
-export const GET: APIRoute = () => new Response(llmsText(), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } })
+export const GET: APIRoute = () => new Response(llmsText())

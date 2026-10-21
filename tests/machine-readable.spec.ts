@@ -157,6 +157,18 @@ test('/llms-full.txt is the English Markdown, a thematic break, then the Chinese
   expect(await fetchText(request, '/llms-full.txt')).toBe(`${english.replace(/\n$/, '')}\n\n---\n\n${chinese}`)
 })
 
+test('the host serves the Markdown versions and the llms files as UTF-8', async ({ request }) => {
+  test.skip(
+    process.env['BASE_URL'] === undefined,
+    'The host sets the content type and its charset: static output keeps no endpoint headers, and the local preview names no charset. Run with BASE_URL against a deployment.',
+  )
+  for (const path of MARKDOWN_VERSIONS.map((version): string => version.markdown).concat(['/llms.txt', '/llms-full.txt'])) {
+    const response = await request.get(path)
+    expect(response.status(), path).toBe(200)
+    expect(response.headers()['content-type'], path).toMatch(/;\s*charset=utf-8\b/i)
+  }
+})
+
 for (const { page: path, markdown } of MARKDOWN_VERSIONS) {
   test(`${path} names its Markdown version in the head`, async ({ page, request }) => {
     await page.goto(path)
