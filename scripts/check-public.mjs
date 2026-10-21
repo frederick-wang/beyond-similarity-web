@@ -10,7 +10,7 @@
 //   node scripts/check-public.mjs --pre-push   git pre-push hook: every object and commit message being pushed
 //   node scripts/check-public.mjs <file>...    arbitrary files, such as an issue or PR body before posting
 //
-// Exit codes: 0 clean; 1 hits found; 2 rules missing, unreadable or invalid, or an input file missing.
+// Exit codes: 0 clean; 1 hits found; 2 repository not found, rules missing, unreadable or invalid, or an input file missing.
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
