@@ -3,8 +3,8 @@ import { formatCount, formatIdentifier, formatYear } from '../lib/format'
 import type { PageCopy } from './types'
 
 // First-screen copy takes its numbers from the facts module. The verbatim
-// abstract and the section prose state numbers as text; tests check them
-// against the paper and, once the Chinese page exists, across languages.
+// abstract and the section prose state numbers as text; tests/prose-figures.spec.ts
+// checks every one of them against literals copied from the paper.
 const benchmarkPairs = formatCount(stats.benchmarkPairs)
 const corpusComparisons = formatCount(stats.corpusComparisons)
 const mostPreciseModel = formatIdentifier(stats.mostPreciseModel)
@@ -73,7 +73,7 @@ export const en: PageCopy = {
       },
       fidelity: {
         label: 'Figure 4',
-        alt: 'Box plots of per-cluster Spearman correlations between literal fidelity and composition year. All pairs: mean −0.15 over 283 clusters. Direct quotation: mean −0.18 over 123 clusters. Paraphrase: mean −0.08 over 170 clusters. All three means are marked significant and sit left of zero.',
+        alt: 'Box plots of per-cluster Spearman correlations between literal fidelity and composition year. All pairs: mean −0.15 over 283 clusters. Direct quotation: mean −0.18 over 123 clusters. Paraphrase: mean −0.08 over 170 clusters. All three means sit left of zero and carry an asterisk for a permutation p below 0.05.',
         caption:
           'Literal fidelity declines with the citing history’s composition date, holding the passage fixed: distribution of per-cluster Spearman correlations of fidelity against year. Boxes show the interquartile range, diamonds the mean of each stratum, an asterisk a permutation p below 0.05, and *k* the number of qualifying clusters.',
       },
@@ -87,11 +87,11 @@ export const en: PageCopy = {
         'Agreement between the two experts on the five labels, over the 1,930 candidates both accepted, before adjudication. Chance is the agreement expected from each expert’s label frequencies, which Cohen’s κ corrects for. Form and source-marking are reliable, function and stance contested, and aspect reliable but almost constant.',
       headers: { dimension: 'Dimension', observed: 'Observed agreement', chance: 'Chance', kappa: 'Cohen’s κ' },
       dimensions: {
-        form: 'Form (quotation or paraphrase)',
-        aspect: 'Aspect (content or structure)',
-        sourceMarking: 'Source-marking (explicit, marked, unmarked)',
-        function: 'Function (background, support, application, critique)',
-        stance: 'Stance (positive, neutral, negative, complex)',
+        form: 'Form (quotation/paraphrase)',
+        aspect: 'Aspect (content/structure)',
+        sourceMarking: 'Source-marking (explicit/marked/unmarked)',
+        function: 'Function (background/support/…)',
+        stance: 'Stance (positive/neutral/…)',
       },
     },
     models: {
@@ -204,7 +204,7 @@ export const en: PageCopy = {
         {
           type: 'paragraph',
           text: 'Aggregate counts are trustworthy only if every task ends in a defined outcome. A stop guard keeps the agent from ending before it calls `submit`, and `submit` checks the declared status against the committed set in both directions: a match needs at least one committed pair, and a declaration of no match needs none. A task that ends any other way, through an API error, exhausted retries, a timeout or a run that stops before submitting, is recorded as failed and never counted as an empty result. Explicit abstention is a first-class outcome because most chunk pairs share no reuse.',
-          sources: [{ part: 'protocol', pages: [3] }],
+          sources: [{ part: 'protocol', pages: [3, 4] }],
         },
       ],
     },
@@ -317,13 +317,13 @@ export const en: PageCopy = {
         { type: 'subheading', id: 'worked-example', text: 'One passage, three kinds of reuse' },
         {
           type: 'paragraph',
-          text: 'The abdication charge forms one merged-fragment cluster of 85 extracted pairs across 22 histories. In the *Book of Han* it is quoted near-verbatim under the source’s name, {{charge}}, labeled quotation, explicit, support, with a literal fidelity of 0.87: the canon is named to lend authority. In the same history an imperial patent appointing a commander absorbs its wording, {{patent}} (go, devote your whole heart … hold faithfully to the mean), labeled quotation, unmarked, application (0.37): investiture language repurposed as working government prose. In the *Records of the Three Kingdoms* the abdication edict transfers the mandate with {{jinAbdicationEdition}} (Heaven’s favor ends forever; the succession lies with Jin), labeled paraphrase, unmarked, application (0.25). A similarity ranking orders the three by overlap alone. The labels separate a public appeal to canonical authority, silent administrative repurposing, and a formulaic script, and within this one cluster fidelity already falls with composition year.',
-          sources: [{ part: 'scaling', pages: [5] }],
+          text: 'The abdication charge forms one merged-fragment cluster of 85 extracted pairs across 22 histories. In the *Book of Han* it is quoted near-verbatim under the source’s name, {{charge}}, labeled quotation, explicit, support, with a literal fidelity of 0.87: the canon is named to lend authority. In the same history an imperial patent appointing a commander absorbs its wording, {{patent}} (go, devote your whole heart … hold faithfully to the mean), labeled quotation, unmarked, application (0.37): investiture language repurposed as working government prose. In the *Records of the Three Kingdoms* the abdication edict transfers the mandate with {{jinAbdicationEdition}} (Heaven’s favor ends forever; the succession lies with Jin), labeled paraphrase, unmarked, application (0.25). A similarity ranking orders the three by overlap alone. The labels separate a public appeal to canonical authority, silent administrative repurposing, and a formulaic script, and within this one cluster fidelity already tends to fall with composition year.',
+          sources: [{ part: 'scaling', pages: [5, 6] }],
         },
         { type: 'subheading', id: 'mix', text: 'The mix of reuse types shows no detectable drift' },
         {
           type: 'paragraph',
-          text: 'Comparing histories composed by 659 CE with those from 945 CE onward, the share of reuse that leaves its source unmarked is 77.5% against 77.6%, and none of the five dimensions shows a trend with composition year (Table 3; function and stance remain exploratory). Per-history usage profiles do not diverge as the gap between composition dates grows: the Jensen–Shannon divergence between two histories is uncorrelated with the years between them (permutation p = .12 to .28). Raw citation density does fall about threefold, but that count-level trend needs no typology and matches the received periodization, so we rest no claim on it.',
+          text: 'Comparing histories composed by 659 CE with those from 945 CE onward, the share of reuse that leaves its source unmarked is 77.5% against 77.6%, and for none of the five dimensions does the share of its dominant category trend significantly with composition year (Table 3; function and stance remain exploratory). Per-history usage profiles do not diverge as the gap between composition dates grows: the Jensen–Shannon divergence between two histories is uncorrelated with the years between them (permutation p = .12 to .28). Raw citation density does fall to about a third, but that count-level trend needs no typology and matches the received periodization, so we rest no claim on it.',
           sources: [{ part: 'scaling', pages: [6] }],
         },
         { type: 'table', table: 'diachronic' },
@@ -338,16 +338,16 @@ export const en: PageCopy = {
           text: 'Literal fidelity aligns each history fragment with its *Analects* source by character-level longest common subsequence. How literally a passage is quoted does not fix how it is marked. Citations that name their source are more faithful than unmarked ones (median literal fidelity 0.78 against 0.38, Kruskal–Wallis p < 10⁻³), and the gap survives within direct quotation (0.85 against 0.50), so a similarity score cannot stand in for the marking label. Naming a source is a public appeal to canonical authority that holds the wording to a higher standard. The relation is a regularity rather than a law: unmarked citation can be verbatim where concealment is the motive.',
           sources: [{ part: 'scaling', pages: [6] }],
         },
-        { type: 'subheading', id: 'function', text: 'Applied citations are looser and unmarked' },
+        { type: 'subheading', id: 'function', text: 'Applied citations tend to be looser and unmarked (exploratory)' },
         {
           type: 'paragraph',
           text: 'Invoked as authoritative support, the canon is quoted more literally (mean literal fidelity 0.50). Turned to application, repurposed for governance and policy, it is quoted more loosely (0.42) and 93% of the time without marking the source. This is the pragmatic use native scholarship calls *tong-jing zhi-yong*, applying the classics to affairs, where a citation’s force is that the sage would have approved the decision, not its exact words. Function is a low-agreement dimension (Table 1), so this finding is exploratory.',
           sources: [{ part: 'scaling', pages: [6] }],
         },
-        { type: 'subheading', id: 'fidelity', text: 'Later histories quote the same passage less literally' },
+        { type: 'subheading', id: 'fidelity', text: 'Later histories tend to quote the same passage less literally' },
         {
           type: 'paragraph',
-          text: 'Holding a passage fixed, later-compiled histories quote it less literally (Figure 4). Across 283 merged-fragment clusters spanning at least five distinct composition years, the mean per-cluster Spearman correlation between fidelity and composition year is −0.15 (69.3% of clusters negative; cluster-bootstrap 95% CI [−0.19, −0.12]; permutation p < 0.001). The decline is steeper for direct quotation (−0.18) than for paraphrase (−0.08) and strengthens among pairs with confidence of 0.9 or higher (172 clusters, ρ = −0.19, p < 0.001). Zhang Xuecheng observed the same necessity: {{zhangTransmission}}, successive historians recast their sources’ wording not from a taste for difference but because circumstance required it.',
+          text: 'Holding a passage fixed, later-compiled histories tend to quote it less literally (Figure 4), though the trend is far from uniform. Across 283 merged-fragment clusters spanning at least five distinct composition years, the mean per-cluster Spearman correlation between fidelity and composition year is −0.15 (69.3% of clusters negative; cluster-bootstrap 95% CI [−0.19, −0.12]; permutation p < 0.001). The decline is steeper for direct quotation (−0.18) than for paraphrase (−0.08) and strengthens among pairs with confidence of 0.9 or higher (172 clusters, ρ = −0.19, p < 0.001). Zhang Xuecheng observed the same necessity: {{zhangTransmission}}, successive historians recast their sources’ wording not from a taste for difference but because circumstance required it.',
           sources: [{ part: 'scaling', pages: [7] }],
         },
         { type: 'figure', figure: 'fidelity' },
