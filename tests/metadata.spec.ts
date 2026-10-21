@@ -13,7 +13,7 @@ import {
   SITE,
   TITLE,
 } from './paper-literals'
-import { readPngHeader } from './png'
+import { readPngHeader } from '../scripts/png.ts'
 
 async function metaContents(page: Page, name: string): Promise<(string | null)[]> {
   return page.locator(`meta[name="${name}"]`).evaluateAll((elements) => elements.map((element) => element.getAttribute('content')))

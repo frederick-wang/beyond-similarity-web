@@ -27,11 +27,11 @@
 // Usage: node scripts/make-site-images.ts
 
 import { readFileSync, writeFileSync } from 'node:fs'
-import { crc32 } from 'node:zlib'
 import { chromium } from '@playwright/test'
 import sharp, { type Sharp } from 'sharp'
 import { appleTouchIcon, pngIcons, svgIcon } from '../src/data/icons.ts'
 import { authors, paper } from '../src/data/paper.ts'
+import { withTextChunks } from './png.ts'
 
 const root = new URL('../', import.meta.url)
 
@@ -164,31 +164,13 @@ async function renderShareCard(): Promise<Buffer> {
   }
 }
 
-/**
- * Returns the PNG with tEXt chunks recording its origin, inserted right after
- * the IHDR chunk. tEXt holds Latin-1, so the texts are kept to printable ASCII.
- */
+/** Returns the PNG with tEXt chunks recording its origin, right after the IHDR chunk. */
 function withOrigin(png: Buffer, origin: Origin): Buffer {
-  const entries = [
-    ['Source', origin.source],
-    ['Description', origin.description],
-    ['impeccable:prompt', `${origin.method} ${origin.description} Source: ${origin.source}.`],
-  ] as const
-  const chunks = entries.map(([keyword, text]) => {
-    if (!/^[\x20-\x7e]+$/.test(text)) {
-      throw new Error(`PNG text for ${keyword} must be printable ASCII: ${text}`)
-    }
-    const type = Buffer.from('tEXt', 'latin1')
-    const data = Buffer.from(`${keyword}\0${text}`, 'latin1')
-    const length = Buffer.alloc(4)
-    length.writeUInt32BE(data.length)
-    const crc = Buffer.alloc(4)
-    crc.writeUInt32BE(crc32(Buffer.concat([type, data])))
-    return Buffer.concat([length, type, data, crc])
-  })
-  // The signature is 8 bytes; IHDR is its 4-byte length, type, data and CRC.
-  const ihdrEnd = 8 + 12 + png.readUInt32BE(8)
-  return Buffer.concat([png.subarray(0, ihdrEnd), ...chunks, png.subarray(ihdrEnd)])
+  return withTextChunks(png, [
+    { keyword: 'Source', text: origin.source },
+    { keyword: 'Description', text: origin.description },
+    { keyword: 'impeccable:prompt', text: `${origin.method} ${origin.description} Source: ${origin.source}.` },
+  ])
 }
 
 async function writePng(path: string, image: Sharp, origin: Origin): Promise<void> {

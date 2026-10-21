@@ -23,7 +23,7 @@ import { createHash } from 'node:crypto'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { crc32 } from 'node:zlib'
+import { withTextChunks } from './png.ts'
 
 const sourcePackage = {
   url: 'https://arxiv.org/e-print/2607.27595v1',
@@ -82,28 +82,11 @@ function renderPage(pdfPath, outputBase, options) {
   return `${outputBase}.png`
 }
 
-/** Returns the PNG with tEXt chunks inserted right after the IHDR chunk. */
-function withTextChunks(png, entries) {
-  const signatureLength = 8
-  const ihdrLength = png.readUInt32BE(signatureLength)
-  const afterIhdr = signatureLength + 12 + ihdrLength
-  const chunks = entries.map(([keyword, text]) => {
-    const type = Buffer.from('tEXt', 'latin1')
-    const data = Buffer.concat([Buffer.from(keyword, 'latin1'), Buffer.from([0]), Buffer.from(text, 'latin1')])
-    const length = Buffer.alloc(4)
-    length.writeUInt32BE(data.length)
-    const crc = Buffer.alloc(4)
-    crc.writeUInt32BE(crc32(Buffer.concat([type, data])))
-    return Buffer.concat([length, type, data, crc])
-  })
-  return Buffer.concat([png.subarray(0, afterIhdr), ...chunks, png.subarray(afterIhdr)])
-}
-
 function writeFigure(renderedPath, outputName, origin) {
   const png = withTextChunks(readFileSync(renderedPath), [
-    ['Source', origin.source],
-    ['Description', origin.description],
-    ['impeccable:prompt', `Sourced, not generated. ${origin.description} Source: ${origin.source}.`],
+    { keyword: 'Source', text: origin.source },
+    { keyword: 'Description', text: origin.description },
+    { keyword: 'impeccable:prompt', text: `Sourced, not generated. ${origin.description} Source: ${origin.source}.` },
   ])
   writeFileSync(new URL(outputName, outputDirectory), png)
   console.log(`wrote src/assets/figures/${outputName}`)

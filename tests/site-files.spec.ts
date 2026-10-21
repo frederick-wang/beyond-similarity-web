@@ -1,6 +1,6 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
 import { PUBLISHED, SITE } from './paper-literals'
-import { readPngHeader, type PngHeader } from './png'
+import { readPngHeader, type PngHeader } from '../scripts/png.ts'
 
 /** The IndexNow key, copied from the key file's name in public/. */
 const INDEXNOW_KEY = 'c132bc6e7cb4da6c991d355d9c45f366'

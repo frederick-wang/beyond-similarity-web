@@ -20,7 +20,7 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { inflateSync } from 'node:zlib'
+import { isPng, readPngTexts } from './png.ts'
 
 // Pushed blobs can be large (figures); the default 1 MB buffer is too small.
 const maxBuffer = 256 * 1024 * 1024
@@ -98,42 +98,15 @@ function scanText(label, text, rules) {
   return hits
 }
 
-const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
-
-/** The keyword and text of every tEXt, zTXt and iTXt chunk in a PNG, one "keyword: text" string each. */
-function pngTextChunks(png) {
-  const texts = []
-  let offset = pngSignature.length
-  while (offset + 8 <= png.length) {
-    const length = png.readUInt32BE(offset)
-    const type = png.toString('latin1', offset + 4, offset + 8)
-    const data = png.subarray(offset + 8, offset + 8 + length)
-    const keywordEnd = data.indexOf(0)
-    const keyword = data.toString('latin1', 0, keywordEnd)
-    if (type === 'tEXt') {
-      texts.push(`${keyword}: ${data.toString('latin1', keywordEnd + 1)}`)
-    } else if (type === 'zTXt') {
-      texts.push(`${keyword}: ${inflateSync(data.subarray(keywordEnd + 2)).toString('latin1')}`)
-    } else if (type === 'iTXt') {
-      const compressed = data[keywordEnd + 1] === 1
-      const languageEnd = data.indexOf(0, keywordEnd + 3)
-      const translatedEnd = data.indexOf(0, languageEnd + 1)
-      const body = data.subarray(translatedEnd + 1)
-      texts.push(`${keyword}: ${(compressed ? inflateSync(body) : body).toString('utf8')}`)
-    }
-    offset += 12 + length
-  }
-  return texts
-}
-
 /**
  * Scans a file's bytes: text files line by line, PNG files through their text
  * chunks, and other binary files (any NUL byte in the first 8,000, as git
  * decides) not at all.
  */
 function scanBytes(label, bytes, rules) {
-  if (bytes.subarray(0, pngSignature.length).equals(pngSignature)) {
-    return scanText(`${label}（PNG 文本块）`, pngTextChunks(bytes).join('\n'), rules)
+  if (isPng(bytes)) {
+    const texts = readPngTexts(bytes).map((chunk) => `${chunk.keyword}: ${chunk.text}`)
+    return scanText(`${label}（PNG 文本块）`, texts.join('\n'), rules)
   }
   if (bytes.subarray(0, 8000).includes(0)) {
     return []
