@@ -98,3 +98,102 @@ export const QUOTATIONS = [
 
 /** The arXiv v1 PDF page on which each figure is printed. */
 export const FIGURE_PAGES = { framework: 2, models: 5, calibration: 6, fidelity: 7 } as const
+
+/** Dimension labels of Table 1 as printed (p. 5). */
+export const TABLE_1_DIMENSIONS = [
+  'Form (quotation/paraphrase)',
+  'Aspect (content/structure)',
+  'Source-marking (explicit/marked/unmarked)',
+  'Function (background/support/…)',
+  'Stance (positive/neutral/…)',
+] as const
+
+/** Dimension names of Table 3 as printed (p. 6). */
+export const TABLE_3_DIMENSIONS = ['Form', 'Aspect', 'Source-marking', 'Function', 'Stance'] as const
+
+/**
+ * Figures each question section and the limitations state, copied from the
+ * paper's text. Digits read the same in both languages, so the Chinese page is
+ * held to the same list. Single-digit values are left out because they would
+ * match by accident.
+ */
+export const SECTION_FIGURES = {
+  gap: ['260s'],
+  method: ['30', '319,465', '11', '39%', '15%', '81%'],
+  benchmark: [
+    '20',
+    '22,919',
+    '120',
+    '942,693',
+    '2,400',
+    '6,018',
+    '3,489',
+    '68%',
+    '2,533',
+    '72.6%',
+    '237',
+    '447',
+    '954',
+    '55.3%',
+    '99.4%',
+    '1,539',
+    '59.9%',
+    '617',
+    '1,214',
+    '1,930',
+    '23',
+    '0.94',
+    '0.71',
+    '0.77',
+    '0.32',
+    '0.27',
+    '98.9%',
+    '96.1%',
+    '37',
+    '43',
+    '345',
+  ],
+  similarity: ['2,533', '25.8%', '40.8%', '61.0%', '33.0%', '91.7%', '232', '470', '1,470', '2.5%', '1.1%', '0.3%'],
+  models: ['55.9%', '92.9%', '82%', '51', '4.9', '521', '37', '39', '0.85', '96.6%', '0.84', '96.1%', '88.5%', '65.1%', '323', '572', '237', '447'],
+  histories: [
+    '65,380',
+    '28.5',
+    '5,766',
+    '85',
+    '22',
+    '0.87',
+    '0.37',
+    '0.25',
+    '659',
+    '945',
+    '77.5%',
+    '77.6%',
+    '.12',
+    '.28',
+    '0.78',
+    '0.38',
+    '0.85',
+    '0.50',
+    '0.42',
+    '93%',
+    '283',
+    '69.3%',
+    '−0.15',
+    '−0.19',
+    '−0.12',
+    '−0.18',
+    '−0.08',
+    '0.001',
+    '172',
+    '117',
+  ],
+  limitations: ['55.3%', '96.1%'],
+} as const
+
+/** Figures each section writes in words, as the English page phrases them. */
+export const SECTION_WORD_FIGURES = {
+  method: ['ninefold', 'fivefold', 'two-thirds'],
+  benchmark: ['factor of two'],
+  models: ['twelve'],
+  histories: ['eighteen centuries', 'one pair in eight', 'a third'],
+} as const

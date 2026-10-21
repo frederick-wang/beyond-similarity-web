@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { TABLE_1, TABLE_2, TABLE_2_TOTAL, TABLE_3, normalize } from './paper-literals'
+import { TABLE_1, TABLE_1_DIMENSIONS, TABLE_2, TABLE_2_TOTAL, TABLE_3, TABLE_3_DIMENSIONS, normalize } from './paper-literals'
 
 async function bodyCells(page: import('@playwright/test').Page, table: string): Promise<string[][]> {
   return page.locator(`#table-${table} tbody tr`).evaluateAll((rows) =>
@@ -10,7 +10,7 @@ async function bodyCells(page: import('@playwright/test').Page, table: string): 
 test('reproduces every cell of Table 1', async ({ page }) => {
   await page.goto('/')
   const rows = await bodyCells(page, 'agreement')
-  expect(rows.map((row) => row.slice(1))).toEqual(TABLE_1.map((row) => [...row]))
+  expect(rows).toEqual(TABLE_1.map((row, index) => [TABLE_1_DIMENSIONS[index], ...row]))
 })
 
 test('reproduces every cell of Table 2, including the total row', async ({ page }) => {
@@ -23,7 +23,16 @@ test('reproduces every cell of Table 2, including the total row', async ({ page 
 test('reproduces every cell of Table 3', async ({ page }) => {
   await page.goto('/')
   const rows = await bodyCells(page, 'diachronic')
-  expect(rows.map((row) => row.slice(1))).toEqual(TABLE_3.map((row) => [...row]))
+  expect(rows).toEqual(TABLE_3.map((row, index) => [TABLE_3_DIMENSIONS[index], ...row]))
+})
+
+test('gives every table one header per column', async ({ page }) => {
+  await page.goto('/')
+  for (const table of ['agreement', 'models', 'diachronic']) {
+    const headers = await page.locator(`#table-${table} thead th`).count()
+    const cells = await page.locator(`#table-${table} tbody tr`).first().locator('th, td').count()
+    expect(headers, table).toBe(cells)
+  }
 })
 
 test('labels each table and links it to its PDF page', async ({ page }) => {
