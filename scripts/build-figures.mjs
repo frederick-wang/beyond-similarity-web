@@ -91,34 +91,39 @@ function writeFigure(renderedPath, outputName, origin) {
   console.log(`wrote src/assets/figures/${outputName}`)
 }
 
-const workDirectory = mkdtempSync(join(tmpdir(), 'beyond-similarity-figures-'))
-try {
-  const packagePath = join(workDirectory, 'source.tar.gz')
-  writeFileSync(packagePath, await download(sourcePackage))
-  execFileSync('tar', ['-xzf', packagePath, '-C', workDirectory])
-  const pdfPath = join(workDirectory, 'paper.pdf')
-  writeFileSync(pdfPath, await download(paperPdf))
+// The figures are made only when Node runs this file. CI imports it without
+// running it (see .github/workflows/ci.yml), which fails on any import in its
+// graph that plain Node cannot resolve.
+if (import.meta.main) {
+  const workDirectory = mkdtempSync(join(tmpdir(), 'beyond-similarity-figures-'))
+  try {
+    const packagePath = join(workDirectory, 'source.tar.gz')
+    writeFileSync(packagePath, await download(sourcePackage))
+    execFileSync('tar', ['-xzf', packagePath, '-C', workDirectory])
+    const pdfPath = join(workDirectory, 'paper.pdf')
+    writeFileSync(pdfPath, await download(paperPdf))
 
-  const framework = renderPage(pdfPath, join(workDirectory, 'framework'), {
-    page: frameworkCrop.page,
-    dpi: frameworkCrop.dpi,
-    crop: frameworkCrop,
-  })
-  writeFigure(framework, 'framework.png', {
-    source: paperPdf.url,
-    description: `Figure 1 of arXiv:2607.27595v1, cropped from PDF page ${frameworkCrop.page} at ${frameworkCrop.dpi} dpi by scripts/build-figures.mjs.`,
-  })
+    const framework = renderPage(pdfPath, join(workDirectory, 'framework'), {
+      page: frameworkCrop.page,
+      dpi: frameworkCrop.dpi,
+      crop: frameworkCrop,
+    })
+    writeFigure(framework, 'framework.png', {
+      source: paperPdf.url,
+      description: `Figure 1 of arXiv:2607.27595v1, cropped from PDF page ${frameworkCrop.page} at ${frameworkCrop.dpi} dpi by scripts/build-figures.mjs.`,
+    })
 
-  for (const figure of vectorFigures) {
-    const rendered = renderPage(join(workDirectory, figure.file), join(workDirectory, figure.output.replace('.png', '')), {
-      page: 1,
-      dpi: vectorDpi,
-    })
-    writeFigure(rendered, figure.output, {
-      source: sourcePackage.url,
-      description: `${figure.label} of arXiv:2607.27595v1, rendered from ${figure.file} in the source package at ${vectorDpi} dpi by scripts/build-figures.mjs.`,
-    })
+    for (const figure of vectorFigures) {
+      const rendered = renderPage(join(workDirectory, figure.file), join(workDirectory, figure.output.replace('.png', '')), {
+        page: 1,
+        dpi: vectorDpi,
+      })
+      writeFigure(rendered, figure.output, {
+        source: sourcePackage.url,
+        description: `${figure.label} of arXiv:2607.27595v1, rendered from ${figure.file} in the source package at ${vectorDpi} dpi by scripts/build-figures.mjs.`,
+      })
+    }
+  } finally {
+    rmSync(workDirectory, { recursive: true, force: true })
   }
-} finally {
-  rmSync(workDirectory, { recursive: true, force: true })
 }

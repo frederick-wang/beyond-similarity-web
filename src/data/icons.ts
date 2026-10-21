@@ -2,6 +2,7 @@
 // files and scripts/make-site-images.ts renders the PNGs, so both read the
 // paths and sizes from here. The SVG is the traced seal that
 // scripts/trace-seal.py writes.
+// Node runs this module unbundled for scripts/make-site-images.ts; a CI step imports the image scripts to check it.
 
 export const svgIcon = '/favicon.svg'
 

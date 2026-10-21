@@ -37,6 +37,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      # The image scripts, and the src modules they load, run under plain Node
+      # without the bundler. Importing the scripts without running them fails
+      # on any runtime import in their graphs that Node cannot resolve.
+      - run: node --input-type=module -e "await import('./scripts/make-site-images.ts'); await import('./scripts/build-figures.mjs')"
       - run: node scripts/check-public.mjs --ci
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test

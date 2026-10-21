@@ -230,15 +230,20 @@ async function writeIcons(): Promise<void> {
   )
 }
 
-const words = shareCardWords()
-const card = await renderShareCard(words)
-await writePng(
-  shareCard.output,
-  sharp(card.png).removeAlpha(),
-  provenanceTexts({
-    method: shareCard.method,
-    description: shareCard.description,
-    source: `scripts/make-site-images.ts, HTML rendered by ${card.renderer} from shareCardWords() in src/data/paper.ts, src/styles/global.css and src/assets/seal.png`,
-  }).concat([{ keyword: 'Card words', text: JSON.stringify(words) }]),
-)
-await writeIcons()
+// The images are made only when Node runs this file. CI imports it without
+// running it (see .github/workflows/ci.yml), which fails on any import in its
+// graph that plain Node cannot resolve.
+if (import.meta.main) {
+  const words = shareCardWords()
+  const card = await renderShareCard(words)
+  await writePng(
+    shareCard.output,
+    sharp(card.png).removeAlpha(),
+    provenanceTexts({
+      method: shareCard.method,
+      description: shareCard.description,
+      source: `scripts/make-site-images.ts, HTML rendered by ${card.renderer} from shareCardWords() in src/data/paper.ts, src/styles/global.css and src/assets/seal.png`,
+    }).concat([{ keyword: 'Card words', text: JSON.stringify(words) }]),
+  )
+  await writeIcons()
+}

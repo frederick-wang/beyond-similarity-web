@@ -1,3 +1,5 @@
+// Node runs this module unbundled for scripts/make-site-images.ts; a CI step imports the image scripts to check it.
+
 import type { PageLanguage, Quantity } from '../data/paper'
 
 // Per-language number typography. English ranges take an en dash and

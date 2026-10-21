@@ -3,6 +3,7 @@
 // the title block, the finding, "At a glance", the meta description, the
 // BibTeX entry, the citation tags, the structured data, the share card and the
 // sitemap.
+// Node runs this module unbundled for scripts/make-site-images.ts; a CI step imports the image scripts to check it.
 
 /** The language pages, as BCP 47 tags. */
 export const pageLanguages = ['en'] as const
