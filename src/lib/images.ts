@@ -1,13 +1,22 @@
 import type { ImageMetadata } from 'astro'
-import type { PngImageMetadata } from '../content/types'
+
+/** An imported image known to be a PNG. Only pngImage() makes one. */
+export interface PngImage {
+  readonly src: string
+  readonly width: number
+  readonly height: number
+  readonly format: 'png'
+}
 
 /**
- * Narrows an imported image to a PNG. The share card has to be one: the head
+ * The image, checked to be a PNG. The share card has to be one: the head
  * declares og:image:type from its format, and its words travel in a PNG text
  * chunk. Any other format stops the build.
  */
-export function assertPng(image: ImageMetadata): asserts image is PngImageMetadata {
-  if (image.format !== 'png') {
-    throw new Error(`${image.src} is ${image.format}, not PNG`)
+export function pngImage(image: ImageMetadata): PngImage {
+  const format = image.format
+  if (format !== 'png') {
+    throw new Error(`${image.src} is ${format}, not PNG`)
   }
+  return { src: image.src, width: image.width, height: image.height, format }
 }
