@@ -30,6 +30,8 @@ for (const { path, lang } of PAGES) {
       await context.grantPermissions(['clipboard-read', 'clipboard-write'])
       await page.goto(path)
       const button = page.getByRole('button', { name: text.copyButton })
+      // A missing button fails here at once; click() would wait out the test timeout.
+      await expect(button).toHaveCount(1)
       await button.click()
       await expect(page.locator('[data-copy-status]')).toHaveText(text.copied)
       const copied = await page.evaluate(() => navigator.clipboard.readText())
