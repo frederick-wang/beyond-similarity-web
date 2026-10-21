@@ -46,19 +46,19 @@ export interface LlmsCopy {
 
 export const llms: LlmsCopy = {
   about: (facts) =>
-    `This site is the paper page for the arXiv preprint arXiv:${facts.arxivId} by ${facts.authors} at ${facts.institutions}. It has an English page and a Chinese counterpart with the same sections, figures, tables and numbers. Every number on the pages follows arXiv ${facts.version}, and paragraphs, figures and tables link to the pages of the ${facts.version} PDF that support them.`,
+    `This site is the paper page for the arXiv preprint arXiv:${facts.arxivId} by ${facts.authors} at ${facts.institutions}. It has an English page and a Chinese counterpart with the same sections, figures, tables and numbers. Every number on the pages follows arXiv ${facts.version}, and figures, tables and most paragraphs link to the page of the ${facts.version} PDF that supports them.`,
   citeAs: 'Cite the paper with this BibTeX entry:',
   pages: {
     heading: 'Pages',
     english: { name: 'English page', notes: 'the findings, method and evidence of the paper, with its figures, tables and classical Chinese quotations' },
-    chinese: { name: 'Chinese page (中文页)', notes: 'the same sections, figures, tables and numbers in Chinese' },
+    chinese: { name: 'Chinese page (中文页)', notes: 'the page in Chinese' },
     englishMarkdown: { name: 'English page in Markdown', notes: 'the text of the English page as Markdown, with its tables and BibTeX entry' },
     chineseMarkdown: { name: 'Chinese page in Markdown', notes: 'the text of the Chinese page as Markdown, with its tables and BibTeX entry' },
   },
   paper: {
     heading: 'Paper',
     arxiv: { name: 'arXiv record', notes: 'the abstract page of the preprint, which lists its versions and publication details' },
-    pdf: (facts) => ({ name: `PDF of arXiv ${facts.version}`, notes: 'the version that every number on this site follows' }),
+    pdf: (facts) => ({ name: `PDF of arXiv ${facts.version}`, notes: 'the full text of the paper' }),
     doi: { name: 'DOI', notes: 'the DOI that arXiv assigned to the preprint, which resolves to the arXiv record' },
   },
   data: {
