@@ -3,6 +3,7 @@
 // and path; everything about the paper itself comes from the facts module, so
 // the English and Chinese pages describe the same paper.
 import type { PageCopy } from '../content/types'
+import { appleTouchIcon, pngIcons, svgIcon } from '../data/icons'
 import { absoluteUrl, authors, familyFirst, paper, type PageLanguage } from '../data/paper'
 import { serializeJsonLd, webPage } from '../lib/structured-data'
 
@@ -25,6 +26,10 @@ const share = copy.shareImage
 <title>{copy.title}</title>
 <meta name="description" content={copy.description} />
 <link rel="canonical" href={canonical} />
+
+<link rel="icon" href={svgIcon} type="image/svg+xml" />
+{pngIcons.map((icon) => <link rel="icon" href={icon.path} type="image/png" sizes={`${icon.size}x${icon.size}`} />)}
+<link rel="apple-touch-icon" href={appleTouchIcon.path} />
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={paper.shortTitle} />
