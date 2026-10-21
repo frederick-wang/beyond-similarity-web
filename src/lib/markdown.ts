@@ -54,6 +54,7 @@ export async function llmsFullText(): Promise<string> {
 export function llmsText(): string {
   const facts = {
     arxivId: paper.arxivId,
+    version: paper.arxivVersion,
     authors: authorList('en'),
     institutions: formatList(
       institutions().map((institution) => institution.nameEn),
@@ -75,7 +76,7 @@ export function llmsText(): string {
     ]),
     fileList(llms.paper.heading, [
       fileEntry(llms.paper.arxiv, links.arxivAbs),
-      fileEntry(llms.paper.pdf, links.pdf),
+      fileEntry(llms.paper.pdf(facts), links.pdf),
       fileEntry(llms.paper.doi, links.doi),
     ]),
     fileList(llms.data.heading, [fileEntry(llms.data.explorer(facts), links.explorer)]),

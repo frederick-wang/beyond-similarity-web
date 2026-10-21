@@ -13,6 +13,8 @@ export interface LlmsEntry {
 /** The facts the paragraph about the site states, from the facts module. */
 export interface LlmsFacts {
   readonly arxivId: string
+  /** The arXiv version that every number on the pages follows, as in "v1". */
+  readonly version: string
   /** The authors as an English list, as in "A, B, and C". */
   readonly authors: string
   /** The authors' institutions as an English list. */
@@ -31,7 +33,12 @@ export interface LlmsCopy {
     readonly englishMarkdown: LlmsEntry
     readonly chineseMarkdown: LlmsEntry
   }
-  readonly paper: { readonly heading: string; readonly arxiv: LlmsEntry; readonly pdf: LlmsEntry; readonly doi: LlmsEntry }
+  readonly paper: {
+    readonly heading: string
+    readonly arxiv: LlmsEntry
+    readonly pdf: (facts: LlmsFacts) => LlmsEntry
+    readonly doi: LlmsEntry
+  }
   readonly data: { readonly heading: string; readonly explorer: (facts: LlmsFacts) => LlmsEntry }
   /** The proposal names the list of links a reader short of context may skip "Optional". */
   readonly optional: { readonly heading: 'Optional'; readonly full: LlmsEntry }
@@ -39,7 +46,7 @@ export interface LlmsCopy {
 
 export const llms: LlmsCopy = {
   about: (facts) =>
-    `This site is the paper page for the arXiv preprint arXiv:${facts.arxivId} by ${facts.authors} at ${facts.institutions}. It has an English page and a Chinese counterpart with the same sections, figures, tables and numbers. Every number on the pages follows arXiv v1, and paragraphs, figures and tables link to the pages of the v1 PDF that support them.`,
+    `This site is the paper page for the arXiv preprint arXiv:${facts.arxivId} by ${facts.authors} at ${facts.institutions}. It has an English page and a Chinese counterpart with the same sections, figures, tables and numbers. Every number on the pages follows arXiv ${facts.version}, and paragraphs, figures and tables link to the pages of the ${facts.version} PDF that support them.`,
   citeAs: 'Cite the paper with this BibTeX entry:',
   pages: {
     heading: 'Pages',
@@ -51,7 +58,7 @@ export const llms: LlmsCopy = {
   paper: {
     heading: 'Paper',
     arxiv: { name: 'arXiv record', notes: 'the abstract page of the preprint, which lists its versions and publication details' },
-    pdf: { name: 'PDF of arXiv v1', notes: 'the version that every number on this site follows' },
+    pdf: (facts) => ({ name: `PDF of arXiv ${facts.version}`, notes: 'the version that every number on this site follows' }),
     doi: { name: 'DOI', notes: 'the DOI that arXiv assigned to the preprint, which resolves to the arXiv record' },
   },
   data: {
