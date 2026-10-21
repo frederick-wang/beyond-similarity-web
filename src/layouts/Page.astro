@@ -7,16 +7,15 @@ import type { PageCopy } from '../content/types'
 
 interface Props {
   readonly copy: PageCopy
-  readonly path: string
 }
 
-const { copy, path } = Astro.props
+const { copy } = Astro.props
 ---
 
 <!doctype html>
 <html lang={copy.lang}>
   <head>
-    <Head copy={copy} path={path} />
+    <Head copy={copy} />
   </head>
   <body>
     <a class="skip-link" href="#main">{copy.skipLink}</a>

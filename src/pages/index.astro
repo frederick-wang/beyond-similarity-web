@@ -5,11 +5,10 @@ import PageNav from '../components/PageNav.astro'
 import Sections from '../components/Sections.astro'
 import TitleBlock from '../components/TitleBlock.astro'
 import { en } from '../content/en'
-import { pages } from '../data/paper'
 import Page from '../layouts/Page.astro'
 ---
 
-<Page copy={en} path={pages.en.path}>
+<Page copy={en}>
   <div class="front page-width">
     <div class="lead">
       <TitleBlock copy={en} />

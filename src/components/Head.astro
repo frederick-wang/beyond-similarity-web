@@ -1,20 +1,20 @@
 ---
-// The one <head> of every language page. A page supplies its language copy
-// and path; everything about the paper itself comes from the facts module, so
-// the English and Chinese pages describe the same paper.
+// The one <head> of every language page. A page supplies only its language
+// copy; its address comes from the page facts for that language, and
+// everything about the paper itself from the facts module, so the English and
+// Chinese pages describe the same paper.
 import type { PageCopy } from '../content/types'
 import { appleTouchIcon, pngIcons, svgIcon } from '../data/icons'
-import { absoluteUrl, authors, familyFirst, paper } from '../data/paper'
+import { absoluteUrl, authors, familyFirst, pages, paper } from '../data/paper'
 import { languageAlternates } from '../lib/alternates'
 import { serializeJsonLd, webPage } from '../lib/structured-data'
 
 interface Props {
   readonly copy: PageCopy
-  readonly path: string
 }
 
-const { copy, path } = Astro.props
-const canonical = absoluteUrl(path)
+const { copy } = Astro.props
+const canonical = absoluteUrl(pages[copy.lang].path)
 const share = copy.shareImage
 ---
 
