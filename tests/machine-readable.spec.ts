@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
+import { lintFor } from 'autocorrect-node'
 import { marked } from 'marked'
 import { attributeValues, isRecord, jsonLd, only } from './head'
 import { ABSTRACT, ARXIV_ABS, EXPLORER, MARKDOWN_VERSIONS, PAGE_TEXT, SITE, TITLE, normalize } from './paper-literals'
@@ -264,6 +265,16 @@ test('/index.md gives the arXiv abstract word for word', async ({ request }) => 
   const markdown = await fetchMarkdown(request, '/index.md')
   const abstract = groupAfter(lineGroups(markdown), `## ${PAGE_TEXT.en.abstractHeading}`)
   expect(abstract.replace(/\*([^*]+)\*/g, '$1')).toBe(ABSTRACT)
+})
+
+test('/zh/index.md passes AutoCorrect as Markdown', async ({ request }) => {
+  // The CLI skips git-ignored files such as dist/ and still reports no issues,
+  // so the served file is linted here, under a .md name so that AutoCorrect
+  // reads it as Markdown. The control sample shows that the lint runs.
+  expect(lintFor('# 标题\n\n中文句子,半角逗号。\n', 'zh/index.md').lines).toHaveLength(1)
+  const result = lintFor(await fetchMarkdown(request, '/zh/index.md'), 'zh/index.md')
+  expect(result.error).toBe('')
+  expect(result.lines.map((line) => `${line.l}:${line.c} ${line.old} → ${line.new}`)).toEqual([])
 })
 
 test('/llms-full.txt is the English Markdown, a thematic break, then the Chinese Markdown', async ({ request }) => {
