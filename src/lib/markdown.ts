@@ -27,16 +27,16 @@ import {
   markdownPath,
   pages,
   paper,
-  pdfPageUrl,
   type PdfPage,
 } from '../data/paper'
 import { tablePages, type TableId } from '../data/tables'
+import { authorList } from './authors'
 import { fullSizeFigure } from './figures'
 import { copyrightLine } from './footer'
 import { formatIdentifier, formatList, formatQuantity, punctuationFor } from './format'
 import { markdownLiteral, markdownText } from './inline'
 import { numberQuestions } from './sections'
-import { sourceLink } from './sources'
+import { pageLink, sourceLink } from './sources'
 import { tableModel, type Cell } from './table-cells'
 
 /** The Markdown version of the page in the copy's language. */
@@ -53,10 +53,7 @@ export async function llmsFullText(): Promise<string> {
 export function llmsText(): string {
   const facts = {
     arxivId: paper.arxivId,
-    authors: formatList(
-      authors.map((author) => authorName(author, 'en')),
-      'en',
-    ),
+    authors: authorList('en'),
     institutions: formatList(
       institutions().map((institution) => institution.nameEn),
       'en',
@@ -200,8 +197,8 @@ function tableBlock(copy: PageCopy, table: TableId): string {
 /** A figure's or a table's caption as the page sets it: the label, the caption, and a link to its page of the PDF. */
 function caption(copy: PageCopy, label: string, text: InlineMarkdown, page: PdfPage): string {
   const marks = punctuationFor(copy.lang)
-  const pageLink = markdownLink(copy.sources.pages([page]), pdfPageUrl(page))
-  return `**${markdownLiteral(label, 'A caption label')}${marks.labelEnd}** ${markdownText(text, copy.lang)}${marks.join}${pageLink}`
+  const pdf = pageLink(copy, page)
+  return `**${markdownLiteral(label, 'A caption label')}${marks.labelEnd}** ${markdownText(text, copy.lang)}${marks.join}${markdownLink(pdf.label, pdf.href)}`
 }
 
 /** A table cell set as its kind asks, with | escaped so that it cannot end the cell. */
