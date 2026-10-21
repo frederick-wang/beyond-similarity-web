@@ -193,11 +193,12 @@ async function readMarkdown(page: Page, markdown: string, canonical: string): Pr
         blocks.push({ kind: 'code', text: required(element.textContent, 'code').trimEnd(), links: [] })
       } else {
         const links = linksOf(element)
+        const [firstLink, ...otherLinks] = links
         const image = element.querySelector(':scope > img')
         if (image !== null && element.childElementCount === 1 && textOf(element) === '') {
           const alternative = normalize(required(image.getAttribute('alt'), 'image text alternative'))
           blocks.push({ kind: 'image', text: alternative, links: [['', required(image.getAttribute('src'), 'image address')]] })
-        } else if (links.length === 1 && links[0]?.[1] === canonical) {
+        } else if (firstLink !== undefined && otherLinks.length === 0 && firstLink[1] === canonical) {
           applied.canonicalSentence += 1
         } else {
           blocks.push({ kind: 'paragraph', text: textOf(element), links })
@@ -272,13 +273,26 @@ for (const { page: path, markdown } of MARKDOWN_VERSIONS) {
 }
 
 test.describe('/llms.txt', () => {
-  /** The file's list entries outside fenced code: `- [name](url): notes`. */
+  /**
+   * The file's list entries outside fenced code, each with the address of its
+   * link when it has the form `- [name](url): notes`, and null when it does not.
+   */
   function entries(text: string): { readonly line: string; readonly url: string | null }[] {
     return lineGroups(text)
-      .filter((block) => !block.startsWith('```'))
-      .flatMap((block) => block.split('\n'))
+      .filter((group) => !group.startsWith('```'))
+      .flatMap((group) => group.split('\n'))
       .filter((line) => line.startsWith('- '))
-      .map((line) => ({ line, url: /^- \[[^\]]+\]\(([^)\s]+)\): \S/.exec(line)?.[1] ?? null }))
+      .map((line) => {
+        const entry = /^- \[[^\]]+\]\(([^)\s]+)\): \S/.exec(line)
+        if (entry === null) {
+          return { line, url: null }
+        }
+        const url = entry[1]
+        if (url === undefined) {
+          throw new Error(`The entry "${line}" matched without an address`)
+        }
+        return { line, url }
+      })
   }
 
   test('opens with the English title and a blockquote summary', async ({ request }) => {
@@ -312,7 +326,7 @@ test.describe('/llms.txt', () => {
     // The page links to arXiv, the PDF and the Explorer from its title block.
     // It gives the DOI as the paper's identifier in its structured data rather
     // than as a link, so the identifier counts as the page's DOI link.
-    const titleLinks = await page.locator('[data-links] a[href^="https://"]').evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href') ?? ''))
+    const titleLinks = await attributeValues(page, '[data-links] a[href^="https://"]', 'href')
     const article = (await jsonLd(page))['mainEntity']
     if (!isRecord(article) || typeof article['@id'] !== 'string') {
       throw new Error('The JSON-LD names no paper identifier')
