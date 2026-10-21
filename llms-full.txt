@@ -2,7 +2,7 @@
 
 This is the Markdown version of <https://beyond-similarity.zhaoji.ac.cn/>.
 
-[Zhaoji Wang](https://www.zhaoji.ac.cn/)<sup>1,2</sup>, Wanyu Si<sup>1,2</sup>, [Jun Wang](https://pkudh.org/member/wangjun2025.html)<sup>1,2</sup><sup>\*</sup>
+[Zhaoji Wang](https://www.zhaoji.ac.cn/)<sup>1,2</sup>, [Wanyu Si](https://pkudh.org/member/wanyu.html)<sup>1,2</sup>, [Jun Wang](https://pkudh.org/member/wangjun2025.html)<sup>1,2</sup><sup>\*</sup>
 
 - <sup>1</sup> Department of Information Management, Peking University, Beijing, China
 - <sup>2</sup> Research Center for Digital Humanities, Peking University, Beijing, China
@@ -30,9 +30,9 @@ Computational approaches to intertextuality have advanced from string matching t
 
 The kind of reuse. A score records how much two passages overlap, while historians ask whether a passage is cited faithfully, borrowed for its authority, or worn down to a formula.
 
-In the *Book of Han* (first century CE), the abdication charge from the *Analects* is transcribed almost verbatim: “咨爾舜，天之歷數在爾躬” (the heaven-ordained succession rests upon your person). A few chapters later, in the biography of the usurper Wang Mang, the same line reappears as “歷數在于予躬”, the second-person pronoun quietly rewritten into the first. By the 260s, in the abdication documents of the *Records of the Three Kingdoms*, only a formulaic skeleton survives, “天祿永終，歷數在晉”, detached from the *Analects* and fused into the standard script of dynastic transfer. A text-reuse detector can find that all three resemble the *Analects*. It cannot say that the first is a faithful citation, the second an appropriation of authority, the third a dead formula. Source: [Introduction · PDF p. 1](https://arxiv.org/pdf/2607.27595v1#page=1)
+In the *Book of Han* (first century CE), the abdication charge from the *Analects* is transcribed almost verbatim: “咨爾舜，天之歷數在爾躬” (the heaven-ordained succession rests upon your person). A few chapters later, in the biography of the usurper Wang Mang, the same line reappears as “歷數在于予躬”, the second-person pronoun quietly rewritten into the first. By the 260s, in the abdication documents of the *Records of the Three Kingdoms*, only a formulaic skeleton survives, “天祿永終，歷數在晉”, detached from the *Analects* and fused into the standard script of dynastic transfer. A text-reuse detector can find that all three resemble the *Analects*. It cannot say that the first is a faithful citation, the second an appropriation of authority, the third a dead formula. Source: [Introduction · PDF p. 1](https://arxiv.org/pdf/2607.27595v1#page=1)
 
-Tracing such reuse by hand is the labor of concordance scholarship. Gu Jiegang dated the strata of the legendary past by setting text against text, and his thesis that each age extended the history it received launched the Doubting Antiquity movement. Comparison of this kind is bounded by sustained expert attention, and Gu himself planned to proceed one book at a time. The standard computational substitutes do not remove that limit: they route every comparison through one similarity value, which keeps the degree of reuse and discards its kind. We therefore treat intertextuality as span-grounded relation extraction: a model locates each reused fragment on both sides as an exact character span and labels the resulting pair by the kind of reuse. Source: [Introduction · PDF p. 1](https://arxiv.org/pdf/2607.27595v1#page=1)
+Tracing such reuse by hand is the labor of concordance scholarship. Gu Jiegang dated the strata of the legendary past by setting text against text, and his thesis that each age extended the history it received launched the Doubting Antiquity movement. Comparison of this kind is bounded by sustained expert attention, and Gu himself planned to proceed one book at a time. The standard computational substitutes do not remove that limit: they route every comparison through one similarity value, which keeps the degree of reuse and discards its kind. We therefore treat intertextuality as span-grounded relation extraction: a model locates each reused fragment on both sides as an exact character span and labels the resulting pair by the kind of reuse. Source: [Introduction · PDF p. 1](https://arxiv.org/pdf/2607.27595v1#page=1)
 
 ## 2. How does grounded agentic extraction work?
 
@@ -40,31 +40,31 @@ An LLM agent reads a whole book of the *Analects* against a whole scroll of a hi
 
 ![Diagram in four panels. (a) An LLM agent reads an Analects book and a history scroll in full, locates wording with a find_position tool that returns exact start and end offsets, and proposes pairs to an add_pair tool that checks the format of labels and spans, re-slices the text at the stated offsets, and refuses duplicates. List and remove tools let it revise committed pairs. (b) A committed pair from Analects Book 13 and Book of Han scroll 6 whose fragments share no characters, labeled paraphrase, content, marked, application, positive, with medium evidence and confidence 0.72. (c) Three comic panels: a run ends with some number of committed pairs, a stop guard blocks every exit except submit, and submit routes the task to match or no match, with any other end recorded as failed. (d) The pipeline: 2,400 chunk-pair tasks times 12 LLMs, 6,018 proposed and 3,489 pooled candidate pairs, two experts and an arbiter yielding 2,533 expert-adjudicated pairs, extractor selection by precision, cost and calibration, and a run over 24 histories with 65,380 tasks and 5,766 pairs.](https://beyond-similarity.zhaoji.ac.cn/_astro/framework.B4wHfvui_Z2i9IMz.webp)
 
-**Figure 1.** Framework overview. (a) The extraction agent for one chunk pair and its task tools: `find_position` grounds candidate wordings in exact offsets, `list` and `remove` support revision, and `add_pair` commits a pair only past the three checks shown. (b) The committed pair shown is real and shares no characters across its fragments: an edict of Emperor Wu invoking *Analects* 13 by the sage’s name alone. (c) A task can end only through `submit`, which checks the declared status against the committed set; any other end is recorded as failed. (d) The validate-then-scale pipeline. [PDF p. 2](https://arxiv.org/pdf/2607.27595v1#page=2)
+**Figure 1.** Framework overview. (a) The extraction agent for one chunk pair and its task tools: `find_position` grounds candidate wordings in exact offsets, `list` and `remove` support revision, and `add_pair` commits a pair only past the three checks shown. (b) The committed pair shown is real and shares no characters across its fragments: an edict of Emperor Wu invoking *Analects* 13 by the sage’s name alone. (c) A task can end only through `submit`, which checks the declared status against the committed set; any other end is recorded as failed. (d) The validate-then-scale pipeline. [PDF p. 2](https://arxiv.org/pdf/2607.27595v1#page=2)
 
-Each task takes a chunk pair, one book of the *Analects* and one scroll of a history, and asks for every intertextual pair in it: a fragment on each side given as a character span [start, end), labeled on five dimensions. Form separates direct quotation from paraphrase. Aspect separates reuse of content from reuse of structure. Source-marking records whether the source is named explicitly, marked, or left unmarked. Function records what the reuse does in its new setting (background, support, application, critique), and stance the citing text’s attitude (positive, neutral, negative, complex). Reuse means traceable textual dependence. Shared topic, agreement, common vocabulary and diffuse influence do not count. A prediction is correct only if both fragments occur verbatim at the stated offsets. Source: [Task and Agentic Extraction Protocol · PDF p. 3](https://arxiv.org/pdf/2607.27595v1#page=3)
+Each task takes a chunk pair, one book of the *Analects* and one scroll of a history, and asks for every intertextual pair in it: a fragment on each side given as a character span [start, end), labeled on five dimensions. Form separates direct quotation from paraphrase. Aspect separates reuse of content from reuse of structure. Source-marking records whether the source is named explicitly, marked, or left unmarked. Function records what the reuse does in its new setting (background, support, application, critique), and stance the citing text’s attitude (positive, neutral, negative, complex). Reuse means traceable textual dependence. Shared topic, agreement, common vocabulary and diffuse influence do not count. A prediction is correct only if both fragments occur verbatim at the stated offsets. Source: [Task and Agentic Extraction Protocol · PDF p. 3](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-Both chunks enter the model’s context whole. We do not cut them into sentences and pair those by n-gram or embedding similarity: an index surfaces only what it already scores as close, and the marking and rhetorical function of a citation are legible only in the discourse around it. Source: [Task and Agentic Extraction Protocol · PDF p. 3](https://arxiv.org/pdf/2607.27595v1#page=3)
+Both chunks enter the model’s context whole. We do not cut them into sentences and pair those by n-gram or embedding similarity: an index surfaces only what it already scores as close, and the marking and rhetorical function of a citation are legible only in the discourse around it. Source: [Task and Agentic Extraction Protocol · PDF p. 3](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-Asked for the reused spans directly, an LLM produces fluent pairs that are sometimes ungrounded or fabricated. The agent therefore has to locate every fragment with a positioning tool, an exact substring search that returns offsets with 30 characters of context on each side, and when it commits a pair, the protocol re-slices both chunks at the stated offsets and rejects the pair unless each fragment reproduces character for character. In the twelve-model run, agents made 319,465 positioning calls, about 11 per task attempt, and the checks rejected 39% of attempts to commit a pair, about a quarter of all attempts at the re-slice and 15% at the check of labels and spans. Rejection tracks grounding rather than quality: the least precise model drew two-thirds of the re-slice rejections, yet 81% of task attempts that hit any rejection still ended with an accepted pair. Removing the positioning tool multiplies the rejection rate ninefold and output tokens fivefold. Source: [Task and Agentic Extraction Protocol · PDF p. 3](https://arxiv.org/pdf/2607.27595v1#page=3)
+Asked for the reused spans directly, an LLM produces fluent pairs that are sometimes ungrounded or fabricated. The agent therefore has to locate every fragment with a positioning tool, an exact substring search that returns offsets with 30 characters of context on each side, and when it commits a pair, the protocol re-slices both chunks at the stated offsets and rejects the pair unless each fragment reproduces character for character. In the twelve-model run, agents made 319,465 positioning calls, about 11 per task attempt, and the checks rejected 39% of attempts to commit a pair, about a quarter of all attempts at the re-slice and 15% at the check of labels and spans. Rejection tracks grounding rather than quality: the least precise model drew two-thirds of the re-slice rejections, yet 81% of task attempts that hit any rejection still ended with an accepted pair. Removing the positioning tool multiplies the rejection rate ninefold and output tokens fivefold. Source: [Task and Agentic Extraction Protocol · PDF p. 3](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-Conclusions read out of a model’s free text cannot be audited at corpus scale. The final prose of a task is never parsed: its output is exactly the set of pairs committed through the tool, which checks the labels and spans of each pair and refuses a second copy of a pair already committed, identity being both fragment texts with their offsets. Each task runs in isolation, with a fresh temporary home and no inherited configuration, and is keyed by a hash of every input that determines its result, including the provider and endpoint serving the model, so the same model name served by two providers cannot silently reuse cached results. Source: [Task and Agentic Extraction Protocol · PDF p. 3](https://arxiv.org/pdf/2607.27595v1#page=3)
+Conclusions read out of a model’s free text cannot be audited at corpus scale. The final prose of a task is never parsed: its output is exactly the set of pairs committed through the tool, which checks the labels and spans of each pair and refuses a second copy of a pair already committed, identity being both fragment texts with their offsets. Each task runs in isolation, with a fresh temporary home and no inherited configuration, and is keyed by a hash of every input that determines its result, including the provider and endpoint serving the model, so the same model name served by two providers cannot silently reuse cached results. Source: [Task and Agentic Extraction Protocol · PDF p. 3](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-Aggregate counts are trustworthy only if every task ends in a defined outcome. A stop guard keeps the agent from ending before it calls `submit`, and `submit` checks the declared status against the committed set in both directions: a match needs at least one committed pair, and a declaration of no match needs none. A task that ends any other way, through an API error, exhausted retries, a timeout or a run that stops before submitting, is recorded as failed and never counted as an empty result. Explicit abstention is a first-class outcome because most chunk pairs share no reuse. Source: [Task and Agentic Extraction Protocol · PDF pp. 3–4](https://arxiv.org/pdf/2607.27595v1#page=3)
+Aggregate counts are trustworthy only if every task ends in a defined outcome. A stop guard keeps the agent from ending before it calls `submit`, and `submit` checks the declared status against the committed set in both directions: a match needs at least one committed pair, and a declaration of no match needs none. A task that ends any other way, through an API error, exhausted retries, a timeout or a run that stops before submitting, is recorded as failed and never counted as an empty result. Explicit abstention is a first-class outcome because most chunk pairs share no reuse. Source: [Task and Agentic Extraction Protocol · PDF pp. 3–4](https://arxiv.org/pdf/2607.27595v1#page=3)
 
 ## 3. How reliable is the expert-adjudicated benchmark?
 
 Reliable enough to compare models and to support claims about form and source-marking. Rescoring against the stricter of the two experts barely changes how the models rank, and the experts agree on those two labels. Function and stance, which require inferring intent, are contested, so findings on them are exploratory.
 
-The benchmark compares the *Analects* (20 books, 22,919 characters) with the *Book of Han* (120 scrolls, 942,693 characters) exhaustively, 2,400 chunk-pair tasks on a public punctuated edition (Shidian Guji). Twelve LLMs each ran all 2,400 tasks and proposed 6,018 pairs, 3,489 of them distinct once the same fragments at the same offsets are merged. Pooling all twelve keeps the benchmark from favoring any one model’s proposals, and the models proposed largely different candidates: 68% came from a single model. Two experts independently judged every candidate, first its validity and then, for valid pairs, the five labels, and a third expert adjudicated every disagreement. The result is 2,533 intertextual pairs, 72.6% of the pool. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
+The benchmark compares the *Analects* (20 books, 22,919 characters) with the *Book of Han* (120 scrolls, 942,693 characters) exhaustively, 2,400 chunk-pair tasks on a public punctuated edition (Shidian Guji). Twelve LLMs each ran all 2,400 tasks and proposed 6,018 pairs, 3,489 of them distinct once the same fragments at the same offsets are merged. Pooling all twelve keeps the benchmark from favoring any one model’s proposals, and the models proposed largely different candidates: 68% came from a single model. Two experts independently judged every candidate, first its validity and then, for valid pairs, the five labels, and a third expert adjudicated every disagreement. The result is 2,533 intertextual pairs, 72.6% of the pool. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-Manual enumeration offers no substitute reference. Two philological surveys counted *Analects* quotations in the *Book of Han* and arrived at 237 and 447, nearly a factor of two apart, and both authors expected to have missed cases. The experts confirm 954 marked pairs on this source pair alone, and each of the twelve models on its own commits between 323 and 572 adjudicated-valid pairs. Source: [Expert-Adjudicated Evaluation · PDF pp. 4–5](https://arxiv.org/pdf/2607.27595v1#page=4)
+Manual enumeration offers no substitute reference. Two philological surveys counted *Analects* quotations in the *Book of Han* and arrived at 237 and 447, nearly a factor of two apart, and both authors expected to have missed cases. The experts confirm 954 marked pairs on this source pair alone, and each of the twelve models on its own commits between 323 and 572 adjudicated-valid pairs. Source: [Expert-Adjudicated Evaluation · PDF pp. 4–5](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-On validity the two experts differ in strictness, not in criterion. One accepted 55.3% of candidates and the other 99.4%, and their decisions nest: no candidate accepted by the stricter expert was rejected by the more lenient one. Both accepted 1,930 candidates. The arbiter resolved the 1,539 between the two thresholds item by item, siding with the stricter expert on 59.9% and accepting 617, and overturned 14 of the 1,214 doubly accepted candidates that label conflicts sent to adjudication, so 1,930 − 14 + 617 = 2,533. Rescored against the stricter expert alone, every model’s precision drops by 9 to 23 points, while the ranking barely moves (Spearman ρ = 0.94, no model moving more than two places) and the choice of deployment model stays the same. The precision figures on this page are measured against the adjudicated threshold. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
+On validity the two experts differ in strictness, not in criterion. One accepted 55.3% of candidates and the other 99.4%, and their decisions nest: no candidate accepted by the stricter expert was rejected by the more lenient one. Both accepted 1,930 candidates. The arbiter resolved the 1,539 between the two thresholds item by item, siding with the stricter expert on 59.9% and accepting 617, and overturned 14 of the 1,214 doubly accepted candidates that label conflicts sent to adjudication, so 1,930 − 14 + 617 = 2,533. Rescored against the stricter expert alone, every model’s precision drops by 9 to 23 points, while the ranking barely moves (Spearman ρ = 0.94, no model moving more than two places) and the choice of deployment model stays the same. The precision figures on this page are measured against the adjudicated threshold. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-Agreement on the five labels, computed over the 1,930 candidates both experts accepted and before adjudication, follows a reliability gradient (Table 1). Form and source-marking, whose evidence sits on the surface of the text (is the wording identical, is the source named), are settled by inspection, while function and stance, which require reconstructing intent and attitude, leave room for principled disagreement between competent experts. Aspect agrees 98.9% of the time, but 97% of pairs reuse content, so chance alone predicts 96.1%: the label is reliable and almost constant. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
+Agreement on the five labels, computed over the 1,930 candidates both experts accepted and before adjudication, follows a reliability gradient (Table 1). Form and source-marking, whose evidence sits on the surface of the text (is the wording identical, is the source named), are settled by inspection, while function and stance, which require reconstructing intent and attitude, leave room for principled disagreement between competent experts. Aspect agrees 98.9% of the time, but 97% of pairs reuse content, so chance alone predicts 96.1%: the label is reliable and almost constant. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-**Table 1.** Agreement between the two experts on the five labels, over the 1,930 candidates both accepted, before adjudication. Chance is the agreement expected from each expert’s label frequencies, which Cohen’s κ corrects for. [PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
+**Table 1.** Agreement between the two experts on the five labels, over the 1,930 candidates both accepted, before adjudication. Chance is the agreement expected from each expert’s label frequencies, which Cohen’s κ corrects for. [PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 | Dimension | Observed agreement | Chance | Cohen’s κ |
 | --- | --- | --- | --- |
@@ -74,23 +74,23 @@ Agreement on the five labels, computed over the 1,930 candidates both experts ac
 | Function (background/support/…) | 58.9% | 39.5% | 0.32 |
 | Stance (positive/neutral/…) | 77.0% | 68.4% | 0.27 |
 
-The models reproduce the gradient where it carries information. Against each model’s majority-class baseline, label accuracy rises by 18 to 37 points on form and 25 to 43 on source-marking, by 12 to 25 on function, and by at most 2 on aspect and 9 on stance. The disagreement belongs to the task, as one contested item shows. Both experts accepted the pair linking the *Analects* phrase “敏而好學” (diligent and fond of learning) to a *Book of Han* scene in which a courtier defends the crown prince, and both called it an unmarked verbatim quotation with positive stance. They split only on why: canonical support for the courtier’s claim, or application of the canon’s standard of talent to a living person (the arbiter ruled application). Nothing on the textual surface settles this, and 345 items in the pool share the shape: pair accepted, form and source-marking agreed, function split between support and application. Source: [Expert-Adjudicated Evaluation · PDF pp. 4–5](https://arxiv.org/pdf/2607.27595v1#page=4)
+The models reproduce the gradient where it carries information. Against each model’s majority-class baseline, label accuracy rises by 18 to 37 points on form and 25 to 43 on source-marking, by 12 to 25 on function, and by at most 2 on aspect and 9 on stance. The disagreement belongs to the task, as one contested item shows. Both experts accepted the pair linking the *Analects* phrase “敏而好學” (diligent and fond of learning) to a *Book of Han* scene in which a courtier defends the crown prince, and both called it an unmarked verbatim quotation with positive stance. They split only on why: canonical support for the courtier’s claim, or application of the canon’s standard of talent to a living person (the arbiter ruled application). Nothing on the textual surface settles this, and 345 items in the pool share the shape: pair accepted, form and source-marking agreed, function split between support and application. Source: [Expert-Adjudicated Evaluation · PDF pp. 4–5](https://arxiv.org/pdf/2607.27595v1#page=4)
 
 ## 4. How much reuse does similarity search miss?
 
 About a quarter of the expert-adjudicated pairs share no three-character sequence, and for those pairs even an oracle dense retriever, queried with the expert-identified fragment itself, ranks an overlapping source sentence in its top ten only 61.0% of the time.
 
-Of the 2,533 expert-adjudicated pairs, 25.8% share no character trigram between their fragments and 40.8% share no 4-gram. An edict of Emperor Wu justifies shifting policy priorities by how Confucius answered each duke differently, “孔子對定公以徠逺”, naming the sage yet sharing not one character with the teaching it invokes, “近者說，遠者來” (*Analects* 13). Ban Gu’s rhapsody in the autobiographical postface compresses the ford encounter of *Analects* 18 into “溺招路以從己兮”, recluse and disciple each reduced to a single name-character, without marking the source. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
+Of the 2,533 expert-adjudicated pairs, 25.8% share no character trigram between their fragments and 40.8% share no 4-gram. An edict of Emperor Wu justifies shifting policy priorities by how Confucius answered each duke differently, “孔子對定公以徠逺”, naming the sage yet sharing not one character with the teaching it invokes, “近者說，遠者來” (*Analects* 13). Ban Gu’s rhapsody in the autobiographical postface compresses the ford encounter of *Analects* 18 into “溺招路以從己兮”, recluse and disciple each reduced to a single name-character, without marking the source. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-We gave dense retrieval an advantage no deployed pipeline has: BGE-M3 queried with the history-side fragment the experts identified. It ranks an overlapping source sentence in its top ten for 61.0% of the trigram-free pairs (top one: 33.0%), against 91.7% for verbatim-anchored pairs, and puts the sources of the edict and the rhapsody at 232nd and 470th among 1,470 *Analects* sentence units. The median rank in the trigram-free stratum is 4, against 1 for verbatim-anchored pairs. These hit rates cap the recall of any retrieve-then-judge pipeline exactly where interpretation begins, and retrieval output carries neither spans nor labels. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
+We gave dense retrieval an advantage no deployed pipeline has: `BGE-M3` queried with the history-side fragment the experts identified. It ranks an overlapping source sentence in its top ten for 61.0% of the trigram-free pairs (top one: 33.0%), against 91.7% for verbatim-anchored pairs, and puts the sources of the edict and the rhapsody at 232nd and 470th among 1,470 *Analects* sentence units. The median rank in the trigram-free stratum is 4, against 1 for verbatim-anchored pairs. These hit rates cap the recall of any retrieve-then-judge pipeline exactly where interpretation begins, and retrieval output carries neither spans nor labels. Source: [Expert-Adjudicated Evaluation · PDF p. 4](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-The same limit appears at the level of whole chunk pairs: if every reuse the experts confirmed is to be kept, dense and sparse embedding prefilters can discard only 2.5% and 1.1% of chunk pairs, 0.3% combined, because literal and distributional similarity systematically miss paraphrase. Source: [Introduction · PDF p. 1](https://arxiv.org/pdf/2607.27595v1#page=1)
+The same limit appears at the level of whole chunk pairs: if every reuse the experts confirmed is to be kept, dense and sparse embedding prefilters can discard only 2.5% and 1.1% of chunk pairs, 0.3% combined, because literal and distributional similarity systematically miss paraphrase. Source: [Introduction · PDF p. 1](https://arxiv.org/pdf/2607.27595v1#page=1)
 
 ## 5. How do twelve LLMs compare on precision, cost, and calibration?
 
 Precision against the benchmark ranges from 55.9% to 92.9%, and eight of the twelve models reach at least 82%. Quality and cost vary independently: the most precise model, `doubao-2.1-turbo`, costs 51 times as much per valid pair as `deepseek-v4-flash`, which is 4.9 points less precise and gives the most precision per dollar, so we chose it for the corpus run.
 
-**Table 2.** Twelve models on the 2,400 evaluation tasks: candidates, valid pairs, precision (the share of committed pairs judged valid in expert adjudication), total cost, cost per valid pair, and median latency per task. [PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
+**Table 2.** Twelve models on the 2,400 evaluation tasks: candidates, valid pairs, precision (the share of committed pairs judged valid in expert adjudication), total cost, cost per valid pair, and median latency per task. [PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
 
 | Model | Candidates | Valid | Precision | Cost (USD) | USD per valid pair | Median latency (s) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -108,35 +108,35 @@ Precision against the benchmark ranges from 55.9% to 92.9%, and eight of the twe
 | `claude-haiku-4.5` | 578 | 323 | 55.9% | 647 | 2.003 | 163 |
 | Total | 6,018 | 4,838 |  | 3,676 |  |  |
 
-Latency varies independently of both: `doubao-2.1-turbo` is also the slowest model (median 521 s per task), while the fastest models, at 37 to 39 s, span a wide range of precision (Table 2). Source: [Expert-Adjudicated Evaluation · PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
+Latency varies independently of both: `doubao-2.1-turbo` is also the slowest model (median 521 s per task), while the fastest models, at 37 to 39 s, span a wide range of precision (Table 2). Source: [Expert-Adjudicated Evaluation · PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 ![Scatter plot of precision against cost per valid pair on a logarithmic axis for twelve LLMs. A dashed efficient frontier runs through deepseek-v4-flash, which is outlined in green as the selected model, deepseek-v4-pro and doubao-2.1-turbo. claude-haiku-4.5 sits lowest, near 56% precision.](https://beyond-similarity.zhaoji.ac.cn/_astro/models.oRlDZNk3_1MgGEB.webp)
 
-**Figure 2.** Twelve LLMs on the 2,533-pair benchmark: precision against cost per valid pair (log scale). The selected deployment model, `deepseek-v4-flash`, attains the best precision per cost; counts are in Table 2. [PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
+**Figure 2.** Twelve LLMs on the 2,533-pair benchmark: precision against cost per valid pair (log scale). The selected deployment model, `deepseek-v4-flash`, attains the best precision per cost; counts are in Table 2. [PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
 
-The confidence the models state is informative and optimistic. Pooled over the twelve models, it separates valid from invalid candidates with an AUC of 0.85, and candidates stated at 0.9 or higher are 96.6% valid (`deepseek-v4-flash` alone: AUC 0.84, 96.1%). Below 0.9 the models are systematically over-confident (Figure 3). Source: [Expert-Adjudicated Evaluation · PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
+The confidence the models state is informative and optimistic. Pooled over the twelve models, it separates valid from invalid candidates with an AUC of 0.85, and candidates stated at 0.9 or higher are 96.6% valid (`deepseek-v4-flash` alone: AUC 0.84, 96.1%). Below 0.9 the models are systematically over-confident (Figure 3). Source: [Expert-Adjudicated Evaluation · PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 ![Bar chart of the share of candidates judged valid in each confidence bucket, pooled over twelve models: 41% below 0.7, 56% for 0.7 to 0.8, 74% for 0.8 to 0.9, 91% for 0.9 to 0.95, and 99% at 0.95 or above. Gray bands mark each bucket’s nominal range, and the bars below 0.9 fall short of their bands.](https://beyond-similarity.zhaoji.ac.cn/_astro/calibration.DvmolZgm_ZWSYoN.webp)
 
-**Figure 3.** Calibration of the confidence the models state, pooled over the twelve models: share of candidates judged valid per confidence bucket. A bar short of its gray band means the models were over-confident in that bucket. [PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
+**Figure 3.** Calibration of the confidence the models state, pooled over the twelve models: share of candidates judged valid per confidence bucket. A bar short of its gray band means the models were over-confident in that bucket. [PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-Candidates proposed by two or more models are 88.5% valid, against 65.1% for those proposed by one, so agreement between models signals validity. The models find different parts of the intertextual space, which the pooled benchmark brings together. Source: [Expert-Adjudicated Evaluation · PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
+Candidates proposed by two or more models are 88.5% valid, against 65.1% for those proposed by one, so agreement between models signals validity. The models find different parts of the intertextual space, which the pooled benchmark brings together. Source: [Expert-Adjudicated Evaluation · PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 ## 6. How did the Twenty-Four Histories reuse the *Analects* across eighteen centuries?
 
 We detect no systematic change in the mix of reuse types across histories composed from 91 BCE to 1739 CE, while later-compiled histories tend to quote the same passage less literally.
 
-We ran `deepseek-v4-flash` over the *Analects* paired with every scroll of the Twenty-Four Histories: 65,380 chunk-pair tasks over about 28.5 million characters, with no failed tasks, yielding 5,766 intertextual pairs. Precision was measured only on the *Book of Han*, and at that precision roughly one pair in eight is expected to be spurious. We therefore treat the output as a distribution of model judgments whose precision and calibration were measured on the benchmark, rest claims on distributional structure rather than raw totals, and let each pair’s confidence serve readers who want a stricter threshold. Source: [Scaling to the Twenty-Four Histories · PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
+We ran `deepseek-v4-flash` over the *Analects* paired with every scroll of the Twenty-Four Histories: 65,380 chunk-pair tasks over about 28.5 million characters, with no failed tasks, yielding 5,766 intertextual pairs. Precision was measured only on the *Book of Han*, and at that precision roughly one pair in eight is expected to be spurious. We therefore treat the output as a distribution of model judgments whose precision and calibration were measured on the benchmark, rest claims on distributional structure rather than raw totals, and let each pair’s confidence serve readers who want a stricter threshold. Source: [Scaling to the Twenty-Four Histories · PDF p. 5](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 ### One passage, three kinds of reuse
 
-The abdication charge forms one merged-fragment cluster of 85 extracted pairs across 22 histories. In the *Book of Han* it is quoted near-verbatim under the source’s name, “咨爾舜，天之歷數在爾躬”, labeled quotation, explicit, support, with a literal fidelity of 0.87: the canon is named to lend authority. In the same history an imperial patent appointing a commander absorbs its wording, “往悉爾心，統辟元戎，折衝綏遠，匡正庶事，允執其中。” (go, devote your whole heart … hold faithfully to the mean), labeled quotation, unmarked, application (0.37): investiture language repurposed as working government prose. In the *Records of the Three Kingdoms* the abdication edict transfers the mandate with “天禄永终，历数在晋” (Heaven’s favor ends forever; the succession lies with Jin), labeled paraphrase, unmarked, application (0.25). The labels separate a public appeal to canonical authority, silent administrative repurposing, and a formulaic script, and within this one cluster literal fidelity already tends to fall with composition year. Source: [Scaling to the Twenty-Four Histories · PDF pp. 5–6](https://arxiv.org/pdf/2607.27595v1#page=5)
+The abdication charge forms one merged-fragment cluster of 85 extracted pairs across 22 histories. In the *Book of Han* it is quoted near-verbatim under the source’s name, “咨爾舜，天之歷數在爾躬”, labeled quotation, explicit, support, with a literal fidelity of 0.87: the canon is named to lend authority. In the same history an imperial patent appointing a commander absorbs its wording, “往悉爾心，統辟元戎，折衝綏遠，匡正庶事，允執其中。” (go, devote your whole heart … hold faithfully to the mean), labeled quotation, unmarked, application (0.37): investiture language repurposed as working government prose. In the *Records of the Three Kingdoms* the abdication edict transfers the mandate with “天禄永终，历数在晋” (Heaven’s favor ends forever; the succession lies with Jin), labeled paraphrase, unmarked, application (0.25). The labels separate a public appeal to canonical authority, silent administrative repurposing, and a formulaic script, and within this one cluster literal fidelity already tends to fall with composition year. Source: [Scaling to the Twenty-Four Histories · PDF pp. 5–6](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 ### The mix of reuse types shows no detectable drift
 
-Comparing histories composed by 659 CE with those from 945 CE onward, the share of reuse that leaves its source unmarked is 77.5% against 77.6%, and for none of the five dimensions does the share of its dominant category correlate with composition year at permutation p < 0.05 (Table 3; function and stance remain exploratory). Per-history usage profiles do not diverge as the gap between composition dates grows: the Jensen–Shannon divergence between two histories is uncorrelated with the years between them (permutation p = .12 to .28). Across the histories, raw citation density does fall to about a third, but that count-level trend needs no typology and matches the received periodization, so we rest no claim on it. Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
+Comparing histories composed by 659 CE with those from 945 CE onward, the share of reuse that leaves its source unmarked is 77.5% against 77.6%, and for none of the five dimensions does the share of its dominant category correlate with composition year at permutation p < 0.05 (Table 3; function and stance remain exploratory). Per-history usage profiles do not diverge as the gap between composition dates grows: the Jensen–Shannon divergence between two histories is uncorrelated with the years between them (permutation p = .12 to .28). Across the histories, raw citation density does fall to about a third, but that count-level trend needs no typology and matches the received periodization, so we rest no claim on it. Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-**Table 3.** The mix of reuse types across the Twenty-Four Histories. Early and late are pooled shares over histories composed by 659 CE and from 945 CE onward. ρ is the Spearman correlation of the dominant category’s per-history share with composition year over the 24 histories, and p a permutation p-value from 2,000 permutations. No trend has p below 0.05. [PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
+**Table 3.** The mix of reuse types across the Twenty-Four Histories. Early and late are pooled shares over histories composed by 659 CE and from 945 CE onward. ρ is the Spearman correlation of the dominant category’s per-history share with composition year over the 24 histories, and p a permutation p-value from 2,000 permutations. No trend has p below 0.05. [PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
 
 | Dimension | Dominant category | Early | Late | *ρ* | *p* |
 | --- | --- | --- | --- | --- | --- |
@@ -146,43 +146,43 @@ Comparing histories composed by 659 CE with those from 945 CE onward, the share 
 | Function | support | 67.8% | 70.8% | −0.11 | .61 |
 | Stance | positive | 73.8% | 79.8% | 0.16 | .44 |
 
-The rewriting of individual passages, shown below, does not conflict with this. Cultural attraction, an account of cultural transmission, expects a group-level distribution that holds steady because transformations of individual items converge on the same forms, not because each item is copied faithfully. Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
+The rewriting of individual passages, shown below, does not conflict with this. Cultural attraction, an account of cultural transmission, expects a group-level distribution that holds steady because transformations of individual items converge on the same forms, not because each item is copied faithfully. Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-Absorbing the canon without marking it, more than three quarters of the reuse in early and late histories alike, is licensed practice in native terms. Zhang Xuecheng distinguishes the compositional register from the evidential: “著作之體，援引古義，襲用成文，不標所出，非為掠美”, in composition one draws on old meanings and takes over existing text without marking the source, and this is no plagiarism, a license he grants only where the author’s own argument stands without leaning on the borrowed words. Liu Xie’s sixth-century poetics already holds that old material, aptly used, reads as if it came from one’s own mouth. Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
+Absorbing the canon without marking it, more than three quarters of the reuse in early and late histories alike, is licensed practice in native terms. Zhang Xuecheng distinguishes the compositional register from the evidential: “著作之體，援引古義，襲用成文，不標所出，非為掠美”, in composition one draws on old meanings and takes over existing text without marking the source, and this is no plagiarism, a license he grants only where the author’s own argument stands without leaning on the borrowed words. Liu Xie’s sixth-century poetics already holds that old material, aptly used, reads as if it came from one’s own mouth. Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
 
 ### Marking and fidelity are separate axes
 
-Literal fidelity is measured by aligning each history fragment with its *Analects* source by character-level longest common subsequence. How literally a passage is quoted does not fix how it is marked. Citations that name their source have higher literal fidelity than unmarked ones (median 0.78 against 0.38, Kruskal–Wallis p < 10⁻³), and the gap survives within direct quotation (0.85 against 0.50), so a similarity score cannot stand in for the marking label. Naming a source is a public appeal to canonical authority that holds the wording to a higher standard. The relation is a regularity rather than a law: unmarked citation can be verbatim where concealment is the motive. Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
+Literal fidelity is measured by aligning each history fragment with its *Analects* source by character-level longest common subsequence. How literally a passage is quoted does not fix how it is marked. Citations that name their source have higher literal fidelity than unmarked ones (median 0.78 against 0.38, Kruskal–Wallis p < 10⁻³), and the gap survives within direct quotation (0.85 against 0.50), so a similarity score cannot stand in for the marking label. Naming a source is a public appeal to canonical authority that holds the wording to a higher standard. The relation is a regularity rather than a law: unmarked citation can be verbatim where concealment is the motive. Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
 
 ### Applied citations tend to be looser and mostly unmarked (exploratory)
 
-Citations labeled support quote the canon more literally (mean literal fidelity 0.50) than citations labeled application (0.42), which repurpose it for governance and policy and leave the source unmarked 93% of the time. This is the pragmatic use native scholarship calls *tong-jing zhi-yong*, applying the classics to affairs, where a citation’s force is that the sage would have approved the decision, not its exact words. Function is a low-agreement dimension (Table 1). Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
+Citations labeled support quote the canon more literally (mean literal fidelity 0.50) than citations labeled application (0.42), which repurpose it for governance and policy and leave the source unmarked 93% of the time. This is the pragmatic use native scholarship calls *tong-jing zhi-yong*, applying the classics to affairs, where a citation’s force is that the sage would have approved the decision, not its exact words. Function is a low-agreement dimension (Table 1). Source: [Scaling to the Twenty-Four Histories · PDF p. 6](https://arxiv.org/pdf/2607.27595v1#page=6)
 
 ### Later histories tend to quote the same passage less literally
 
-Holding a passage fixed, later-compiled histories tend to quote it less literally (Figure 4). Across 283 merged-fragment clusters spanning at least five distinct composition years, the mean per-cluster Spearman correlation between literal fidelity and composition year is −0.15 (69.3% of clusters negative; cluster-bootstrap 95% CI [−0.19, −0.12]; permutation p < 0.001). The decline is steeper for direct quotation (−0.18) than for paraphrase (−0.08) and strengthens among pairs with confidence of 0.9 or higher (172 clusters, ρ = −0.19, p < 0.001). Zhang Xuecheng observed that transmission alters wording: “司馬遷點竄尚書左國之文，班固點竄司馬遷之文，非好異也，理勢之不得不然也”, successive historians recast their sources’ wording not from a taste for difference but because circumstance required it. Source: [Scaling to the Twenty-Four Histories · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
+Holding a passage fixed, later-compiled histories tend to quote it less literally (Figure 4). Across 283 merged-fragment clusters spanning at least five distinct composition years, the mean per-cluster Spearman correlation between literal fidelity and composition year is −0.15 (69.3% of clusters negative; cluster-bootstrap 95% CI [−0.19, −0.12]; permutation p < 0.001). The decline is steeper for direct quotation (−0.18) than for paraphrase (−0.08) and strengthens among pairs with confidence of 0.9 or higher (172 clusters, ρ = −0.19, p < 0.001). Zhang Xuecheng observed that transmission alters wording: “司馬遷點竄尚書左國之文，班固點竄司馬遷之文，非好異也，理勢之不得不然也”, successive historians recast their sources’ wording not from a taste for difference but because circumstance required it. Source: [Scaling to the Twenty-Four Histories · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ![Box plots of per-cluster Spearman correlations between literal fidelity and composition year. All pairs: mean −0.15 over 283 clusters. Direct quotation: mean −0.18 over 123 clusters. Paraphrase: mean −0.08 over 170 clusters. All three means sit left of zero and carry an asterisk for a permutation p below 0.05.](https://beyond-similarity.zhaoji.ac.cn/_astro/fidelity.DbYY9Rhf_JEUwl.webp)
 
-**Figure 4.** Literal fidelity tends to decline with the citing history’s composition date, holding the passage fixed: distribution of per-cluster Spearman correlations of fidelity against year. Boxes show the interquartile range, diamonds the mean of each stratum, an asterisk a permutation p below 0.05, and *k* the number of qualifying clusters. [PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
+**Figure 4.** Literal fidelity tends to decline with the citing history’s composition date, holding the passage fixed: distribution of per-cluster Spearman correlations of fidelity against year. Boxes show the interquartile range, diamonds the mean of each stratum, an asterisk a permutation p below 0.05, and *k* the number of qualifying clusters. [PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ### Reuse that a fixed segmentation cannot align
 
-Reading each chunk in full also recovers reuse whose two sides differ in extent. In the *Book of Han* a single clause praising Emperor Cheng’s bearing, “升車正立，不內顧，不疾言，不親指” (on mounting the carriage he stood straight; he did not look round, spoke not hastily, pointed at nothing), draws on two separate passages of the *Analects* chapter “Xiangdang”: “升車，必正立，執綏” (mounting the carriage, he stood straight and grasped the cord) and “車中，不內顧，不疾言，不親指” (in the carriage he did not look round, spoke not hastily, pointed at nothing). Both pairs were accepted. A sentence-to-sentence ranking would have to pick one *Analects* sentence or split its score between the two. The corpus run contains 117 groups in which one history span answers to two or more disjoint *Analects* passages. Source: [Scaling to the Twenty-Four Histories · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
+Reading each chunk in full also recovers reuse whose two sides differ in extent. In the *Book of Han* a single clause praising Emperor Cheng’s bearing, “升車正立，不內顧，不疾言，不親指” (on mounting the carriage he stood straight; he did not look round, spoke not hastily, pointed at nothing), draws on two separate passages of the *Analects* chapter “Xiangdang”: “升車，必正立，執綏” (mounting the carriage, he stood straight and grasped the cord) and “車中，不內顧，不疾言，不親指” (in the carriage he did not look round, spoke not hastily, pointed at nothing). Both pairs were accepted. A sentence-to-sentence ranking would have to pick one *Analects* sentence or split its score between the two. The corpus run contains 117 groups in which one history span answers to two or more disjoint *Analects* passages. Source: [Scaling to the Twenty-Four Histories · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ## Limitations
 
-The corpus run uses a single model whose precision was measured on the *Book of Han* only. The findings we rely on persist and strengthen among pairs with confidence of 0.9 or higher, which make up 55.3% of the run, so lower-confidence pairs do not carry them. On the benchmark, `deepseek-v4-flash`’s candidates at that confidence are 96.1% valid. Every count of reuse is a lower bound, since only pairs that some model proposed can be counted. Source: [Discussion and Limitations · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
+The corpus run uses a single model whose precision was measured on the *Book of Han* only. The findings we rely on persist and strengthen among pairs with confidence of 0.9 or higher, which make up 55.3% of the run, so lower-confidence pairs do not carry them. On the benchmark, `deepseek-v4-flash`’s candidates at that confidence are 96.1% valid. Every count of reuse is a lower bound, since only pairs that some model proposed can be counted. Source: [Discussion and Limitations · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
 
-The model may have absorbed earlier scholarly identifications of reuse, so we present the system as assistive. Contamination cuts unevenly: cases a model may have memorized concentrate among famous, marked citations, while the value at corpus scale lies in unmarked paraphrase, which concordances do not list. Each history enters the diachronic analyses with a single composition date although several took decades to compile, and the split between early and late histories follows the received periodization. Source: [Discussion and Limitations · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
+The model may have absorbed earlier scholarly identifications of reuse, so we present the system as assistive. Contamination cuts unevenly: cases a model may have memorized concentrate among famous, marked citations, while the value at corpus scale lies in unmarked paraphrase, which concordances do not list. Each history enters the diachronic analyses with a single composition date although several took decades to compile, and the split between early and late histories follows the received periodization. Source: [Discussion and Limitations · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
 
-The benchmark is a controlled evaluation setting for one source pair, not a universal intertextuality benchmark. Source: [Discussion and Limitations · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
+The benchmark is a controlled evaluation setting for one source pair, not a universal intertextuality benchmark. Source: [Discussion and Limitations · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ## Using this work
 
 Two resources are public: the paper on [arXiv](https://arxiv.org/abs/2607.27595) and the [Explorer](https://analects-24histories-intertext.pkudh.net/), a site in Chinese that shows every intertextual pair of the Twenty-Four Histories run in its textual context, with its spans and labels, and groups pairs into clusters that trace the reception of a passage.
 
-The protocol needs only a source pair that can be segmented and a typology of reuse to annotate, and little in it is specific to the *Analects* or to Chinese: its checks apply wherever reuse must be tied to exact spans. Source: [Discussion and Limitations · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
+The protocol needs only a source pair that can be segmented and a typology of reuse to annotate, and little in it is specific to the *Analects* or to Chinese: its checks apply wherever reuse must be tied to exact spans. Source: [Discussion and Limitations · PDF p. 7](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ## Cite
 
@@ -207,11 +207,11 @@ This work was supported by the National Key Research and Development Program of 
 
 ---
 
-# 超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测
+# 超越相似度：中国古代史书互文的智能体抽取与专家评测
 
 这是 <https://beyond-similarity.zhaoji.ac.cn/zh/> 的 Markdown 版本。
 
-[王兆基](https://www.zhaoji.ac.cn/)<sup>1,2</sup>、司宛玉<sup>1,2</sup>、[王军](https://pkudh.org/member/wangjun2025.html)<sup>1,2</sup><sup>\*</sup>
+[王兆基](https://www.zhaoji.ac.cn/)<sup>1,2</sup>、[司宛玉](https://pkudh.org/member/wanyu.html)<sup>1,2</sup>、[王军](https://pkudh.org/member/wangjun2025.html)<sup>1,2</sup><sup>\*</sup>
 
 - <sup>1</sup> 北京大学信息管理系
 - <sup>2</sup> 北京大学数字人文研究中心
@@ -222,58 +222,58 @@ This work was supported by the National Key Research and Development Program of 
 - [PDF](https://arxiv.org/pdf/2607.27595v1)
 - [互文图谱](https://analects-24histories-intertext.pkudh.net/)
 
-我们让大语言模型智能体把它提出的每处复用落地到精确字符区间，并标注来源被复用的方式，再用《论语》与《汉书》之间的 2,533 条专家仲裁互文对验证它。在成书于公元前 91 年至 1739 年的正史中，直接引用和无标记复用的占比都未检出系统性变化，而同一原文在较晚成书的史书中字面忠实度总体较低。
+我们让大语言模型智能体抽取互文：它提出的每一处复用，都要定位到两侧原文的字符区间，并标注复用方式。方法在《论语》与《汉书》之间 2,533 条经专家裁定的互文对上验证。在成书于公元前 91 年至 1739 年的正史中，直接引用和无标记复用的占比都未检出系统性变化；但较晚成书的史书引用同一段原文时，往往不如较早的史书贴近字面。
 
 ## 一览
 
-- **2,533**：《论语》与《汉书》之间的专家仲裁互文对
-- **55.9%～92.9%**：12 个大语言模型对照这一基准的精确率
-- **51 倍**：精确率最高的 `doubao-2.1-turbo` 与 `deepseek-v4-flash` 每个有效互文对的成本之比，后者精确率低 4.9 个百分点
-- **5,766**：`deepseek-v4-flash` 在二十四史上经 65,380 次比对抽取的互文对。如果它在《汉书》上 88.0% 的精确率在这里同样成立，其中约每 8 条就有 1 条是误报。
+- **2,533**：《论语》与《汉书》之间经专家裁定的互文对
+- **55.9%～92.9%**：12 个大语言模型在这一基准上的精确率
+- **51 倍**：精确率最高的 `doubao-2.1-turbo` 与 `deepseek-v4-flash` 每条有效互文对的成本之比，后者精确率低 4.9 个百分点
+- **5,766**：`deepseek-v4-flash` 在二十四史上做 65,380 次比对抽取出的互文对。若它在《汉书》上 88.0% 的精确率在此同样成立，其中约每 8 条有 1 条是误报。
 
 ## 摘要
 
-互文性的计算方法已从字符串匹配走到神经检索，但其输出（相似度分数与平行段落列表）只标明文本在哪里相互复用，而不刻画「如何」与「为何」。我们把细粒度互文抽取改写为一个智能体任务：大语言模型（LLM, Large Language Model）完整读入两个文本单元，经由受约束的工具接口，必须把每条提出的复用落地到两侧的精确字符区间，并按五维复用类型学（复用形式、复用层面、来源标记、互文功能、立场）标注。我们在《论语》与《汉书》的穷尽比对上验证这一方法：三位领域专家把多模型汇集的候选集仲裁为 2,533 条互文对构成的基准。以此为标准，我们研究十二个大语言模型，报告精确率（56%～93%）、可比质量下 51 倍的成本跨度，以及其置信度校准得如何。专家一致性勾勒出一条「信度梯度」：证据落在文本表面的维度被一致地标注，而需要推断意图的维度存在争议，这划定了此类标注所能支撑的主张。把验证过的抽取器扩展到全部二十四史（65,380 次比对、5,766 对），得到相似度分数无法表达的语料级结构。引用的解释性构成在十八个世纪间未显示系统性变化，同一段经文却被引得越来越不逐字。总体稳定与个案漂移并存，正是文化吸引式解释所预期的。我们发布抽取协议与专家仲裁基准。
+互文性的计算方法已从字符串匹配发展到神经检索，但它们输出的相似度分数和平行段落列表，只能指出文本在哪里相互复用，说明不了怎样复用、为何复用。我们把细粒度的互文抽取改写为一项智能体任务：大语言模型（LLM, Large Language Model）完整读入两个文本单元，只能通过受约束的工具接口提交结果；它提出的每一处复用，都必须定位到两侧的精确字符区间，并按五维复用类型学（复用形式、复用层面、来源标记、互文功能、立场）标注。我们在《论语》与《汉书》的穷尽比对上验证这一方法：多个模型提出的候选汇集起来，由三位领域专家裁定，构成包含 2,533 条互文对的基准。以此为标准，我们考察了十二个大语言模型，报告它们的精确率（56%～93%）、质量相近时多达 51 倍的成本差距，以及置信度的校准程度。专家之间的一致性呈现出一条「信度梯度」：证据在文本表面的维度，标注一致；需要推断意图的维度，存在争议。据此可以划定这类标注能够支撑哪些结论。将验证过的抽取器用于全部二十四史（65,380 次比对，5,766 条互文对）后，我们得到了相似度分数无法表达的语料层面的结构。十八个世纪里，引用的类型构成未见系统性变化，同一段经文却引得越来越不贴近字面。整体稳定、个案渐变，正是文化吸引理论所预期的。我们公开了抽取协议和专家裁定的基准。
 
 ## 1. 相似度分数漏掉了什么？
 
-漏掉的是复用的种类。分数只记下两段文字重合多少，史家要问的却是一段话是忠实称引、借重权威，还是已经磨成套语。
+漏掉了复用的类型。分数只记下两段文字重合多少，史家要问的却是：这段话是忠实的称引，是借重经典的权威，还是已经沦为套语。
 
-《汉书》（公元一世纪）近乎逐字地转录了《论语》的禅让册命「咨爾舜，天之歷數在爾躬」。几章之后，在篡位者王莽的传记里，同一句话再次出现，作「歷數在于予躬」，第二人称代词悄悄换成了第一人称。到 260 年代，《三国志》的禅让文书里只剩下一个公式化的骨架「天祿永終，歷數在晉」，已脱离《论语》，融进了王朝更替的标准文书。文本复用检测器能发现这三处都与《论语》相似，却说不出第一处是忠实的称引，第二处是对权威的挪用，第三处是僵死的套语。出处：[引言 · PDF 第 1 页](https://arxiv.org/pdf/2607.27595v1#page=1)
+《汉书》成书于公元 1 世纪，书中几乎逐字转录了《论语》的禅让册命「咨爾舜，天之歷數在爾躬」。同书《王莽传》中，这句话又作「歷數在于予躬」，第二人称悄悄换成了第一人称。到 3 世纪 60 年代，《三国志》所载的禅让文书只剩下一个公式化的骨架「天祿永終，歷數在晉」，它已脱离《论语》，融入了王朝更替的标准文书。文本复用检测器能发现这三处都与《论语》相似，却分辨不出第一处是忠实的称引，第二处是对权威的挪用，第三处是僵死的套语。出处：[引言 · PDF 第 1 页](https://arxiv.org/pdf/2607.27595v1#page=1)
 
-用人工追踪这种复用，是索引之学的功夫。顾颉刚靠文本之间的逐一对勘，为传说中的古史分出层次、判定先后。他认为每个时代都把承接下来的古史再加长一层，这一论断开启了疑古运动。这类对勘受限于专家能持续投入多少注意力，顾颉刚本人也只打算一部书一部书地做下去。通行的计算替代方法没有解除这个限制：它们让每次比较都归结为一个相似度值，留下复用的程度，丢掉复用的种类。因此我们把互文性看作区间落地的关系抽取（span-grounded relation extraction）：模型把两侧每个被复用的片段定位为精确字符区间，再按复用的种类标注由此得到的互文对。出处：[引言 · PDF 第 1 页](https://arxiv.org/pdf/2607.27595v1#page=1)
+靠人工追踪这类复用，是索引之学的工作。顾颉刚通过文本对勘为传说中的古史分层断代，他提出的「层累地造成的中国古史」说开启了疑古运动。这类对勘受制于专家的精力，顾颉刚自己也只打算一部书一部书地考辨下去。通行的计算方法并没有突破这个限制：它们把每一次比较都归结为一个相似度值，保留了复用的程度，丢掉了复用的类型。因此，我们把互文分析表述为一项关系抽取任务（span-grounded relation extraction）：模型要在两侧定位每个被复用的片段，给出精确的字符区间，再按复用类型标注由此构成的互文对。出处：[引言 · PDF 第 1 页](https://arxiv.org/pdf/2607.27595v1#page=1)
 
-## 2. 落地化智能体抽取如何运作？
+## 2. 智能体如何抽取互文并保证结果可核对？
 
-大语言模型智能体把《论语》的一整篇与史书的一整卷对读，只能通过对照原文核验的工具记录复用，因此每条提交的互文对都指向两侧的精确字符区间，并带有五个维度的标签。
+大语言模型智能体把《论语》的一整篇与史书的一整卷对读。它只能通过工具记录复用，而工具会逐字对照原文检查，所以每条提交的互文对都对应两侧原文的精确字符区间，并带有五个维度的标签。
 
-![四栏示意图，图中文字为英文。(a) 大语言模型智能体完整读入《论语》的一篇和史书的一卷，用 find_position 工具查找措辞，取得精确的起止偏移，再把互文对提交给 add_pair 工具。add_pair 检查标签与区间的格式，按所述偏移把原文重新切片，并拒绝重复的互文对。list 和 remove 工具用来修订已提交的互文对。(b) 一条已提交的互文对，来自《论语》第 13 篇和《汉书》第 6 卷，两侧片段没有一个字相同，标注为转述、内容、有标记、应用、肯定，证据强度中等，置信度 0.72。(c) 三格漫画：一次运行结束时有若干条已提交的互文对；停止守卫拦住除 submit 之外的所有出口；submit 把任务判为匹配或无匹配，其他任何结束方式都记为失败。(d) 管线：2,400 个文本块对任务乘以 12 个大语言模型，提出 6,018 条互文对，汇集为 3,489 条候选。两位专家加一位仲裁人得出 2,533 条专家仲裁互文对。据此按精确率、成本和校准选出抽取器，在 24 部史书上运行 65,380 个任务，得到 5,766 条互文对。](https://beyond-similarity.zhaoji.ac.cn/_astro/framework.B4wHfvui_Z2i9IMz.webp)
+![示意图，共四栏，图中文字为英文。(a) 大语言模型智能体完整读入《论语》的一篇和史书的一卷，用 find_position 工具查找措辞，取得精确的起止偏移，再把互文对交给 add_pair 工具。add_pair 检查标签与区间的格式，按给出的偏移重新截取原文，并拒收重复的互文对。智能体可以用 list 和 remove 工具修改已提交的互文对。(b) 一条已提交的互文对，出自《论语》第 13 篇和《汉书》第 6 卷，两侧片段没有一个字相同，标注为转述、内容、有标记、应用、肯定，证据强度中等，置信度 0.72。(c) 三格漫画：一次运行结束时已提交若干互文对；图中的 stop guard 拦住了 submit 以外的所有出口；submit 把任务判为匹配或无匹配，以其他方式结束一律记为失败。(d) 流程：2,400 个文本块对任务乘以 12 个大语言模型，提出 6,018 条互文对，汇集为 3,489 条候选；两位专家判断、第三位专家裁定，得到 2,533 条互文对；按精确率、成本和校准选出抽取器，在 24 部史书上运行 65,380 个任务，得到 5,766 条互文对。](https://beyond-similarity.zhaoji.ac.cn/_astro/framework.B4wHfvui_Z2i9IMz.webp)
 
-**图 1** 框架总览。(a) 单个文本块对的抽取智能体及其任务工具：`find_position` 把候选措辞落地到精确偏移，`list` 和 `remove` 用于修订，`add_pair` 只在通过图中三项检查后才提交一条互文对。(b) 图中这条已提交的互文对是真实个案，两侧片段没有一个字相同：汉武帝的一道诏书只凭孔子之名援引《论语》第 13 篇。(c) 任务只能经 `submit` 结束，`submit` 对照已提交的集合核对所声明的状态，其他任何结束方式都记为失败。(d) 先验证后规模化的管线。[PDF 第 2 页](https://arxiv.org/pdf/2607.27595v1#page=2)
+**图 1** 框架总览。(a) 处理单个文本块对的抽取智能体及其工具：`find_position` 把候选措辞定位到精确偏移，`list` 和 `remove` 用于修改，`add_pair` 只在通过图中三项检查后才提交互文对。(b) 图中这条互文对是真实个案，两侧片段没有一个字相同：汉武帝的一道诏书只提孔子之名，援引《论语》第 13 篇。(c) 任务只能通过 `submit` 结束，`submit` 会对照已提交的互文对核对所声明的状态；以其他方式结束的任务记为失败。(d) 先验证、后扩展的流程。[PDF 第 2 页](https://arxiv.org/pdf/2607.27595v1#page=2)
 
-每个任务的输入是一个文本块对，即《论语》的一篇和史书的一卷，要求找出其中所有互文对：两侧各一个片段，以字符区间 [start, end) 给出，并在五个维度上标注。复用形式区分直接引用与转述。复用层面区分对内容的复用与对结构的复用。来源标记记录来源是显性点明、有标记，还是无标记。互文功能记录复用在新语境中起什么作用（背景、支持、应用、批判），立场记录引用方的态度（肯定、中立、否定、复杂）。复用指可追溯的文本依赖，共同话题、观点一致、常用词汇重合和弥散的影响都不算。只有两侧片段都在所述偏移处逐字出现，预测才算正确。出处：[任务与智能体抽取协议 · PDF 第 3 页](https://arxiv.org/pdf/2607.27595v1#page=3)
+每个任务处理一个文本块对，即《论语》的一篇和史书的一卷，要求找出其中全部互文对。每条互文对由两侧的对应片段构成，片段用字符区间 [start, end) 表示。每条互文对都要在五个维度上标注。复用形式分直接引用和转述。复用层面分内容和结构。来源标记分显性（点明出处）、有标记（有所提示但不点名）和无标记。互文功能指复用在新语境中的作用，分背景、支持、应用和批判。立场指引用者的态度，分肯定、中立、否定和复杂。这里的复用指可以追溯的文本依赖，话题相同、观点一致、常用词重合和泛泛的影响都不算。只有两侧片段都在所给偏移处逐字出现，预测才算正确。出处：[任务与智能体抽取协议 · PDF 第 3 页](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-两个文本块都整体进入模型的上下文。我们不把它们切成句子、再按 n-gram 或嵌入相似度配对，因为索引只会呈现它已经判为相近的内容，而一处引用怎样标记来源、起什么修辞作用，只有放回它所在的语篇才看得出来。出处：[任务与智能体抽取协议 · PDF 第 3 页](https://arxiv.org/pdf/2607.27595v1#page=3)
+两个文本块都完整放入模型的上下文。我们不先把它们切成句子、再按 n-gram 或嵌入相似度配对，因为索引只会呈现它已判为相近的内容；而一处引用如何标示来源、起什么修辞作用，只有放回上下文才看得出来。出处：[任务与智能体抽取协议 · PDF 第 3 页](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-直接让大语言模型给出被复用的区间，得到的互文对行文流畅，却有时没有落地，甚至是编造的。因此智能体必须用定位工具找到每个片段。这个工具在文本块上做精确子串检索，返回偏移和两侧各 30 个字符的上下文。智能体提交互文对时，协议按所述偏移把两个文本块重新切片，只要有一侧片段不能逐字复现，就拒绝这条互文对。在十二个模型的运行中，智能体共调用定位工具 319,465 次，每次任务尝试约 11 次。校验拒绝了 39% 的提交尝试，按全部尝试计，约四分之一拒在逐字回切，15% 拒在标签与区间检查。拒绝反映的是能否落地，而非质量：精确率最低的那个模型独占了逐字回切拒绝的三分之二，而遇到过拒绝的任务尝试中，81% 最后仍提交了一条被接受的互文对。去掉定位工具后，拒绝率增至九倍，输出 token 数增至五倍。出处：[任务与智能体抽取协议 · PDF 第 3 页](https://arxiv.org/pdf/2607.27595v1#page=3)
+如果直接让大语言模型写出被复用的片段，它给出的互文对读来通顺，却可能在原文中找不到，甚至是编造的。所以智能体必须先用定位工具找到每个片段。定位工具在文本块中做精确的子串检索，返回片段的偏移和前后各 30 个字符的上下文。智能体提交互文对时，协议按给出的偏移从两个文本块中重新截取片段；只要有一侧与提交的文字不能逐字吻合，就拒收这条互文对。在十二个模型的运行中，智能体共调用定位工具 319,465 次，平均每次任务尝试约 11 次。在全部提交尝试中，39% 被拒：约四分之一未通过逐字比对，另有 15% 未通过标签与区间的格式检查。拒收反映的是定位能力，不等同于互文判断的质量：精确率最低的模型独占了逐字比对拒收的三分之二，而遇到过拒收的任务尝试中，81% 最终仍提交了通过校验的互文对。去掉定位工具后，拒收率升至原来的九倍，输出 token 数升至五倍。出处：[任务与智能体抽取协议 · PDF 第 3 页](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-从模型自由文本里读出的结论，在语料规模上无法审计。协议从不解析模型在任务结尾写的文字，任务的输出就是经工具提交的互文对集合。工具检查每条互文对的标签与区间，并拒绝重复提交。两条互文对是否相同，看两侧片段文本及各自的偏移。每个任务隔离运行，使用全新的临时主目录，不继承任何配置。每个任务的键是一个哈希，覆盖决定其结果的全部输入，包括提供模型服务的供应商和端点，所以同名模型由两家供应商提供时，不会悄悄复用缓存结果。出处：[任务与智能体抽取协议 · PDF 第 3 页](https://arxiv.org/pdf/2607.27595v1#page=3)
+从模型自由文本中读出的结论，无法在语料规模上逐条核查。因此协议从不解析任务结束时模型写下的文字，任务的输出就是通过工具提交的互文对集合。工具检查每条互文对的标签与区间，并拒收重复提交；判断是否重复，看两侧片段的文字及各自的偏移。每个任务都隔离运行，使用全新的临时主目录，不继承任何配置。每个任务以一个哈希值为键，哈希覆盖决定结果的全部输入，包括提供模型服务的供应商和接口地址。这样，同名模型由两家供应商提供时，不会悄悄共用缓存结果。出处：[任务与智能体抽取协议 · PDF 第 3 页](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-只有每个任务都以明确的结果结束，汇总计数才可信。停止守卫不让智能体在调用 `submit` 之前结束，`submit` 再对照已提交的集合双向核对所声明的状态：声明匹配至少要有一条已提交的互文对，声明无匹配则一条也不能有。以其他方式结束的任务，包括接口报错、重试耗尽、超时，或没有提交就停下的运行，都记为失败，绝不算作空结果。多数文本块对之间没有复用，所以显式弃权本身是一种正式结果。出处：[任务与智能体抽取协议 · PDF 第 3～4 页](https://arxiv.org/pdf/2607.27595v1#page=3)
+只有每个任务都以明确的结果结束，汇总计数才可信。智能体调用 `submit` 之前不能结束任务；`submit` 会对照已提交的互文对，双向核对所声明的状态：声明「匹配」，至少要有一条已提交的互文对；声明「无匹配」，则一条也不能有。以其他方式结束的任务，包括接口报错、重试次数用尽、超时，或没有提交就停止的运行，都记为失败，不算作空结果。多数文本块对之间本来没有复用，所以明确声明「无匹配」与找到匹配一样，都是正式的结果。出处：[任务与智能体抽取协议 · PDF 第 3～4 页](https://arxiv.org/pdf/2607.27595v1#page=3)
 
-## 3. 专家仲裁基准有多可靠？
+## 3. 专家裁定的基准有多可靠？
 
-足以用来比较模型，也足以支撑关于复用形式和来源标记的结论。只按两位专家中较严的一位重新计分，模型排名几乎不变，两位专家在这两个标签上的判断也基本一致。互文功能和立场需要推断意图，存在争议，关于它们的发现只是探索性的。
+用来比较模型足够可靠，也足以支撑关于复用形式和来源标记的结论。只按两位专家中较严的一位重新计分，模型排名几乎不变；两位专家在这两个标签上的判断也基本一致。互文功能和立场需要推断意图，专家之间存在分歧，相关发现只能算探索性的。
 
-基准在公开的标点数字版（识典古籍）上，把《论语》（20 篇，22,919 字符）与《汉书》（120 卷，942,693 字符）穷尽配对，共 2,400 个文本块对任务。十二个大语言模型各自跑完全部 2,400 个任务，提出 6,018 条互文对，把相同偏移上的相同片段合并后，得到 3,489 条互异候选。汇集全部十二个模型，基准就不会偏向某一个模型提出的候选，而各模型提出的候选大多不同：68% 只由一个模型提出。两位专家独立判断每条候选，先判断是否有效，再为有效的互文对标注五个标签，第三位专家仲裁所有分歧。最终得到 2,533 条互文对，占候选池的 72.6%。出处：[专家仲裁评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
+基准以公开的标点整理本（识典古籍）为底本，把《论语》（20 篇，22,919 字符）与《汉书》（120 卷，942,693 字符）穷尽配对，共 2,400 个文本块对任务。十二个大语言模型各自完成全部 2,400 个任务，共提出 6,018 条互文对；把偏移相同的相同片段合并后，得到 3,489 条不同的候选。汇集全部十二个模型的结果，是为了不让基准偏向某一个模型提出的候选；而各模型提出的候选确实大多不同，68% 只由一个模型提出。两位专家独立判断每条候选，先判断是否有效，再为有效的互文对标注五个标签；两人意见不一致时，由第三位专家裁定。最终得到 2,533 条互文对，占候选池的 72.6%。出处：[专家评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-人工枚举给不出可替代的参照。两项文献学调查统计《汉书》引用《论语》的次数，分别得到 237 和 447，后者将近前者的两倍，两位作者也都预计自己有遗漏。仅在这一对来源上，专家就确认了 954 条有标记的互文对。十二个模型各自单独运行，提交的经仲裁有效的互文对都在 323～572 条之间。出处：[专家仲裁评测 · PDF 第 4～5 页](https://arxiv.org/pdf/2607.27595v1#page=4)
+人工统计也给不出可以替代的参照。两项文献学调查统计《汉书》引用《论语》的次数，分别得到 237 处和 447 处，相差近一倍，两位作者也都估计自己有遗漏。仅在这两部书之间，专家就确认了 954 条带来源标记的互文对；十二个模型各自单独运行时，提交的互文对中经裁定有效的也都在 323～572 条之间。出处：[专家评测 · PDF 第 4～5 页](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-在有效性判断上，两位专家宽严不同，标准一致。一位接受了 55.3% 的候选，另一位接受了 99.4%，而且两人的决定是嵌套的：较严的专家接受的候选，较宽的专家一条也没有拒绝。两人都接受的候选有 1,930 条。落在两人阈值之间的 1,539 条，由仲裁人逐条裁定：其中 59.9% 与较严的专家一致，共接受 617 条。标签冲突另把 1,214 条双方都接受的候选送去仲裁，仲裁人把其中 14 条改判为无效，所以 1,930 − 14 + 617 = 2,533。只对照较严的专家重新计分，每个模型的精确率都下降 9～23 个百分点，排名却几乎不动（Spearman 相关系数 ρ = 0.94，没有模型移动超过两位），部署模型的选择也不变。本页的精确率都对照仲裁后的阈值计算。出处：[专家仲裁评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
+在有效性判断上，两位专家只是宽严不同，标准并无分歧。一位接受了 55.3% 的候选，另一位接受了 99.4%，而且两人的判断是嵌套的：较严的专家接受的候选，较宽的专家一条也没有拒绝。两人都接受的候选有 1,930 条。落在两人阈值之间的 1,539 条，由第三位专家逐条裁定，其中 59.9% 与较严的专家一致，共接受 617 条。另有 1,214 条候选两人都接受、但标签有冲突，也送交裁定，第三位专家把其中 14 条改判为无效。合计 1,930 − 14 + 617 = 2,533 条。若只以较严的专家为准重新计分，每个模型的精确率都下降 9～23 个百分点，排名却几乎不变（Spearman 相关系数 ρ = 0.94，没有模型的名次变动超过两位），部署模型的选择也不变。本页的精确率都以裁定结果为准。出处：[专家评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-在两位专家都接受的 1,930 条候选上，按仲裁前的标注计算五个标签的一致性，结果呈现一条信度梯度（表 1）。复用形式和来源标记的证据就在文本表面（措辞是否相同，来源是否点名），一看便能判定。互文功能和立场需要重构意图和态度，称职的专家之间也会有各有依据的分歧。复用层面的一致率是 98.9%，但 97% 的互文对复用的是内容，按机会推算的一致率已有 96.1%：这个标签可靠，但几乎是个常量。出处：[专家仲裁评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
+五个标签的一致性按两位专家都接受的 1,930 条候选计算，用的是裁定前的标注，结果呈现一条信度梯度（表 1）。复用形式和来源标记的证据就在文本表面（措辞是否相同，来源是否点名），查看文本即可判定；互文功能和立场需要重建引用者的意图和态度，即便都是行家，也可能各有依据、判断不一。复用层面的一致率为 98.9%，但 97% 的互文对复用的都是内容，仅凭机会就能达到 96.1% 的一致率：这个标签可靠，却几乎是个常量。出处：[专家评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-**表 1** 两位专家在五个标签上的一致性，基于两人都接受的 1,930 条候选，在仲裁之前计算。机会一致率指按每位专家各自的标签频率推算的预期一致率，即 Cohen’s κ 所校正的基线。[PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
+**表 1** 两位专家在五个标签上的一致性。计算范围是两人都接受的 1,930 条候选，所用标注为第三位专家裁定之前的标注。机会一致率指仅凭每位专家各自的标签频率就能预期的一致率，即 Cohen’s κ 所校正的部分。[PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 | 维度 | 观察一致率 | 机会一致率 | Cohen’s κ |
 | --- | --- | --- | --- |
@@ -283,25 +283,25 @@ This work was supported by the National Key Research and Development Program of 
 | 互文功能（背景/支持/……） | 58.9% | 39.5% | 0.32 |
 | 立场（肯定/中立/……） | 77.0% | 68.4% | 0.27 |
 
-模型在梯度有信息量的地方复现了这条梯度。与各模型自身的多数类基线相比，标签准确率在复用形式上提高 18～37 个百分点，来源标记上 25～43 个，互文功能上 12～25 个，复用层面和立场上分别至多 2 个和 9 个。分歧来自任务本身，下面这个有争议的条目可以说明。两位专家都接受了一条互文对，它把《论语》的「敏而好學」与《汉书》中一位臣子为皇太子辩护的场景联系起来，两人也都判定这是无标记的逐字引用，立场为肯定。他们只在「为什么引」上分歧：是用经典支持臣子的主张，还是把经典衡量人才的标准应用到一个活人身上（仲裁人裁定为应用）。文本表面没有任何东西能裁决这一点，而候选池中有 345 条与它形态相同：互文对被接受，复用形式和来源标记一致，互文功能在支持与应用之间分歧。出处：[专家仲裁评测 · PDF 第 4～5 页](https://arxiv.org/pdf/2607.27595v1#page=4)
+在标签不集中于单一类别的维度上，模型的表现也呈现出这条梯度。与各模型自身的多数类基线相比，标签准确率在复用形式上提高 18～37 个百分点，在来源标记上提高 25～43 个，在互文功能上提高 12～25 个，在复用层面和立场上分别至多提高 2 个和 9 个。分歧出自任务本身，下面这个有争议的条目可以说明。《汉书》中有一段臣子为皇太子辩护的话，一条互文对把它与《论语》的「敏而好學」联系起来。两位专家都接受这条互文对，也都判定它是无标记的直接引用，立场为肯定。他们只在引用的用意上有分歧：一位认为是用经典支持臣子的主张，另一位认为是把经典衡量人才的标准用在皇太子身上；第三位专家裁定为应用。文本表面没有任何线索能决定这一点，而候选池中有 345 条与它情形相同：互文对被接受，复用形式和来源标记一致，互文功能在支持与应用之间分歧。出处：[专家评测 · PDF 第 4～5 页](https://arxiv.org/pdf/2607.27595v1#page=4)
 
 ## 4. 相似度检索会漏掉多少复用？
 
-约四分之一的专家仲裁互文对没有一处相同的连续三字。对这些互文对，即使稠密检索器直接用专家标出的片段去查询，也只在 61.0% 的情况下把有重叠的源句排进前十。
+约四分之一经专家裁定的互文对，两侧片段没有一处相同的连续三字。对这些互文对，即使直接用专家标出的史书侧片段查询稠密检索器，也只有 61.0% 能在前十条结果中检出与《论语》侧片段重叠的句子。
 
-在 2,533 条专家仲裁互文对中，25.8% 的两侧片段没有一处相同的连续三字，40.8% 没有相同的连续四字。汉武帝的一道诏书援引孔子对不同国君的答问各不相同，为施政重点的调整辩护：「孔子對定公以徠逺」。它点出了孔子，却与所援引的教诲「近者說，遠者來」（《论语》第 13 篇）没有一个字相同。班固《叙传》中的赋把《论语》第 18 篇的问津一事压缩为「溺招路以從己兮」，隐者与弟子各只剩名字里的一个字，也没有标明来源。出处：[专家仲裁评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
+在 2,533 条经专家裁定的互文对中，25.8% 的两侧片段没有一处相同的连续三字，40.8% 没有相同的连续四字。汉武帝的一道诏书以孔子对不同国君的回答各不相同为由，为调整施政重点辩护：「孔子對定公以徠逺」。诏书点出了孔子，却与所援引的教诲「近者說，遠者來」（《论语》第 13 篇《子路》）没有一个字相同。班固《叙传》中的赋，把《论语》第 18 篇《微子》中子路问津的故事压缩为「溺招路以從己兮」，隐者与弟子各只剩名字里的一个字，也没有标明出处。出处：[专家评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-我们给了稠密检索一个实际部署的管线都没有的优势：用专家标出的史书侧片段直接查询 BGE-M3。对没有相同连续三字的互文对，它只在 61.0% 的情况下把有重叠的源句排进前十（排在第一：33.0%），逐字锚定的互文对则为 91.7%。在 1,470 个《论语》句子单元中，那道诏书和那篇赋的来源分别排在第 232 位和第 470 位。无连续三字重合的这一层，中位排名是 4，逐字锚定的互文对是 1。这些命中率给任何先检索后判读的管线的召回率设了上限，而上限恰好落在需要解读的地方。检索的输出也既不带区间，也不带标签。出处：[专家仲裁评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
+我们给了稠密检索一个实际系统不会有的便利：直接用专家标出的史书侧片段查询 `BGE-M3`。没有相同连续三字的互文对，只有 61.0% 能在前十条结果中检出重叠的源句（排在第一位的为 33.0%），逐字锚定的互文对则为 91.7%。在 1,470 个《论语》句子单元中，那道诏书和那篇赋的来源分别排在第 232 位和第 470 位。无连续三字重合的这一层，中位排名为 4，逐字锚定的互文对为 1。这些命中率决定了任何先检索、后判读的流程所能达到的召回率上限，而受限最严重的，正是需要解读的那部分复用。检索的输出也既没有字符区间，也没有标签。出处：[专家评测 · PDF 第 4 页](https://arxiv.org/pdf/2607.27595v1#page=4)
 
-在整个文本块对的层面也有同样的限制：要保留专家确认的每一处复用，稠密与稀疏嵌入预过滤分别只能剔除 2.5% 和 1.1% 的文本块对，两者合用只有 0.3%，因为字面相似度和分布相似度都会系统地漏掉转述。出处：[引言 · PDF 第 1 页](https://arxiv.org/pdf/2607.27595v1#page=1)
+在整个文本块对的层面，限制同样存在：要保留专家确认的每一处复用，稠密嵌入与稀疏嵌入预过滤分别只能剔除 2.5% 和 1.1% 的文本块对，两者合用只能剔除 0.3%，因为字面相似度和分布相似度都会系统地漏掉转述。出处：[引言 · PDF 第 1 页](https://arxiv.org/pdf/2607.27595v1#page=1)
 
 ## 5. 十二个大语言模型在精确率、成本和校准上有何差别？
 
-对照基准，精确率在 55.9%～92.9% 之间，十二个模型中有八个不低于 82%。质量与成本各自独立变化：精确率最高的 `doubao-2.1-turbo` 每个有效互文对的成本是 `deepseek-v4-flash` 的 51 倍，后者精确率低 4.9 个百分点，每美元换来的精确率最高，因此我们选它做全量运行。
+对照基准，各模型的精确率在 55.9%～92.9% 之间，十二个模型中有八个不低于 82%。质量与成本并不同步：精确率最高的 `doubao-2.1-turbo`，每条有效互文对的成本是 `deepseek-v4-flash` 的 51 倍；后者精确率低 4.9 个百分点，但精确率与成本之比最高，因此我们选它做全量运行。
 
-**表 2** 十二个模型在 2,400 个评测任务上的结果：候选数、有效互文对数、精确率（已提交的互文对中经专家仲裁判为有效的比例）、总成本、每个有效互文对的成本，以及每个任务的中位时延。[PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
+**表 2** 十二个模型在 2,400 个评测任务上的结果：候选数、有效互文对数、精确率（已提交的互文对中经专家裁定为有效的比例）、总成本、每条有效互文对的成本，以及每个任务的中位时延。[PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-| 模型 | 候选 | 有效 | 精确率 | 成本（美元） | 每个有效互文对的成本（美元） | 中位时延（秒） |
+| 模型 | 候选 | 有效 | 精确率 | 成本（美元） | 每条有效互文对的成本（美元） | 中位时延（秒） |
 | --- | --- | --- | --- | --- | --- | --- |
 | `doubao-2.1-turbo` | 367 | 341 | 92.9% | 853 | 2.501 | 521 |
 | `deepseek-v4-pro` | 426 | 394 | 92.5% | 42 | 0.107 | 101 |
@@ -317,35 +317,35 @@ This work was supported by the National Key Research and Development Program of 
 | `claude-haiku-4.5` | 578 | 323 | 55.9% | 647 | 2.003 | 163 |
 | 合计 | 6,018 | 4,838 |  | 3,676 |  |  |
 
-时延与这两者也各自独立：`doubao-2.1-turbo` 同时是最慢的模型（每个任务的中位时延为 521 秒），而最快的几个模型（37～39 秒）精确率跨度很大（表 2）。出处：[专家仲裁评测 · PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
+时延与这两者也不同步：`doubao-2.1-turbo` 同时是最慢的模型（每个任务的中位时延为 521 秒），而最快的几个模型（37～39 秒）精确率高低悬殊（表 2）。出处：[专家评测 · PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
 
-![十二个大语言模型的散点图：精确率对每个有效互文对的成本，成本为对数轴。一条虚线有效前沿经过 deepseek-v4-flash、deepseek-v4-pro 和 doubao-2.1-turbo，其中 deepseek-v4-flash 以绿色描边，标示为选定的模型。claude-haiku-4.5 位置最低，精确率约 56%。](https://beyond-similarity.zhaoji.ac.cn/_astro/models.oRlDZNk3_1MgGEB.webp)
+![散点图：十二个大语言模型的精确率与每条有效互文对的成本，成本取对数轴。虚线画出有效前沿，经过 deepseek-v4-flash、deepseek-v4-pro 和 doubao-2.1-turbo；deepseek-v4-flash 用绿色描边，标为选定的模型。claude-haiku-4.5 位置最低，精确率约 56%。](https://beyond-similarity.zhaoji.ac.cn/_astro/models.oRlDZNk3_1MgGEB.webp)
 
-**图 2** 十二个大语言模型在 2,533 条互文对的基准上：精确率对每个有效互文对的成本（对数刻度）。选定的部署模型 `deepseek-v4-flash` 每单位成本换得的精确率最高，各项计数见表 2。[PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
+**图 2** 十二个大语言模型的精确率与每条有效互文对的成本（对数刻度），基准为 2,533 条互文对。选定的部署模型 `deepseek-v4-flash` 精确率与成本之比最高；各项计数见表 2。[PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
 
-模型自报的置信度有信息量，但偏乐观。汇集十二个模型，置信度区分有效与无效候选的曲线下面积（AUC, Area Under the Curve）为 0.85。自报置信度不低于 0.9 的候选，96.6% 有效（只看 `deepseek-v4-flash`：AUC 0.84，96.1%）。低于 0.9 时，各模型系统地过度自信（图 3）。出处：[专家仲裁评测 · PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
+模型自报的置信度有参考价值，但偏于乐观。汇总十二个模型，置信度区分有效与无效候选的曲线下面积（AUC, Area Under the Curve）为 0.85；自报置信度不低于 0.9 的候选，96.6% 有效（仅看 `deepseek-v4-flash`：AUC 0.84，96.1%）。置信度低于 0.9 时，模型自报的置信度系统地高于候选的实际有效比例（图 3）。出处：[专家评测 · PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
 
-![柱状图，显示十二个模型汇总后，各置信度桶内被判为有效的候选比例：低于 0.7 为 41%，0.7～0.8 为 56%，0.8～0.9 为 74%，0.9～0.95 为 91%，0.95 及以上为 99%。灰色色带标出每个桶的名义范围，低于 0.9 的各柱都没有达到各自的色带。](https://beyond-similarity.zhaoji.ac.cn/_astro/calibration.DvmolZgm_ZWSYoN.webp)
+![柱状图：汇总十二个模型后，各置信度桶内判为有效的候选所占比例。低于 0.7 为 41%，0.7～0.8 为 56%，0.8～0.9 为 74%，0.9～0.95 为 91%，0.95 及以上为 99%。灰色色带标出每个桶的名义范围，低于 0.9 的各柱都没有达到各自的色带。](https://beyond-similarity.zhaoji.ac.cn/_astro/calibration.DvmolZgm_ZWSYoN.webp)
 
-**图 3** 模型自报置信度的校准，汇总十二个模型：各置信度桶内被判为有效的候选比例。柱子没有达到灰色色带，表示模型在该桶内过度自信。[PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
+**图 3** 模型自报置信度的校准，汇总十二个模型：各置信度桶内判为有效的候选比例。柱子未达到灰色色带，说明模型在该桶内过于自信。[PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-由两个或更多模型共同提出的候选有 88.5% 有效，只由一个模型提出的为 65.1%，所以模型之间的一致是候选有效的信号。各模型找到的是互文空间的不同部分，汇集而成的基准把它们合在一起。出处：[专家仲裁评测 · PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
+由两个及以上模型共同提出的候选，88.5% 有效；只由一个模型提出的为 65.1%。可见模型之间的一致是候选有效的信号。不同模型找到的是互文空间的不同部分，汇集而成的基准把这些部分合在一起。出处：[专家评测 · PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 ## 6. 二十四史在十八个世纪里如何复用《论语》？
 
-在成书于公元前 91 年至 1739 年的各部史书之间，复用类型的构成未检出系统性变化，而同一原文在较晚成书的史书中字面忠实度总体较低。
+在成书于公元前 91 年至 1739 年的各部史书之间，复用类型的构成未检出系统性变化；但较晚成书的史书引用同一段原文时，往往不如较早的史书贴近字面。
 
-我们用 `deepseek-v4-flash` 把《论语》与二十四史的每一卷配对，共 65,380 个文本块对任务，涉及约 2,850 万字符，没有失败的任务，得到 5,766 条互文对。精确率只在《汉书》上测过，按这一精确率，预计大约每八条中有一条是误报。因此我们把输出看作一组模型判断的分布，这些判断的精确率和校准已在基准上测过。结论建立在分布结构上，不依赖原始总数，每条互文对的置信度则留给想把阈值收得更紧的读者。出处：[规模化到二十四史 · PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
+我们用 `deepseek-v4-flash` 把《论语》与二十四史的每一卷配对，共 65,380 个文本块对任务，涉及约 2,850 万字符，没有失败的任务，共得到 5,766 条互文对。精确率只在《汉书》上测过；按这一精确率估计，大约每八条中有一条是误报。因此，我们把输出看作一组模型判断的分布；作出这些判断的模型，其精确率和校准已在基准上测定。结论建立在分布的结构上，不依赖原始总数；每条互文对都附有置信度，想收紧阈值的读者可以据此筛选。出处：[扩展到二十四史 · PDF 第 5 页](https://arxiv.org/pdf/2607.27595v1#page=5)
 
 ### 一段原文，三种复用
 
-禅让册命构成一个合并片段簇，包含从 22 部史书中抽取的 85 条互文对。《汉书》点明出处，近乎逐字地引用它：「咨爾舜，天之歷數在爾躬」，标注为直接引用、显性、支持，字面忠实度 0.87，点出经典是为了借重它的权威。同一部史书里的一道拜将册文吸收了它的措辞，标注为直接引用、无标记、应用（0.37），册命的语言转作了日常施政的公文：「往悉爾心，統辟元戎，折衝綏遠，匡正庶事，允執其中。」《三国志》的禅让诏书用「天禄永终，历数在晋」移交天命，标注为转述、无标记、应用（0.25）。标签把对经典权威的公开诉诸、不声不响的行政挪用和公式化的文书区分开来，而仅在这一个簇里，字面忠实度已有随成书年份下降的趋势。出处：[规模化到二十四史 · PDF 第 5～6 页](https://arxiv.org/pdf/2607.27595v1#page=5)
+禅让册命所在的合并片段簇共有 85 条互文对，分布在 22 部史书中。《汉书》点明出处，几乎逐字引用：「咨爾舜，天之歷數在爾躬」，标注为直接引用、显性、支持，字面忠实度 0.87；点出经典，是为了借重它的权威。同书一道拜将的册文吸收了册命的措辞，标注为直接引用、无标记、应用（0.37），册命的语言在这里转为日常施政的公文：「往悉爾心，統辟元戎，折衝綏遠，匡正庶事，允執其中。」《三国志》的禅让诏书以「天禄永终，历数在晋」移交天命，标注为转述、无标记、应用（0.25）。标签把公开借重经典的权威、不动声色的行政挪用和公式化的文书区分开来；而仅在这一个簇里，字面忠实度已呈现随成书年份下降的趋势。出处：[扩展到二十四史 · PDF 第 5～6 页](https://arxiv.org/pdf/2607.27595v1#page=5)
 
-### 复用类型的构成未检出漂移
+### 复用类型的构成未检出历时变化
 
-比较 659 年及以前成书的史书与 945 年起成书的史书，无标记复用的占比分别为 77.5% 和 77.6%。五个维度中，没有一个维度的主导类别占比与成书年份的相关在置换检验中达到 p < 0.05（表 3；互文功能和立场仍属探索性）。各部史书的用法画像也不随成书年代的间隔拉大而分化：两部史书之间的 Jensen–Shannon 散度与相隔年数不相关（置换检验 p = .12～.28）。从较早的史书到较晚的史书，原始引用密度确实降到约三分之一，但这个计数层面的趋势用不着类型学，也与通行的分期相符，所以我们不以此立论。出处：[规模化到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
+659 年及以前成书的史书与 945 年及以后成书的史书相比，无标记复用的占比分别为 77.5% 和 77.6%。五个维度中，没有一个维度的主导类别占比与成书年份的相关在置换检验中达到 p < 0.05（表 3；互文功能和立场仍属探索性结果）。各部史书的复用类型分布也未见随成书年代相隔拉大而分化：两部史书之间的 Jensen–Shannon 散度与相隔年数未检出相关（置换检验 p = .12～.28）。从较早的史书到较晚的史书，原始引用密度确实降到约三分之一；但这一计数层面的趋势用不着类型学，也与通行的分期相符，所以我们不据此立论。出处：[扩展到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-**表 3** 二十四史中复用类型的构成。早期与晚期分别是 659 年及以前成书、945 年起成书的史书合并计算的占比。ρ 是 24 部史书中主导类别的逐史占比与成书年份的 Spearman 相关系数，p 是 2,000 次置换得到的置换检验 p 值。没有一个趋势的 p 低于 0.05。[PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
+**表 3** 二十四史中复用类型的构成。早期、晚期分别合并 659 年及以前成书、945 年及以后成书的史书计算占比。ρ 是主导类别在各部史书中的占比与成书年份的 Spearman 相关系数（共 24 部史书），p 是 2,000 次置换得到的置换检验 p 值。各项趋势的 p 都不低于 0.05。[PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
 
 | 维度 | 主导类别 | 早期 | 晚期 | *ρ* | *p* |
 | --- | --- | --- | --- | --- | --- |
@@ -355,43 +355,43 @@ This work was supported by the National Key Research and Development Program of 
 | 互文功能 | 支持 | 67.8% | 70.8% | −0.11 | .61 |
 | 立场 | 肯定 | 73.8% | 79.8% | 0.16 | .44 |
 
-下文所见单段原文的改写，与复用类型的构成未检出变化并不冲突。文化吸引是一种关于文化传播的解释。它预期群体层面的分布保持稳定，原因是个体的变形向相同的形式收敛，而不是每一项都被忠实复制。出处：[规模化到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
+下文会看到，单段原文在流传中屡经改写，这与复用类型的构成未检出变化并不矛盾。文化吸引理论解释文化如何传播：它预期群体层面的分布保持稳定，因为传播中的改写会趋向若干共同的形式，不必每次都忠实复制。出处：[扩展到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-吸收经典而不标出处，在早期和晚期史书中都占复用的四分之三以上，按本土的说法，这是得到许可的做法。章学诚把著作之体与考据之体分开：「著作之體，援引古義，襲用成文，不標所出，非為掠美」。不过他只把这一许可给予自家论说足以自立、无须倚仗所引之言的作者。刘勰六世纪的诗学已经认为，旧语用得恰当，读来便如同出自己口。出处：[规模化到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
+不标出处地吸收经典，在早期和晚期史书中都占复用的四分之三以上，而中国传统学术本身就认可这种做法。章学诚区分著作之体与考据之体，认为「著作之體，援引古義，襲用成文，不標所出，非為掠美」。但他只把这种许可给予论说足以自立、无须倚重所引之言的作者。刘勰在 6 世纪就已认为，旧典用得贴切，便如同出自作者之口。出处：[扩展到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-### 来源标记与字面忠实度是两回事
+### 字面忠实度代替不了来源标记
 
-字面忠实度的计算方法，是按字符级最长公共子序列把每个史书片段与它的《论语》源文对齐。一处引用有多贴近字面，并不决定它怎样标记来源。点名来源的引用比无标记的引用字面忠实度更高（中位数 0.78 对 0.38，Kruskal–Wallis 检验 p < 10⁻³），在直接引用内部这一差距依然存在（0.85 对 0.50），所以相似度分数代替不了来源标记这个标签。点名来源是公开诉诸经典权威，措辞也因此要守更高的标准。这种关系只是一种规律，有例外：作者有意隐藏来源时，无标记的引用也可以逐字照录。出处：[规模化到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
+字面忠实度的计算方法是：按字符级最长公共子序列，把每个史书片段与它的《论语》源文对齐。一段话引得多贴近字面，并不决定它如何标记来源。点名来源的引用比无标记的引用字面忠实度更高（中位数 0.78 对 0.38，Kruskal–Wallis 检验 p < 10⁻³）；只看直接引用，差距依然存在（0.85 对 0.50）。所以相似度分数不能代替来源标记这个标签。点名来源就是公开借重经典的权威，措辞也因此要守更严的标准。这只是一种规律，并非定律：如果作者有意隐去来源，无标记的引用同样可以一字不差。出处：[扩展到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-### 应用型引用往往不那么贴近字面，大多也不标来源（探索性）
+### 应用型引用往往不那么贴近字面，多数不标来源（探索性结果）
 
-标为支持的引用比标为应用的引用更贴近经典的字面（字面忠实度均值 0.50 对 0.42）。应用型引用把经典改用于治理与政策，93% 不标来源。本土学术把这种实用的引经称为「通经致用」：引文的分量在于圣人会赞同这个决定，不在于圣人的原话。互文功能是专家一致性较低的维度（表 1）。出处：[规模化到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
+标为支持的引用比标为应用的引用更贴近经典的字面（字面忠实度均值 0.50 对 0.42）。应用型引用把经典用于治理和政策，93% 不标来源。这正是传统学术所说的「通经致用」：引文的分量在于圣人会赞同这项决定，不在于圣人的原话。互文功能是专家一致性较低的维度（表 1）。出处：[扩展到二十四史 · PDF 第 6 页](https://arxiv.org/pdf/2607.27595v1#page=6)
 
-### 较晚的史书引用同一原文，字面忠实度往往更低
+### 较晚的史书引用同一段原文，往往不那么贴近字面
 
-固定同一段原文来看，较晚成书的史书引用它时往往不那么贴近字面（图 4）。在 283 个合并片段簇上（每簇至少涉及五个不同的成书年份），簇内字面忠实度与成书年份的 Spearman 相关系数平均为 −0.15（69.3% 的簇为负；簇级自助法 95% 置信区间 [−0.19, −0.12]；置换检验 p < 0.001）。直接引用的下降比转述更陡（−0.18 对 −0.08），在置信度不低于 0.9 的互文对中，这一趋势更强（172 个簇，ρ = −0.19，p < 0.001）。章学诚已经看到，流传会改动措辞：「司馬遷點竄尚書左國之文，班固點竄司馬遷之文，非好異也，理勢之不得不然也」。出处：[规模化到二十四史 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
+固定同一段原文来看，较晚成书的史书引用它时往往不那么贴近字面（图 4）。符合条件的合并片段簇共 283 个，每簇至少涉及五个不同的成书年份。簇内字面忠实度与成书年份的 Spearman 相关系数平均为 −0.15（69.3% 的簇为负；簇级自助法 95% 置信区间为 [−0.19, −0.12]；置换检验 p < 0.001）。直接引用的下降比转述更陡（−0.18 对 −0.08）；只看置信度不低于 0.9 的互文对，这一趋势更明显（172 个簇，ρ = −0.19，p < 0.001）。章学诚早已看到流传会改动措辞：「司馬遷點竄尚書左國之文，班固點竄司馬遷之文，非好異也，理勢之不得不然也」。出处：[扩展到二十四史 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
 
-![箱线图，显示各簇字面忠实度与成书年份的 Spearman 相关系数。全部互文对：283 个簇，均值 −0.15。直接引用：123 个簇，均值 −0.18。转述：170 个簇，均值 −0.08。三个均值都在零的左侧，都带有表示置换检验 p 小于 0.05 的星号。](https://beyond-similarity.zhaoji.ac.cn/_astro/fidelity.DbYY9Rhf_JEUwl.webp)
+![箱线图：各簇字面忠实度与成书年份的 Spearman 相关系数。全部互文对：283 个簇，均值 −0.15。直接引用：123 个簇，均值 −0.18。转述：170 个簇，均值 −0.08。三个均值都在零的左侧，都带有星号，表示置换检验 p 小于 0.05。](https://beyond-similarity.zhaoji.ac.cn/_astro/fidelity.DbYY9Rhf_JEUwl.webp)
 
-**图 4** 固定原文时，字面忠实度往往随引用方史书的成书年份下降：各簇忠实度与年份的 Spearman 相关系数分布。箱体为四分位距，菱形为各层均值，星号表示置换检验 p 小于 0.05，*k* 为符合条件的簇数。[PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
+**图 4** 固定同一段原文，引用它的史书成书越晚，字面忠实度往往越低。图为各簇忠实度与成书年份的 Spearman 相关系数分布。箱体为四分位距，菱形为各层均值，星号表示置换检验 p 小于 0.05，*k* 为符合条件的簇数。[PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ### 固定切分无法对齐的复用
 
-完整读入每个文本块，还能找回两侧长短不一的复用。《汉书》称赞汉成帝仪容的一句「升車正立，不內顧，不疾言，不親指」，取材于《论语·乡党》两处分开的记述：「升車，必正立，執綏」和「車中，不內顧，不疾言，不親指」。这两条互文对都被接受。按句子对句子排序，只能选中其中一句《论语》，或者把分数摊到两句上。全量运行中共有 117 组这样的复用：一个史书侧字符区间对应两处及以上互不重叠的《论语》段落。出处：[规模化到二十四史 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
+完整读入每个文本块，还能找到两侧长短不一的复用。《汉书》称赞汉成帝仪容的一句「升車正立，不內顧，不疾言，不親指」，取材于《论语·乡党》中两处分开的记述：「升車，必正立，執綏」和「車中，不內顧，不疾言，不親指」。两条互文对都经裁定有效。如果按句子对句子排序，只能选中其中一句《论语》，或者把分数分摊到两句上。全量运行中共有 117 组这样的复用：同一个史书侧字符区间，对应《论语》中两处及以上互不重叠的段落。出处：[扩展到二十四史 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ## 局限
 
-全量运行只用了一个模型，它的精确率只在《汉书》上测过。我们依赖的发现在置信度不低于 0.9 的互文对中依然成立，而且更强。这部分互文对占全量运行的 55.3%，所以这些发现并不靠低置信度的互文对支撑。在基准上，`deepseek-v4-flash` 置信度达到这一水平的候选 96.1% 有效。所有复用计数都是下限，因为只有某个模型提出过的互文对才能计入。出处：[讨论与局限 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
+全量运行只用了一个模型，它的精确率只在《汉书》上测过。我们依据的几项发现，在置信度不低于 0.9 的互文对中依然成立，而且更明显；这部分互文对占全量运行的 55.3%，所以这些发现并不依赖低置信度的互文对。在基准上，`deepseek-v4-flash` 置信度达到这一水平的候选有 96.1% 有效。所有复用计数都只是下限，因为只有某个模型提出过的互文对才能计入。出处：[讨论与局限 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
 
-模型可能吸收过前人对复用的学术认定，所以我们把这个系统定位为辅助工具。这种数据污染的影响并不均匀：模型可能记住的个案集中在著名的、有标记的引用上，而语料规模上的价值在于索引不收的无标记转述。每部史书都只以一个成书年份进入历时分析，尽管有几部编了几十年，早期与晚期的划分也沿用通行的分期。出处：[讨论与局限 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
+模型可能在训练中吸收过前人对这些复用的考证，所以我们把这个系统定位为辅助工具。这种数据污染的影响并不均匀：模型可能记住的个案集中在著名的、标明出处的引用上，而在语料规模上真正有价值的是无标记的转述，索引并不收录这类复用。每部史书在历时分析中都只取一个成书年份，尽管有几部前后编了几十年；早期与晚期的划分也沿用通行的分期。出处：[讨论与局限 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
 
-这个基准是针对一对来源的受控评测场景，并非通用的互文基准。出处：[讨论与局限 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
+这个基准只覆盖《论语》与《汉书》这一组文献，是受控的评测场景，并非通用的互文基准。出处：[讨论与局限 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ## 使用本研究
 
-目前公开的资源有两项：[arXiv](https://arxiv.org/abs/2607.27595) 上的论文和[互文图谱](https://analects-24histories-intertext.pkudh.net/)。互文图谱在原文语境中展示二十四史全量运行得到的每一条互文对及其字符区间和标签，并把互文对归入簇，追踪一段原文的接受史。
+目前公开的资源有两项：[arXiv](https://arxiv.org/abs/2607.27595) 上的论文，以及[互文图谱](https://analects-24histories-intertext.pkudh.net/)。互文图谱在原文上下文中展示二十四史全量运行得到的每条互文对，连同字符区间和标签；它还把互文对归入簇，用来追踪一段原文的接受史。
 
-这套协议只需要一对可以切分的来源和一套用于标注的复用类型学，其中几乎没有专属于《论语》或中文的东西：凡是必须把复用落地到精确字符区间的场合，它的校验都适用。出处：[讨论与局限 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
+这套协议只需要两部可以切分的文献和一套用于标注的复用类型学，几乎没有专属于《论语》或中文的部分。凡是需要把复用落实到精确字符区间的场合，都可以用它的校验。出处：[讨论与局限 · PDF 第 7 页](https://arxiv.org/pdf/2607.27595v1#page=7)
 
 ## 引用
 
