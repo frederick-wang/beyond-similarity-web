@@ -111,6 +111,12 @@ export const TABLE_1_DIMENSIONS = [
 /** Dimension names of Table 3 as printed (p. 6). */
 export const TABLE_3_DIMENSIONS = ['Form', 'Aspect', 'Source-marking', 'Function', 'Stance'] as const
 
+/** Numbers that section headings state, in words or digits (the prose test reads answers and paragraphs only). */
+export const HEADING_FIGURES = { histories: ['eighteen centuries'] } as const
+
+/** Grant numbers in the acknowledgments, as printed on p. 8. */
+export const GRANT_NUMBERS = ['2025YFC3309300', '72010107003'] as const
+
 /**
  * Every number of two or more digits that the answers and paragraphs of each
  * section state, copied from the paper's text. Tables and captions are checked

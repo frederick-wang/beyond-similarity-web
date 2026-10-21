@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { SECTION_FIGURES, SECTION_WORD_FIGURES, normalize } from './paper-literals'
+import { GRANT_NUMBERS, HEADING_FIGURES, SECTION_FIGURES, SECTION_WORD_FIGURES, normalize } from './paper-literals'
 
 // Section prose states the paper's numbers as text rather than reading them
 // from the facts module. For each section, the numbers in its answer and
@@ -41,3 +41,21 @@ for (const [section, figures] of Object.entries(SECTION_FIGURES)) {
     }
   })
 }
+
+for (const [section, figures] of Object.entries(HEADING_FIGURES)) {
+  test(`states the paper's figures in the ${section} heading`, async ({ page }) => {
+    await page.goto('/')
+    const heading = normalize(await page.locator(`section#${section} > h2`).innerText())
+    for (const figure of figures) {
+      expect(heading).toContain(figure)
+    }
+  })
+}
+
+test('names the grants as the paper prints them', async ({ page }) => {
+  await page.goto('/')
+  const text = normalize(await page.locator('section#acknowledgments').innerText())
+  for (const grant of GRANT_NUMBERS) {
+    expect(text).toContain(`No. ${grant}`)
+  }
+})
