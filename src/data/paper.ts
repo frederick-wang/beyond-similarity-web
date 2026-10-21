@@ -1,7 +1,8 @@
 // The single source of paper facts, following arXiv:2607.27595v1. Everything
 // the page states as a fact outside long-form section prose reads from here:
-// the title block, the finding, "At a glance", the meta description and the
-// BibTeX entry.
+// the title block, the finding, "At a glance", the meta description, the
+// BibTeX entry, the citation tags, the structured data, the share card and the
+// sitemap.
 
 /** The language pages, as BCP 47 tags. */
 export const pageLanguages = ['en'] as const
