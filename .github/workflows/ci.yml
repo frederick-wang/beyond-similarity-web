@@ -8,15 +8,28 @@ on:
 permissions:
   contents: read
 
+# One group per ref. GitHub runs at most one run of a group at a time, and a
+# newly queued run replaces any run of the group that is still waiting.
+#
+# On a pull request, a newer push also cancels the run in progress.
+#
+# On main, runs therefore go one at a time in push order, and so do their
+# publishes. A newer push replacing a waiting run is safe because the newer
+# commit contains the older one. scripts/publish-site.mjs relies on this
+# ordering, so cancel-in-progress must stay false for pushes to main:
+# cancelling a running run could start the next one while its publish is still
+# pushing.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -32,3 +45,46 @@ jobs:
           name: playwright-traces
           path: test-results/
           retention-days: 7
+      # The build that has just passed the tests. On main the publish job pushes
+      # this artifact, so a run builds only once.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site
+          path: dist/
+          include-hidden-files: true
+          if-no-files-found: error
+          # "Re-run all jobs" uploads under the same name again.
+          overwrite: true
+          retention-days: 7
+
+  # Publishes the tested build as the contents of the `site` branch (ADR 0003).
+  # Nothing here knows about hosting.
+  publish:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # The only job that can write to the repository.
+    permissions:
+      contents: write # pushes the site branch
+    # No actions/setup-node: the script uses only Node built-ins, which the
+    # runner image's Node provides, and setup-node's token input would receive
+    # this job's write token.
+    steps:
+      # Downloaded before the checkout stores the write credential, and outside
+      # the workspace, so that credential exists only for the last step.
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site
+          path: ${{ runner.temp }}/site
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The publish script pushes with this job's token. The job uploads
+          # nothing, so the stored credential never leaves the runner.
+          persist-credentials: true
+      - run: node scripts/publish-site.mjs "$RUNNER_TEMP/site" "$SOURCE_SHA"
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
