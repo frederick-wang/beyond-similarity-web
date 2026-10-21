@@ -85,7 +85,9 @@ test.describe('link previews on social platforms', () => {
   test('give the title, description, address and a large image', async ({ page }) => {
     await page.goto('/')
     const description = await page.locator('meta[name="description"]').getAttribute('content')
-    expect(await openGraph(page, 'og:type')).toBe('website')
+    // "article" lets Zotero save a journal article with its DOI; "website" would make it a web page.
+    expect(await openGraph(page, 'og:type')).toBe('article')
+    expect(await openGraph(page, 'article:published_time')).toBe(PUBLISHED)
     expect(await openGraph(page, 'og:site_name')).toBe('Beyond Similarity')
     expect(await openGraph(page, 'og:title')).toBe(TITLE)
     expect(await openGraph(page, 'og:description')).toBe(description)
