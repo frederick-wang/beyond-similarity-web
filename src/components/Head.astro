@@ -4,6 +4,7 @@
 // the English and Chinese pages describe the same paper.
 import type { PageCopy } from '../content/types'
 import { absoluteUrl, authors, familyFirst, paper } from '../data/paper'
+import { serializeJsonLd, webPage } from '../lib/structured-data'
 
 interface Props {
   readonly copy: PageCopy
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const { copy, path } = Astro.props
+const canonical = absoluteUrl(path)
 ---
 
 <meta charset="utf-8" />
@@ -18,10 +20,12 @@ const { copy, path } = Astro.props
 <meta name="color-scheme" content="light dark" />
 <title>{copy.title}</title>
 <meta name="description" content={copy.description} />
-<link rel="canonical" href={absoluteUrl(path)} />
+<link rel="canonical" href={canonical} />
 
 <meta name="citation_title" content={paper.titleEn} />
 {authors.map((author) => <meta name="citation_author" content={familyFirst(author)} />)}
 <meta name="citation_publication_date" content={paper.published.replaceAll('-', '/')} />
 <meta name="citation_doi" content={paper.doi} />
 <meta name="citation_arxiv_id" content={paper.arxivId} />
+
+<script type="application/ld+json" set:html={serializeJsonLd(webPage(copy, canonical))} />

@@ -1,5 +1,18 @@
 import { expect, test, type Page } from '@playwright/test'
-import { ARXIV_ID, AUTHORS_FAMILY_FIRST, DOI, PUBLISHED_SLASHED, TITLE } from './paper-literals'
+import {
+  ABSTRACT,
+  AFFILIATIONS,
+  ARXIV_ABS,
+  ARXIV_ID,
+  AUTHORS,
+  AUTHORS_FAMILY_FIRST,
+  DOI,
+  DOI_URL,
+  PUBLISHED,
+  PUBLISHED_SLASHED,
+  SITE,
+  TITLE,
+} from './paper-literals'
 
 async function metaContents(page: Page, name: string): Promise<string[]> {
   return page.locator(`meta[name="${name}"]`).evaluateAll((elements) => elements.map((element) => element.getAttribute('content') ?? ''))
@@ -18,5 +31,40 @@ test.describe('citation metadata for Google Scholar and reference managers', () 
   test('offers no citation_pdf_url, since Google Scholar wants the PDF in the same directory as the page', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('meta[name="citation_pdf_url"]')).toHaveCount(0)
+  })
+})
+
+test.describe('structured data', () => {
+  test('describes the page as a WebPage whose main entity is the paper as a ScholarlyArticle', async ({ page }) => {
+    await page.goto('/')
+    const blocks = await page.locator('script[type="application/ld+json"]').allTextContents()
+    expect(blocks).toHaveLength(1)
+    const data: unknown = JSON.parse(blocks.join(''))
+    const description = await page.locator('meta[name="description"]').getAttribute('content')
+    expect(data).toMatchObject({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      // The page's own identifier, distinct from the paper's DOI.
+      '@id': expect.stringContaining(SITE),
+      url: SITE,
+      name: TITLE,
+      description,
+      inLanguage: 'en',
+      mainEntity: {
+        '@type': 'ScholarlyArticle',
+        '@id': DOI_URL,
+        sameAs: ARXIV_ABS,
+        name: TITLE,
+        headline: TITLE,
+        author: AUTHORS.map((name) => ({
+          '@type': 'Person',
+          name,
+          affiliation: AFFILIATIONS.map((affiliation) => ({ '@type': 'Organization', name: affiliation })),
+        })),
+        datePublished: PUBLISHED,
+        abstract: ABSTRACT,
+        inLanguage: 'en',
+      },
+    })
   })
 })

@@ -29,7 +29,9 @@ export const ARXIV_ID = '2607.27595'
 export const ARXIV_ABS = 'https://arxiv.org/abs/2607.27595'
 export const ARXIV_PDF_V1 = 'https://arxiv.org/pdf/2607.27595v1'
 export const DOI = '10.48550/arXiv.2607.27595'
-/** arXiv v1 submission date, in the slash form citation_publication_date takes. */
+export const DOI_URL = 'https://doi.org/10.48550/arXiv.2607.27595'
+/** arXiv v1 submission date, as ISO 8601 and in the slash form citation_publication_date takes. */
+export const PUBLISHED = '2026-07-30'
 export const PUBLISHED_SLASHED = '2026/07/30'
 export const EXPLORER = 'https://analects-24histories-intertext.pkudh.net/'
 export const SITE = 'https://beyond-similarity.zhaoji.ac.cn/'

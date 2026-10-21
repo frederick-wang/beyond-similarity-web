@@ -82,6 +82,8 @@ export const paper = {
   doi: '10.48550/arXiv.2607.27595',
   /** arXiv v1 submission date (YYYY-MM-DD). */
   published: '2026-07-30',
+  /** The language the paper is written in (BCP 47), the same on every language page. */
+  language: 'en',
   bibtexKey: 'wang2026beyond',
 } as const
 
@@ -129,6 +131,7 @@ export const glance = {
 } as const satisfies Readonly<Record<GlanceId, Quantity>>
 
 export const links = {
+  doi: `https://doi.org/${paper.doi}`,
   arxivAbs: `https://arxiv.org/abs/${paper.arxivId}`,
   pdf: `https://arxiv.org/pdf/${paper.arxivId}${paper.arxivVersion}`,
   explorer: 'https://analects-24histories-intertext.pkudh.net/',
