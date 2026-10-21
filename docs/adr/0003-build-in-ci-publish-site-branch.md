@@ -1,6 +1,6 @@
 # The site is built in CI and published to the `site` branch
 
-Hosting only serves files. CI type-checks, builds, and tests every change; on `main` it publishes the built site as the contents of the `site` branch, and hosting pulls that branch with a read-only deploy key scoped to this repository. Build tooling stays out of hosting, and no hosting credentials are stored in GitHub.
+Hosting only serves files. CI type-checks, builds, and tests every change; on `main` it publishes the built site as the contents of the `site` branch, and hosting pulls that branch with a read-only deploy key scoped to this repository. Hosting never follows `site` automatically: each deploy activates one chosen `site` commit, after checking that its `build.json` names the source commit it was built from. Build tooling stays out of hosting, and no hosting credentials are stored in GitHub.
 
 ## Considered Options
 

@@ -9,9 +9,8 @@
 //
 // Each publish adds one commit whose tree is exactly the build directory and
 // whose parent is the previous publish; the first publish is a root commit. The
-// branch never holds source files, and every earlier publish stays reachable,
-// so hosting can check out the commit the maintainer approved even after a
-// newer one has landed.
+// branch never holds source files, and earlier publishes stay reachable, as the
+// deploy step in ADR 0003 needs.
 //
 // Outcomes, in the order they are decided:
 //   exit 1  build.json names another commit than <source-sha>, the arguments or
