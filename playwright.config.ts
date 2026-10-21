@@ -26,7 +26,7 @@ const ci = process.env['CI'] !== undefined
 
 export default defineConfig({
   testDir: 'tests',
-  globalSetup: './tests/global-setup.ts',
+  globalSetup: external ? [] : ['./tests/global-setup.ts'],
   fullyParallel: true,
   forbidOnly: ci,
   reporter: ci ? 'github' : 'list',
