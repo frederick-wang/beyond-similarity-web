@@ -6,6 +6,7 @@ import {
   PAGES,
   SECTION_FIGURES,
   SECTION_FIGURES_ZH_OVERRIDES,
+  SECTION_PHRASES,
   SECTION_WORD_FIGURES,
   normalize,
   type PageLanguage,
@@ -17,7 +18,9 @@ import {
 // in its answer and paragraphs (tables and captions are tested elsewhere) must
 // be exactly the literals copied from the paper: a wrong number fails, and so
 // does a number added to the prose without being checked against the paper.
-// Both language pages are held to the same lists.
+// Both language pages are held to the same lists. Numbers written as words,
+// single digits and numbers whose order carries the meaning are checked as
+// phrases copied from each page.
 
 type Section = keyof typeof SECTION_FIGURES
 
@@ -68,6 +71,10 @@ for (const { path, lang } of PAGES) {
         const wordFigures: Readonly<Partial<Record<SectionId, readonly string[]>>> = SECTION_WORD_FIGURES[lang]
         for (const word of wordFigures[section] ?? []) {
           expect(text, `figure ${word}`).toContain(word)
+        }
+        const phrases: Readonly<Partial<Record<SectionId, readonly string[]>>> = SECTION_PHRASES[lang]
+        for (const phrase of phrases[section] ?? []) {
+          expect(text, `phrase ${phrase}`).toContain(phrase)
         }
       })
     }

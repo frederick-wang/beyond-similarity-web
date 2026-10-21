@@ -258,6 +258,7 @@ export const QUOTATIONS = [
 
 /** The arXiv v1 PDF page on which each figure is printed. */
 export const FIGURE_PAGES = { framework: 2, models: 5, calibration: 6, fidelity: 7 } as const
+export type FigureId = keyof typeof FIGURE_PAGES
 
 /** Dimension labels of Table 1 as printed (p. 5). */
 export const TABLE_1_DIMENSIONS = [
@@ -403,3 +404,32 @@ export const SECTION_WORD_FIGURES = {
     histories: ['八条中有一条', '三分之一', '四分之三', '五个维度', '五个不同'],
   },
 } as const satisfies Record<PageLanguage, Partial<Record<SectionId, readonly string[]>>>
+
+/**
+ * Phrases that tie numbers to what they count where the number checks cannot:
+ * single digits, which the multi-digit checks skip, and numbers whose order in
+ * one sentence carries the meaning, which a comparison of sets would let swap.
+ * Each phrase is copied as the page serves it, in each language.
+ */
+export const SECTION_PHRASES = {
+  en: {
+    benchmark: ['drops by 9 to 23 points', 'at most 2 on aspect and 9 on stance'],
+    similarity: ['is 4, against 1'],
+  },
+  'zh-Hans': {
+    benchmark: ['下降 9～23 个百分点', '复用层面和立场上分别至多 2 个和 9 个'],
+    similarity: ['中位排名是 4，逐字锚定的互文对是 1'],
+  },
+} as const satisfies Record<PageLanguage, Partial<Record<SectionId, readonly string[]>>>
+
+/** The same kind of phrases in the figures' text alternatives, by figure. */
+export const FIGURE_ALT_PHRASES = {
+  en: {
+    framework: ['Book of Han scroll 6'],
+    fidelity: ['Direct quotation: mean −0.18 over 123 clusters', 'Paraphrase: mean −0.08 over 170 clusters'],
+  },
+  'zh-Hans': {
+    framework: ['《汉书》第 6 卷'],
+    fidelity: ['直接引用：123 个簇，均值 −0.18', '转述：170 个簇，均值 −0.08'],
+  },
+} as const satisfies Record<PageLanguage, Partial<Record<FigureId, readonly string[]>>>

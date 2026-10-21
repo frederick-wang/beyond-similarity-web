@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ARXIV_PDF_V1, FIGURE_PAGES, PAGES } from './paper-literals'
+import { ARXIV_PDF_V1, FIGURE_ALT_PHRASES, FIGURE_PAGES, PAGES, type FigureId } from './paper-literals'
 
 const figures = [
   ['framework', 'Figure 1.'],
@@ -30,7 +30,22 @@ for (const [figure, label] of figures) {
   })
 }
 
-for (const { path } of PAGES) {
+for (const { path, lang } of PAGES) {
+  // Phrases pin what the number checks cannot: single digits, and numbers
+  // whose order carries the meaning, such as the two strata of Figure 4.
+  test(`${path} ties single digits and paired numbers to their objects in the text alternatives`, async ({ page }) => {
+    await page.goto(path)
+    const phrases: Readonly<Partial<Record<FigureId, readonly string[]>>> = FIGURE_ALT_PHRASES[lang]
+    for (const [figure, expected] of Object.entries(phrases)) {
+      const image = page.locator(`figure[data-figure="${figure}"] img`)
+      await expect(image).toHaveCount(1)
+      const alt = await image.getAttribute('alt')
+      for (const phrase of expected) {
+        expect(alt, `${figure}: ${phrase}`).toContain(phrase)
+      }
+    }
+  })
+
   test(`${path} reports the calibration bars in the text alternative of Figure 3`, async ({ page }) => {
     await page.goto(path)
     const alt = await page.locator('figure[data-figure="calibration"] img').getAttribute('alt')

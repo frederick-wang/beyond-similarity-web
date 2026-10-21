@@ -7,11 +7,12 @@ import type { PageCopy } from './types'
 // for the values every page states alike. The abstract, translated from the
 // arXiv abstract, and the section prose state numbers as text:
 // tests/prose-figures.spec.ts checks every number of two or more digits in
-// each section, the abstract included, against the English page's literals
-// with the one change of form that tests/paper-literals.ts declares, and the
-// Chinese wording of the numbers written as words. tests/parity.spec.ts
-// compares the numbers of figure text alternatives, captions and the abstract
-// with the English page's.
+// each section, the abstract included, against the same literals copied from
+// the paper, with the one change of form that tests/paper-literals.ts
+// declares, and checks the Chinese wording of the numbers written as words
+// and of the phrases that tie single digits and paired numbers to their
+// objects. tests/parity.spec.ts compares the numbers of figure text
+// alternatives, captions and the abstract with the English page's.
 const firstHistory = formatYear(stats.compositionYears.first, 'zh-Hans')
 const lastHistory = formatYear(stats.compositionYears.last, 'zh-Hans')
 
