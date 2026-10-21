@@ -1,0 +1,35 @@
+# Generic wording that would state the paper's standing with a venue or
+# publisher. The site describes the paper only as an arXiv preprint, so no
+# tracked file, commit message or built page may contain any of these.
+# scripts/check-public.mjs applies the rules in every mode, and on its own in
+# CI with --build. This file is the only one exempt from them; the maintainer's
+# private rules still apply to it.
+#
+# When prose trips a rule, rephrase the prose; do not weaken the rule.
+#
+# One case-insensitive regular expression per line. Lines starting with # and
+# blank lines are ignored.
+
+double[- ]blind
+camera[- ]ready
+under review
+\bin review\b
+peer[- ]review
+\b(in|under) submission\b
+submitted to
+submitted for publication
+conditionally accepted
+accepted for publication
+\baccepted (at|to)\b
+to appear in
+forthcoming (in|at)
+\bin press\b
+main conference
+审稿
+投稿中|已投稿|投稿(至|于|到|给)
+送审
+在审
+录用
+已接收
+即将(发表|刊出)
+待发表
