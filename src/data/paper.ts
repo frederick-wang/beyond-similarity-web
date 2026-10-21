@@ -103,7 +103,7 @@ export const authors = [
     familyNameEn: 'Si',
     affiliations: [1, 2],
     corresponding: false,
-    homepage: null,
+    homepage: 'https://pkudh.org/member/wanyu.html',
   },
   {
     nameEn: 'Jun Wang',
