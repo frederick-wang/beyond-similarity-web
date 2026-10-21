@@ -1,0 +1,539 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-21T22:29:46.126Z",
+  "title": "Design System: Beyond Similarity",
+  "extensions": {
+    "colorMeta": {
+      "indigo": {
+        "role": "primary",
+        "displayName": "Annotation Indigo",
+        "description": "links in running text, the page list, the link row, the copy button, the focus ring, and the hover state of every quiet link. A running-text link is underlined in this indigo at 40% opacity, and the underline turns solid on hover. On paper it reads 7.6:1 in light and 7.8:1 in dark.",
+        "tonalRamp": [
+          "#000925",
+          "#002059",
+          "#043b90",
+          "#295db5",
+          "#4a80db",
+          "#6ea4ff",
+          "#abcbff",
+          "#e5efff"
+        ]
+      },
+      "indigo-wash": {
+        "role": "primary",
+        "displayName": "Indigo Wash",
+        "description": "marks the reader's position and answers the pointer, as the ground of text selection, of the hovered link-row item and copy button, and of the deployment model's row in the twelve-model table.",
+        "tonalRamp": [
+          "#080b12",
+          "#21252c",
+          "#3d424a",
+          "#5c616a",
+          "#7d838c",
+          "#a0a5af",
+          "#c4c9d3",
+          "#e9eff9"
+        ]
+      },
+      "vermilion": {
+        "role": "secondary",
+        "displayName": "Seal Vermilion",
+        "description": "the scroll seal in the masthead and the question numerals, and nothing else on the page. The seal is raster artwork taken from the Explorer, with its own light and dark files; its red (#af382a, dark #e77b66, as the SVG favicon traces it) sits within three units per sRGB channel of this token.",
+        "tonalRamp": [
+          "#1f0000",
+          "#4c0200",
+          "#800500",
+          "#a93023",
+          "#d05545",
+          "#f97967",
+          "#ffb3a6",
+          "#ffe9e5"
+        ]
+      },
+      "on-vermilion": {
+        "role": "secondary",
+        "displayName": "On Vermilion",
+        "description": "the digit inside a question numeral, 6.0:1 in light and 6.8:1 in dark.",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "description": "reading text, headings, caption labels, glance numbers, author names and table text; 18.1:1 on paper in light, 15.7:1 in dark.",
+        "tonalRamp": [
+          "#080b11",
+          "#22252c",
+          "#3e4249",
+          "#5d6169",
+          "#7e828a",
+          "#a1a5ad",
+          "#c5c9d2",
+          "#eaeff7"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "description": "secondary text (captions, affiliations, glance notes, source lines, quiet links, the language switch and the footer) and the 1.5px rules that close a table's header and body; 7.2:1 on paper in light, 7.5:1 in dark.",
+        "tonalRamp": [
+          "#070b13",
+          "#20252e",
+          "#3d424c",
+          "#5b626c",
+          "#7c838d",
+          "#9fa5b1",
+          "#c3cad5",
+          "#e8effb"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "description": "the page itself, and the ground of the copy button.",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "wash": {
+        "role": "neutral",
+        "displayName": "Wash",
+        "description": "the ground of the BibTeX entry.",
+        "tonalRamp": [
+          "#090b0e",
+          "#232528",
+          "#404245",
+          "#5f6165",
+          "#808286",
+          "#a2a5a9",
+          "#c6c9cd",
+          "#eceff3"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "description": "every 1px rule and border (masthead, page list, glance margin, table rows, link-row items, frames), the underline of quiet links and author names, and the scrollbar thumb of the scrolling table and BibTeX regions.",
+        "tonalRamp": [
+          "#090b0e",
+          "#232529",
+          "#404246",
+          "#5f6166",
+          "#808287",
+          "#a2a5aa",
+          "#c6c9ce",
+          "#eceff4"
+        ]
+      },
+      "plate": {
+        "role": "neutral",
+        "displayName": "Plate White",
+        "description": "the ground of the figure plates, which keeps the paper's figures in the colors they were published with when the page turns dark.",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "indigo-dark": {
+        "role": "primary",
+        "displayName": "Annotation Indigo (dark theme)",
+        "description": "Dark-theme counterpart of Annotation Indigo, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#000924",
+          "#002058",
+          "#173f80",
+          "#3760a4",
+          "#5782c9",
+          "#78a5ef",
+          "#aacbff",
+          "#e5efff"
+        ]
+      },
+      "indigo-wash-dark": {
+        "role": "primary",
+        "displayName": "Indigo Wash (dark theme)",
+        "description": "Dark-theme counterpart of Indigo Wash, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#060b15",
+          "#1e2531",
+          "#3b424f",
+          "#59626f",
+          "#7a8391",
+          "#9da6b5",
+          "#c0cada",
+          "#e6efff"
+        ]
+      },
+      "vermilion-dark": {
+        "role": "secondary",
+        "displayName": "Seal Vermilion (dark theme)",
+        "description": "Dark-theme counterpart of Seal Vermilion, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#1e0100",
+          "#4a0600",
+          "#7c1402",
+          "#a13a29",
+          "#c85d4a",
+          "#f0816c",
+          "#ffb3a4",
+          "#ffe9e4"
+        ]
+      },
+      "on-vermilion-dark": {
+        "role": "secondary",
+        "displayName": "On Vermilion (dark theme)",
+        "description": "Dark-theme counterpart of On Vermilion, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#080b11",
+          "#22252c",
+          "#3e4249",
+          "#5d6169",
+          "#7e828b",
+          "#a1a5ae",
+          "#c5c9d2",
+          "#eaeff8"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Ink (dark theme)",
+        "description": "Dark-theme counterpart of Ink, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#090b0e",
+          "#232529",
+          "#404246",
+          "#5f6166",
+          "#808287",
+          "#a2a5aa",
+          "#c6c9ce",
+          "#eceff4"
+        ]
+      },
+      "ink-muted-dark": {
+        "role": "neutral",
+        "displayName": "Muted Ink (dark theme)",
+        "description": "Dark-theme counterpart of Muted Ink, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c626a",
+          "#7d838b",
+          "#9fa5af",
+          "#c3cad3",
+          "#e9eff9"
+        ]
+      },
+      "paper-dark": {
+        "role": "neutral",
+        "displayName": "Paper (dark theme)",
+        "description": "Dark-theme counterpart of Paper, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#080b11",
+          "#22252c",
+          "#3e4249",
+          "#5d6169",
+          "#7e828b",
+          "#a1a5ae",
+          "#c5c9d2",
+          "#eaeff8"
+        ]
+      },
+      "wash-dark": {
+        "role": "neutral",
+        "displayName": "Wash (dark theme)",
+        "description": "Dark-theme counterpart of Wash, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#080b12",
+          "#21252e",
+          "#3d424b",
+          "#5c616b",
+          "#7d828d",
+          "#a0a5b0",
+          "#c3c9d5",
+          "#e9effa"
+        ]
+      },
+      "rule-dark": {
+        "role": "neutral",
+        "displayName": "Hairline (dark theme)",
+        "description": "Dark-theme counterpart of Hairline, switched by prefers-color-scheme.",
+        "tonalRamp": [
+          "#070b12",
+          "#20252d",
+          "#3d424b",
+          "#5c626b",
+          "#7d838c",
+          "#9fa5af",
+          "#c3cad4",
+          "#e8effa"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "the paper's title, once per page; 28px on a 390px screen and 36.8px from a viewport about 968px wide."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "section headings, with the question numeral before the text on question sections."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "subheadings within a section."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "the one-sentence finding on the first screen and the answer sentence that opens each question section, at the measure."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "reading text, at the measure. Paragraphs wrap with text-wrap: pretty, headings with text-wrap: balance."
+      },
+      "glance-number": {
+        "displayName": "Glance Number",
+        "purpose": "the quantities in \"At a glance\"."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "the headings \"At a glance\" and \"On this page\"."
+      },
+      "control": {
+        "displayName": "Control",
+        "purpose": "link-row items and the copy button. The language switch takes the same size at 400."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "affiliations and glance notes. The corresponding-author note, the copy status and the footer take the same size at the body's line height."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "figure and table captions, at the measure; the label inside a caption is ink at 650."
+      },
+      "table": {
+        "displayName": "Table",
+        "purpose": "table cells; header cells at 600, row headers at 400."
+      },
+      "source": {
+        "displayName": "Source",
+        "purpose": "the source line after a paragraph."
+      },
+      "classical": {
+        "displayName": "Classical",
+        "purpose": "classical Chinese quotations, in English and Chinese prose alike."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "the BibTeX entry."
+      }
+    },
+    "motion": [
+      {
+        "name": "hover-fill",
+        "value": "120ms ease-out",
+        "purpose": "Border and background color of link-row items and the copy button on hover."
+      },
+      {
+        "name": "press",
+        "value": "translateY(1px)",
+        "purpose": "The copy button while pressed."
+      },
+      {
+        "name": "anchor-scroll",
+        "value": "scroll-behavior: smooth",
+        "purpose": "In-page jumps, only under prefers-reduced-motion: no-preference."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "page-list-open",
+        "value": "48rem"
+      },
+      {
+        "name": "two-column",
+        "value": "68rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Link Row",
+      "kind": "button",
+      "refersTo": "link-row-item",
+      "description": "The title block's links to arXiv, the PDF, the Explorer and the citation: outlined in hairline, indigo text, filled with indigo wash on hover.",
+      "html": "<ul class=\"ds-links\"><li><a href=\"#\">arXiv:2607.27595</a></li><li><a href=\"#\">PDF</a></li><li><a href=\"#\">Explorer (in Chinese)</a></li><li><a href=\"#\">Cite</a></li></ul>",
+      "css": ".ds-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); } .ds-links a { display: inline-flex; align-items: center; min-height: 2.25rem; padding: 0 0.85rem; border: 1px solid var(--rule, #dfe2e7); border-radius: 6px; color: var(--indigo, #1c50a7); font-size: 0.9375rem; font-weight: 550; text-decoration: none; transition: border-color 120ms ease-out, background-color 120ms ease-out; } .ds-links a:hover { border-color: var(--indigo, #1c50a7); background: var(--indigo-wash, #e7edf7); } .ds-links a:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; }"
+    },
+    {
+      "name": "Copy Button",
+      "kind": "button",
+      "refersTo": "copy-button",
+      "description": "The only button: copies the BibTeX entry. Indigo outline on paper, indigo wash on hover, 1px down while pressed; hidden when the Clipboard API is missing.",
+      "html": "<button class=\"ds-copy\" type=\"button\">Copy BibTeX</button>",
+      "css": ".ds-copy { min-height: 2.25rem; padding: 0 0.95rem; border: 1px solid var(--indigo, #1c50a7); border-radius: 6px; background: var(--paper, #ffffff); color: var(--indigo, #1c50a7); font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); font-size: 0.9375rem; font-weight: 550; cursor: pointer; transition: background-color 120ms ease-out; } .ds-copy:hover { background: var(--indigo-wash, #e7edf7); } .ds-copy:active { transform: translateY(1px); } .ds-copy:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; }"
+    },
+    {
+      "name": "Masthead and Language Switch",
+      "kind": "nav",
+      "refersTo": "language-switch",
+      "description": "The seal and short title on the left; the other language, named in its own language, as a quiet link on the right; hairline below.",
+      "html": "<header class=\"ds-masthead\"><a class=\"ds-brand\" href=\"#\"><svg class=\"ds-seal\" viewBox=\"20 19 243 243\" width=\"28\" height=\"28\" aria-hidden=\"true\" focusable=\"false\"><path class=\"ds-seal-stamp\" d=\"M73.1 245.7C69.8 245.5 65.6 245.5 63.8 245.5C54.8 245.8 42.4 245.3 39.1 244.5C37.9 244.2 36.7 244 36.2 244C33.4 244 28.3 241.8 26.2 239.6C24.1 237.3 22 232.7 22 230.4C22 230 21.8 228.2 21.5 226.4C20.4 218.8 20.4 218.7 21 213.2C21.5 208.5 21.6 207.8 21.3 203.9C21.1 201.5 21 198.7 21 197.5C21 196.3 20.8 194.6 20.6 193.6C20 190.9 19.9 188 20.2 185.3C20.9 179.2 21 174.8 21 159.4C21 146.8 21 142.2 20.6 137.8C20.1 130.8 20.3 127 21.4 120.8C21.7 119.1 21.7 118.5 21.4 116.5C20.6 111.2 20.2 101 20.7 97.1C21.1 93.4 21.1 82 20.6 79.4C20.2 77 20.2 75.4 20.5 74.2C20.7 73.8 20.9 71 21 68.1C21.8 48.8 22 47.4 25.3 44.4C28.5 41.4 35.2 39 40.5 39C41.3 39 42.8 38.8 43.9 38.5C45.6 38.1 47.2 38 53 37.9C57.6 37.8 60.9 37.6 62.4 37.4C63.9 37.1 66.4 37 70.6 37C75.4 37 77 36.9 79 36.5C81.1 36.1 83 36 97.4 35.9C106.2 35.8 120.6 35.6 129.5 35.3C142.9 35 148 35 159.8 35.2C168.6 35.3 175.2 35.3 177.4 35.2C179.6 35 182.5 35.1 185.4 35.2C187.8 35.4 191.9 35.4 194.4 35.3C196.9 35.2 200.8 35.3 203.5 35.5C206 35.6 214.6 35.9 222.5 36C233.9 36.2 237.2 36.3 238.5 36.6C239.4 36.8 240.8 37 241.6 37C245.4 37 252.5 40.1 255.3 42.9C257.8 45.4 260 50.8 260 54.2C260 54.8 260.2 56.2 260.4 57.1C260.6 58.1 260.9 61.1 261 63.9C261.1 66.6 261.4 69.4 261.5 70C262 71.7 262.1 98.3 261.7 101.9C261.4 105 261.6 108.3 262.5 112.3C263.1 115.1 263.1 117.2 262.5 120.6C262 123.6 261.8 136.9 262.3 139.8C262.8 142.9 262.8 144.9 262.4 147.4C262 150.2 261.9 151.5 262 177.8C262 193.6 262 194.5 261.5 196.3C260.8 198.9 260.8 203.5 261.5 207.1C262.3 211.1 262.1 227.8 261.3 230.9C260.7 233.1 259.1 236.1 257.9 237.4C254.9 240.9 246.8 243.8 239.2 244.1C237.5 244.2 235.7 244.4 235.1 244.5C234.5 244.7 227 244.9 215 245C199.2 245.2 195.3 245.3 192.9 245.6C190.3 246 187.7 246 167.8 245.9C141.1 245.8 135.8 245.8 103.9 245.9C90.3 245.9 76.4 245.8 73.1 245.7Z\"/><path fill=\"#fefdfd\" fill-rule=\"evenodd\" d=\"M221.8 205.8C218.2 205.5 218.4 204.5 222.4 202.1C225 200.6 226 199.7 227 198.4C230.4 193.9 227.1 190.5 219.3 190.5C213.9 190.5 209.9 191.8 206.7 194.7C202.8 198.2 201.3 198.1 201.1 194.4C201 192.6 201 192.2 202 188.9C203 185.4 207.1 182.4 212.8 181.1C213.6 181 214.6 180.7 215.2 180.5C215.9 180.2 217.6 180.1 221.6 180.1C226.9 180.1 227.2 180.2 229.3 180.8C234.8 182.5 238 184.8 239.9 188.3C240.9 190.1 240.9 190.1 240.9 193.6C240.9 196.8 240.8 197.2 240.3 198.2C238.8 201.1 237.3 202.2 231.9 204.4C228.3 205.9 226.2 206.2 221.8 205.8ZM238 178.9C237.5 178.7 236.2 178.2 235 177.7C232.6 176.7 231.2 176.2 228.8 175.6C226.5 175 218.2 174.8 216.5 175.4C215.9 175.6 214.6 175.8 213.8 176C211.8 176.3 209.2 176.9 208.1 177.4C207 177.8 205.9 177.8 205.6 177.5C205.2 177.1 205.2 175 205.5 174.1C205.7 173.7 205.9 171.5 206 169.2C206.1 166.9 206.3 164.5 206.6 163.8C206.8 162.8 207 160.7 207.1 157.2C207.2 154.1 207.4 151.6 207.6 150.8C207.8 150 208 147.5 208.1 145.1C208.2 142.8 208.4 140.1 208.6 139.1C208.8 138.1 209 135.4 209.1 132.8C209.2 130.2 209.3 127.7 209.5 127.2C209.7 126.8 209.9 124.1 210 121.4C210.1 118.6 210.3 116 210.5 115.5C210.7 115 210.9 113.8 211 112.9C211.6 107.1 216.2 102.1 221.8 101.1C222.2 101 223.2 100.8 223.9 100.5C225.6 100 231.9 100 233.5 100.5C234.1 100.8 235.1 101 235.6 101.1C238.9 101.7 242.6 104.5 244.1 107.8C244.9 109.4 244.9 109.4 244.9 117.2C244.9 123.7 244.8 125.5 244.5 127C244.2 128 244 130.3 243.9 132C243.9 133.7 243.6 135.9 243.4 136.9C243.2 137.9 243 140.5 242.9 143.2C242.8 146 242.6 148.6 242.4 149.6C242.2 150.7 242 152.6 242 154.4C242 156 241.8 158.6 241.6 160.1C241.4 161.6 241.1 165.2 241 168C240.9 171 240.6 174 240.4 175C240.2 176 239.9 177.3 239.9 177.8C239.7 179 239.1 179.3 238 178.9ZM43.9 177.6C36.6 175.1 33.1 171.6 33.1 167C33.2 161.5 38.1 157.7 47.1 156.2C48.9 155.9 53.5 156.1 54.2 156.5C54.5 156.6 55.5 156.9 56.5 157.1C59.7 157.8 63 159.6 65.5 162C68.3 164.7 68.9 165.9 68.9 168.6C68.8 172.5 67.1 173.8 65.1 171.5C64.5 170.8 61.8 169.1 59.9 168C56.1 166.2 51.1 165.5 48.1 166.5C45.5 167.4 45 168 45 170.1C45 171.9 45.3 172.5 47.8 176.5C48.6 177.7 48.6 178 48.2 178.4C47.7 178.9 47.1 178.8 43.9 177.6ZM187.4 175.7C186.3 175.6 185.1 175.5 185 175.4C184.8 175.2 183 175.1 180.9 175C178.8 174.9 176.7 174.7 176.2 174.5C175.8 174.4 174.5 174.1 173.5 173.9C171 173.4 170.5 173.3 163.8 171.4C155.8 169.1 146.3 163.7 130.9 152.7C129.9 152 128.6 151.2 127.9 150.8C127.2 150.4 125.8 149.6 124.7 148.9C120.9 146.5 112.2 143.5 107.9 143C106.8 142.9 105.4 142.6 104.8 142.4C103.1 141.8 88.1 141.8 86.5 142.4C85.9 142.6 84.3 142.8 83 142.9C81.7 143 80.2 143.2 79.6 143.4C75.7 144.8 74.3 143.3 75.4 138.8C75.6 137.9 75.9 136.1 76 134.9C76.2 133.6 76.4 132.1 76.6 131.5C76.8 130.9 77 129.4 77.1 128.1C77.2 126.9 77.4 125.4 77.6 124.8C77.8 124.1 78 122.7 78.1 121.5C78.2 120.3 78.4 118.9 78.6 118.4C78.8 117.8 79 116.3 79.1 115C79.2 113.7 79.4 112.1 79.6 111.5C79.8 110.9 80 109.4 80.1 108.3C80.2 107.2 80.4 106 80.5 105.7C80.7 105.4 80.9 103.7 81 102C81.1 100.2 81.4 98.2 81.6 97.5C81.8 96.7 82.1 95.7 82.2 95.3C82.4 94.2 83.6 93.3 85.2 93.1C85.8 93 86.8 92.8 87.4 92.6C87.9 92.4 89 92.2 89.9 92.1C90.7 92 91.7 91.8 92.2 91.6C92.7 91.4 93.8 91.2 94.7 91.1C95.6 91 97.2 90.8 98.1 90.5C100.4 90 120.5 89.9 122.1 90.5C122.7 90.6 124.3 90.9 125.8 91C127.3 91.1 129.1 91.4 129.8 91.6C130.5 91.8 131.9 92.1 132.8 92.4C133.6 92.6 135 92.9 135.8 93.1C143 94.9 151.7 99.1 163 106.2C165.4 107.8 168.6 109.8 170.1 110.8C175.6 114.2 183.5 117.4 188.7 118.1C189.3 118.2 190.2 118.5 190.7 118.7C191.1 118.9 192.4 119 193.6 119C198 119 202.5 119.8 203.4 120.6C204 121.2 204 121.4 204 124.3C204 126 203.8 128.2 203.6 129.2C203.4 130.3 203.1 133 203 135.4C202.9 137.7 202.6 140 202.5 140.5C202.3 141 202.1 143.3 202 145.8C201.9 148.3 201.6 150.7 201.4 151.4C201.2 152.2 201 154.3 200.9 157.1C200.8 159.7 200.6 162.2 200.4 163C200.2 163.8 200 165.5 199.9 166.8C199.8 168.1 199.6 169.5 199.5 169.9C199.3 170.3 199.1 171.6 199 172.8C198.7 176 198.9 175.9 193.8 175.9C191.5 175.9 188.6 175.9 187.4 175.7ZM186.4 160.1C186.7 159.8 187 159.2 187 158.8C187 158.4 187.2 157.5 187.5 156.8C187.8 156 188 155.2 188 154.9C188 154.7 188.2 153.8 188.5 152.9C189 151.4 189.4 149.9 190.5 146C192 140.7 192.5 139 193.1 136.5C193.3 135.7 193.6 134.7 193.8 134.1C194.5 131.7 192 130.3 190.6 132.4C190.2 133.1 188.2 139.1 187.9 140.6C187.8 141.2 187.3 142.8 186.9 144.1C185.7 147.8 185 150 184.8 150.9C184.8 151.3 184.3 152.8 183.8 154.1C182.4 158.4 182.8 160.8 185 160.8C185.5 160.8 186 160.5 186.4 160.1ZM171.4 157.9C172.7 157.1 173.2 156 174.1 152.9C174.5 151.4 178.2 140.9 179.1 138.4C179.8 136.5 181 132.7 181 132.2C181 131.6 180.2 131 179.4 131C177.4 131 176.6 132.6 173.9 141.5C173.5 142.9 173.1 144 172.5 145.6C172.2 146.3 172 147 172 147.2C172 147.4 171.6 148.5 171.1 149.6C168.2 156.6 167.9 158.6 169.9 158.7C170.1 158.7 170.7 158.4 171.4 157.9ZM63.9 154.5C63.2 154.3 62.3 153.9 61.9 153.7C61 153.3 58 152.3 55.2 151.5C51.6 150.5 45.7 151.1 40.6 152.8C37.7 153.8 36.8 153.8 36.3 153C35.8 152.1 36.1 144.4 36.6 142.6C36.8 141.9 37 140.6 37 139.6C37 138.7 37.2 136.9 37.4 135.8C37.6 134.6 37.9 132 38 130C38.1 128 38.4 125.6 38.6 124.8C38.8 123.9 39 121.8 39.1 120.1C39.2 118.5 39.4 116.6 39.6 115.9C39.8 115.2 40 113.4 40.1 112C40.2 110.6 40.4 108.8 40.6 108.1C40.8 107.4 41 105.5 41.1 103.8C41.2 102 41.3 100.2 41.5 99.8C41.7 99.3 41.9 97.5 42 95.8C42.3 91.6 43.5 87.7 45.1 85.8C46.3 84.3 49.6 82.5 51.6 82C52.3 81.9 53.5 81.6 54.2 81.4C55.8 80.9 62.9 80.9 64.7 81.3C68.6 82.2 73.2 85.8 75 89.5C75.9 91.3 75.9 91.4 75.9 94.2C75.9 96.2 75.7 97.5 75.4 98.4C75.2 99.1 75 100.4 74.9 101.3C74.8 102.2 74.6 103.3 74.5 103.6C74.3 103.9 74.1 105.5 74 107.1C73.9 108.8 73.6 110.6 73.4 111.2C73.2 111.8 73 113 73 113.8C73 114.7 72.8 116.1 72.6 117C72.4 117.9 72.1 119.9 72 121.6C71.9 123.2 71.6 124.9 71.5 125.4C71.3 126 71.1 127.7 71 129.3C70.9 130.9 70.6 132.9 70.4 133.7C70.2 134.5 70 136.4 69.9 137.9C69.8 139.4 69.6 141.3 69.4 142.1C69.2 142.9 69 144.3 69 145.1C69 145.9 68.8 147.4 68.6 148.2C68.4 149.1 68.1 150.8 68 151.9C67.7 154.8 66.5 155.5 63.9 154.5ZM159.4 150.7C159.8 150.3 160.3 149.2 162.4 144.1C164.2 139.7 167.3 133.1 169 130.1C170.2 128.1 170.2 128.1 169.4 127.4C167.6 125.6 165.5 127.3 163.4 132.3C162.9 133.4 161.5 136.5 160.3 139.1C159 141.7 158 143.9 158 144.1C158 144.2 157.5 145.4 157 146.6C155.7 149.5 155.7 150.3 156.9 151C157.5 151.3 159 151.1 159.4 150.7ZM146 144.7C146.6 144.4 147.3 143.4 149.5 139.3C150.4 137.6 151.6 135.3 152.2 134.4C155.7 128.2 156.6 126.5 157.3 125C157.7 124.1 158.5 122.5 159.1 121.3C160 119.3 160.1 119.3 159.7 118.6C159.3 118.2 159 118 158.4 118C156.8 118 155.8 119.3 153.5 123.8C152.4 126 151 128.6 150.4 129.5C149.8 130.4 148.9 132 148.4 133.1C147.9 134.2 146.7 136.4 145.8 137.9C144.5 140.2 143.5 142.6 143.5 143.5C143.5 143.6 143.7 144 144 144.3C144.6 145 145.2 145.2 146 144.7ZM134.7 138.4C135.3 137.8 136.4 135.5 137.4 133.1C138.6 130 141.4 124.5 143.6 120.6C147.2 114.5 147.5 113.9 147.9 112.9C148.6 111 148.1 110 146.5 110C145.2 110 144.4 110.9 143.5 113.2C142.7 115.1 141.7 116.9 139.9 119.3C138.9 120.7 131 136.5 131 137.2C131 137.4 131.3 137.9 131.7 138.3C132.7 139.2 133.9 139.3 134.7 138.4ZM92 129.2C92.4 128.8 92.8 127.9 93 127.3C93.4 125.8 94.3 123.8 95.2 122.4C95.6 121.9 96.7 120 97.6 118.4C98.6 116.7 99.7 114.7 100.2 113.9C101.3 112 103.7 107 104.2 105.4C104.5 104.7 105 103.5 105.4 102.7C105.8 101.7 106 101 105.8 100.6C105.6 99.8 104.7 99.2 104 99.4C102.8 99.8 100.4 103.3 99.8 105.6C99.4 106.9 96.3 113.2 95.1 115C94.6 115.8 93.8 117.1 93.4 118C92.9 118.9 92.3 120 91.9 120.4C90.9 121.6 89.3 124.6 89 125.8C88.9 126.4 88.6 127.3 88.4 127.8C88.1 128.4 88 129 88.1 129.2C88.5 130.5 91 130.5 92 129.2ZM121.9 129.6C122.2 129.4 122.7 128.8 123.1 128.2C125.4 124 127.2 120.8 128.1 119C128.7 117.8 129.9 115.6 130.8 114.2C132.3 111.8 134 108 134 107.2C134 106.6 133.1 106 132.4 106C131 106 130.2 106.9 128.3 110.9C127.3 112.9 126.2 115 125.8 115.6C123.4 119 118.8 127.8 118.8 128.9C118.8 129.2 118.9 129.5 119 129.7C119.5 130.1 121.3 130.1 121.9 129.6ZM109.8 125.7C110.2 125.5 110.7 124.7 110.9 124.1C111.1 123.4 111.9 121.5 112.6 119.8C113.4 118 114.4 115.5 115 114.1C116 111.8 116.5 110.7 119.3 105.5C120 104.3 120.5 103.1 120.5 102.7C120.5 101.3 118.5 100.5 117.3 101.4C116.6 102 114.4 105.8 113.6 108C113.2 108.9 112.3 110.8 111.6 112.1C110.3 114.7 109.8 115.8 108.6 118.9C108.3 119.8 107.8 121.1 107.5 121.8C106.8 123.3 106.7 124.1 107 125C107.4 126.4 108.6 126.7 109.8 125.7ZM246.5 102.5C243.7 99.3 238.5 96.3 234.9 95.9C234.2 95.8 233.1 95.6 232.5 95.4C230.9 94.8 225.6 95 223.2 95.6C218.1 97 214.9 98.6 212.3 101C210 103.3 209.4 103.5 209.1 102.1C208.9 100.9 209.1 98.3 209.6 97.2C211.4 93 211.4 93 214.6 90.9C219.6 87.6 221.1 87.2 228.1 87.1C233.7 87 234.5 87 237.9 88C243.1 89.4 246.2 91.7 248.1 95.5C249.3 97.7 249.9 102.3 249.2 103.4C248.5 104.3 247.9 104.1 246.5 102.5ZM75.4 81.8C72.8 79.3 70.2 77.9 65.2 76.5C63.5 76.1 62.6 76 58.6 76C52.7 76 50.2 76.6 45.6 79.3C43.2 80.6 42.4 78.5 44.1 75.2C45.9 71.9 49.5 69.3 54.5 67.7C56.7 67 61.5 66.9 63.5 67.5C64.1 67.7 65.2 68 66 68.1C69.7 69 73.5 71.1 75.7 73.4C79.4 77.2 80.7 83.8 77.7 83.8C77.6 83.8 76.5 82.9 75.4 81.8Z\"/></svg><span>Beyond Similarity</span></a><ul class=\"ds-languages\"><li><a href=\"#\" hreflang=\"zh-Hans\" lang=\"zh-Hans\">中文</a></li></ul></header>",
+      "css": ".ds-masthead { display: flex; align-items: center; gap: 1.5rem; min-height: 3.5rem; padding: 0 1.25rem; border-bottom: 1px solid var(--rule, #dfe2e7); font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); } .ds-brand { display: inline-flex; align-items: center; gap: 0.625rem; color: var(--ink, #13161c); font-size: 1.0625rem; font-weight: 600; letter-spacing: 0.005em; text-decoration: none; } .ds-seal { display: block; transform: translateY(1px); } .ds-seal-stamp { fill: #af382a; } @media (prefers-color-scheme: dark) { .ds-seal-stamp { fill: #e77b66; } } .ds-languages { display: flex; gap: 1rem; margin: 0 0 0 auto; padding: 0; list-style: none; } .ds-languages a { display: inline-flex; align-items: center; min-height: 2.25rem; color: var(--ink-muted, #525862); font-size: 0.9375rem; text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; text-decoration-color: var(--rule, #dfe2e7); } .ds-languages a:hover { color: var(--indigo, #1c50a7); text-decoration-color: currentColor; } .ds-masthead a:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; border-radius: 2px; }"
+    },
+    {
+      "name": "Page List",
+      "kind": "nav",
+      "refersTo": "question-numeral-nav",
+      "description": "The first items of \"On this page\": question sections carry their vermilion numeral, other sections are indented to the question text. Below 48rem it folds into a closed disclosure.",
+      "html": "<nav class=\"ds-page-nav\" aria-label=\"On this page\"><h2>On this page</h2><ol><li><a href=\"#\"><span>Abstract</span></a></li><li class=\"ds-question-item\"><a href=\"#\"><span class=\"ds-numeral\" aria-hidden=\"true\">1</span><span>What does a similarity score leave out?</span></a></li><li class=\"ds-question-item\"><a href=\"#\"><span class=\"ds-numeral\" aria-hidden=\"true\">2</span><span>How does grounded agentic extraction work?</span></a></li><li class=\"ds-question-item\"><a href=\"#\"><span class=\"ds-numeral\" aria-hidden=\"true\">3</span><span>How reliable is the expert-adjudicated benchmark?</span></a></li></ol></nav>",
+      "css": ".ds-page-nav { border-top: 1px solid var(--rule, #dfe2e7); padding-top: 1rem; color: var(--ink, #13161c); font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); font-size: 1.0625rem; line-height: 1.65; } .ds-page-nav h2 { margin: 0; font-size: 1rem; font-weight: 650; line-height: 1.25; } .ds-page-nav ol { display: grid; gap: 0.4rem; margin: 0.6rem 0 0; padding: 0; list-style: none; } .ds-page-nav a { display: inline-flex; gap: 0.6rem; align-items: baseline; color: var(--indigo, #1c50a7); text-decoration: none; } .ds-page-nav li:not(.ds-question-item) a { padding-left: 1.85rem; } .ds-page-nav a:hover span:last-child { text-decoration: underline; text-underline-offset: 0.2em; } .ds-page-nav a:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; border-radius: 2px; } .ds-page-nav .ds-numeral { flex: none; display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 3px; background: var(--vermilion, #b2392b); color: var(--on-vermilion, #ffffff); font-size: 0.75rem; font-weight: 650; font-variant-numeric: tabular-nums; transform: translateY(-0.08em); }"
+    },
+    {
+      "name": "Question Heading",
+      "kind": "custom",
+      "refersTo": "question-numeral",
+      "description": "A question section opens with its vermilion numeral and heading, then the answer in one lead sentence at the measure.",
+      "html": "<section class=\"ds-question\"><h2><span class=\"ds-numeral\" aria-hidden=\"true\">1</span><span>What does a similarity score leave out?</span></h2><p>The kind of reuse. A score records how much two passages overlap, while historians ask whether a passage is cited faithfully, borrowed for its authority, or worn down to a formula.</p></section>",
+      "css": ".ds-question { color: var(--ink, #13161c); font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); } .ds-question h2 { display: flex; gap: 0.75rem; align-items: baseline; margin: 0; font-size: 1.4375rem; font-weight: 650; line-height: 1.25; letter-spacing: -0.005em; text-wrap: balance; } .ds-question .ds-numeral { flex: none; display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 4px; background: var(--vermilion, #b2392b); color: var(--on-vermilion, #ffffff); font-size: 0.875rem; font-weight: 650; font-variant-numeric: tabular-nums; transform: translateY(-0.12em); } .ds-question p { max-width: var(--measure, 34em); margin: 1rem 0 0; font-size: 1.1875rem; line-height: 1.6; text-wrap: pretty; } .ds-question code { font-family: inherit; font-size: inherit; white-space: nowrap; }"
+    },
+    {
+      "name": "At a Glance",
+      "kind": "custom",
+      "refersTo": "glance-number",
+      "description": "The paper's numbers in the margin column: each quantity in ink on tabular figures above the muted note that qualifies it. No accent, box or icon.",
+      "html": "<aside class=\"ds-glance\" aria-labelledby=\"ds-glance-heading\"><h2 id=\"ds-glance-heading\">At a glance</h2><dl><div class=\"ds-glance-entry\"><dt>2,533</dt><dd>expert-adjudicated intertextual pairs between the <em>Analects</em> and the <em>Book of Han</em></dd></div><div class=\"ds-glance-entry\"><dt>55.9%–92.9%</dt><dd>precision of 12 LLMs against that benchmark</dd></div><div class=\"ds-glance-entry\"><dt>51×</dt><dd>cost per valid pair of the most precise model, <code>doubao-2.1-turbo</code>, relative to <code>deepseek-v4-flash</code>, which is 4.9 points less precise</dd></div><div class=\"ds-glance-entry\"><dt>5,766</dt><dd>intertextual pairs that <code>deepseek-v4-flash</code> extracted from 65,380 comparisons over the Twenty-Four Histories. If its 88.0% precision on the <em>Book of Han</em> holds, about 1 in 8 of them would be spurious.</dd></div></dl></aside>",
+      "css": ".ds-glance { max-width: var(--margin-column, 17.5rem); padding-left: 1.75rem; border-left: 1px solid var(--rule, #dfe2e7); color: var(--ink, #13161c); font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); } .ds-glance h2 { margin: 0; font-size: 1rem; font-weight: 650; line-height: 1.25; } .ds-glance dl { display: grid; gap: 1.15rem; margin: 0.9rem 0 0; } .ds-glance-entry { display: grid; gap: 0.15rem; } .ds-glance dt { font-size: 1.6rem; font-weight: 650; line-height: 1.15; letter-spacing: -0.01em; font-variant-numeric: tabular-nums lining-nums; } .ds-glance dd { margin: 0; color: var(--ink-muted, #525862); font-size: 0.875rem; line-height: 1.5; } .ds-glance code { font-family: inherit; font-size: inherit; white-space: nowrap; }"
+    },
+    {
+      "name": "Reading Paragraph",
+      "kind": "custom",
+      "refersTo": "source-line",
+      "description": "Body text at the measure, a classical Chinese quotation in Songti inside the page language's quotation marks, and the source line that closes the paragraph with a quiet link to the PDF page.",
+      "html": "<p class=\"ds-reading\">In the <em>Book of Han</em> (first century CE), the abdication charge from the <em>Analects</em> is transcribed almost verbatim: “<span class=\"ds-classical\" lang=\"zh-Hant\">咨爾舜，天之歷數在爾躬</span>” (the heaven-ordained succession rests upon your person). A few chapters later, in the biography of the usurper Wang Mang, the same line reappears as “<span class=\"ds-classical\" lang=\"zh-Hant\">歷數在于予躬</span>”, the second-person pronoun quietly rewritten into the first. By the 260s, in the abdication documents of the <em>Records of the Three Kingdoms</em>, only a formulaic skeleton survives, “<span class=\"ds-classical\" lang=\"zh-Hant\">天祿永終，歷數在晉</span>”, detached from the <em>Analects</em> and fused into the standard script of dynastic transfer. A text-reuse detector can find that all three resemble the <em>Analects</em>. It cannot say that the first is a faithful citation, the second an appropriation of authority, the third a dead formula. <span class=\"ds-sources\">Source: <a class=\"ds-quiet\" href=\"#\">Introduction · PDF p.&nbsp;1</a></span></p>",
+      "css": ".ds-reading { max-width: var(--measure, 34em); margin: 0; color: var(--ink, #13161c); font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); font-size: 1.0625rem; line-height: 1.65; text-wrap: pretty; } .ds-reading .ds-classical { font-family: var(--font-classical, 'Songti SC', 'Songti TC', 'Noto Serif CJK SC', 'Noto Serif CJK TC', 'Source Han Serif SC', 'SimSun', serif); } .ds-reading .ds-sources { display: inline-block; color: var(--ink-muted, #525862); font-size: 0.8125rem; line-height: 1.5; } .ds-reading .ds-quiet { color: var(--ink-muted, #525862); text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; text-decoration-color: var(--rule, #dfe2e7); } .ds-reading .ds-quiet:hover { color: var(--indigo, #1c50a7); text-decoration-color: currentColor; } .ds-reading .ds-quiet:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; border-radius: 2px; } .ds-reading code { font-family: inherit; font-size: inherit; white-space: nowrap; }"
+    },
+    {
+      "name": "Figure Caption",
+      "kind": "custom",
+      "refersTo": "caption",
+      "description": "The caption under a figure plate: the label in ink at 650, the caption in muted ink at the measure, then quiet links to the full-size image and the PDF page.",
+      "html": "<figcaption class=\"ds-caption\"><span class=\"ds-label\">Figure 2.</span> Twelve LLMs on the 2,533-pair benchmark: precision against cost per valid pair (log scale). The selected deployment model, <code>deepseek-v4-flash</code>, attains the best precision per cost; counts are in Table&nbsp;2. <span class=\"ds-figure-links\"><a class=\"ds-quiet\" href=\"#\">Open full size</a><span aria-hidden=\"true\">·</span><a class=\"ds-quiet\" href=\"#\">PDF p.&nbsp;5</a></span></figcaption>",
+      "css": ".ds-caption { display: block; max-width: var(--measure, 34em); color: var(--ink-muted, #525862); font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); font-size: 0.875rem; line-height: 1.55; } .ds-caption .ds-label { color: var(--ink, #13161c); font-weight: 650; white-space: nowrap; } .ds-caption .ds-figure-links { display: inline-flex; gap: 0.4em; white-space: nowrap; } .ds-caption .ds-quiet { color: var(--ink-muted, #525862); text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; text-decoration-color: var(--rule, #dfe2e7); } .ds-caption .ds-quiet:hover { color: var(--indigo, #1c50a7); text-decoration-color: currentColor; } .ds-caption .ds-quiet:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; border-radius: 2px; } .ds-caption code { font-family: inherit; font-size: inherit; white-space: nowrap; }"
+    },
+    {
+      "name": "Table Frame",
+      "kind": "custom",
+      "refersTo": "table-cell",
+      "description": "A scholarly table as text: caption above, hairline rows, 1.5px muted-ink rules under the header and the last row, tabular figures, the deployment model's row in indigo wash, sideways scrolling in a focusable region.",
+      "html": "<figure class=\"ds-table-figure\"><figcaption class=\"ds-caption\"><span class=\"ds-label\">Table 2.</span> Twelve models on the 2,400 evaluation tasks: candidates, valid pairs, precision (the share of committed pairs judged valid in expert adjudication), total cost, cost per valid pair, and median latency per task. <a class=\"ds-quiet ds-nowrap\" href=\"#\">PDF p.&nbsp;6</a></figcaption><div class=\"ds-scroll\" role=\"region\" tabindex=\"0\" aria-label=\"Table 2, scrolls horizontally\"><table><thead><tr><th scope=\"col\">Model</th><th scope=\"col\">Candidates</th><th scope=\"col\">Valid</th><th scope=\"col\">Precision</th><th scope=\"col\">Cost (USD)</th><th scope=\"col\">USD per valid pair</th><th scope=\"col\">Median latency (s)</th></tr></thead><tbody><tr><th scope=\"row\"><code>doubao-2.1-turbo</code></th><td>367</td><td>341</td><td>92.9%</td><td>853</td><td>2.501</td><td>521</td></tr><tr><th scope=\"row\"><code>deepseek-v4-pro</code></th><td>426</td><td>394</td><td>92.5%</td><td>42</td><td>0.107</td><td>101</td></tr><tr><th scope=\"row\"><code>glm-5-turbo</code></th><td>460</td><td>410</td><td>89.1%</td><td>215</td><td>0.525</td><td>126</td></tr><tr class=\"ds-deployment\"><th scope=\"row\"><code>deepseek-v4-flash</code></th><td>443</td><td>390</td><td>88.0%</td><td>19</td><td>0.049</td><td>131</td></tr><tr><th scope=\"row\"><code>doubao-2.1-pro</code></th><td>495</td><td>426</td><td>86.1%</td><td>241</td><td>0.566</td><td>183</td></tr><tr><th scope=\"row\"><code>qwen3.7-plus</code></th><td>492</td><td>416</td><td>84.6%</td><td>68</td><td>0.163</td><td>178</td></tr><tr><th scope=\"row\"><code>gemini-3.1-flash-lite</code></th><td>384</td><td>324</td><td>84.4%</td><td>115</td><td>0.355</td><td>37</td></tr><tr><th scope=\"row\"><code>glm-5.2</code></th><td>583</td><td>478</td><td>82.0%</td><td>98</td><td>0.205</td><td>162</td></tr><tr><th scope=\"row\"><code>qwen3.7-max</code></th><td>520</td><td>414</td><td>79.6%</td><td>122</td><td>0.294</td><td>194</td></tr><tr><th scope=\"row\"><code>gpt-5.4-mini</code></th><td>455</td><td>350</td><td>76.9%</td><td>227</td><td>0.648</td><td>39</td></tr><tr><th scope=\"row\"><code>gpt-5.5</code></th><td>815</td><td>572</td><td>70.2%</td><td>1,029</td><td>1.799</td><td>38</td></tr><tr><th scope=\"row\"><code>claude-haiku-4.5</code></th><td>578</td><td>323</td><td>55.9%</td><td>647</td><td>2.003</td><td>163</td></tr></tbody></table></div></figure>",
+      "css": ".ds-table-figure { margin: 0; color: var(--ink, #13161c); font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif); } .ds-table-figure .ds-caption { max-width: var(--measure, 34em); color: var(--ink-muted, #525862); font-size: 0.875rem; line-height: 1.55; } .ds-table-figure .ds-label { color: var(--ink, #13161c); font-weight: 650; white-space: nowrap; } .ds-table-figure .ds-nowrap { white-space: nowrap; } .ds-table-figure .ds-quiet { color: var(--ink-muted, #525862); text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; text-decoration-color: var(--rule, #dfe2e7); } .ds-table-figure .ds-quiet:hover { color: var(--indigo, #1c50a7); text-decoration-color: currentColor; } .ds-table-figure .ds-quiet:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; border-radius: 2px; } .ds-scroll { margin-top: 0.75rem; overflow-x: auto; scrollbar-color: var(--rule, #dfe2e7) transparent; } .ds-scroll:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; border-radius: 2px; } .ds-table-figure table { min-width: 100%; border-collapse: collapse; font-size: 0.875rem; line-height: 1.45; font-variant-numeric: tabular-nums lining-nums; } .ds-table-figure th, .ds-table-figure td { padding: 0.45rem 0.75rem; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--rule, #dfe2e7); } .ds-table-figure th:first-child, .ds-table-figure td:first-child { padding-left: 0; text-align: left; } .ds-table-figure thead th { color: var(--ink, #13161c); font-weight: 600; vertical-align: bottom; border-bottom: 1.5px solid var(--ink-muted, #525862); } .ds-table-figure th[scope='row'] { font-weight: 400; } .ds-table-figure tbody tr:last-child > * { border-bottom: 1.5px solid var(--ink-muted, #525862); } .ds-table-figure tr.ds-deployment > * { background: var(--indigo-wash, #e7edf7); } .ds-table-figure code { font-family: inherit; font-size: inherit; white-space: nowrap; }"
+    },
+    {
+      "name": "BibTeX Entry",
+      "kind": "custom",
+      "refersTo": "bibtex-entry",
+      "description": "The citation as selectable text on the wash ground, in a hairline frame with an 8px radius, scrolling sideways when lines run long.",
+      "html": "<div class=\"ds-bibtex\" role=\"region\" tabindex=\"0\" aria-label=\"BibTeX entry\"><pre lang=\"en\"><code>@misc{wang2026beyond,\n  title         = {Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories},\n  author        = {Wang, Zhaoji and Si, Wanyu and Wang, Jun},\n  year          = {2026},\n  eprint        = {2607.27595},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.CL},\n  doi           = {10.48550/arXiv.2607.27595},\n  url           = {https://arxiv.org/abs/2607.27595}\n}</code></pre></div>",
+      "css": ".ds-bibtex { overflow-x: auto; background: var(--wash, #f0f3f7); border: 1px solid var(--rule, #dfe2e7); border-radius: 8px; scrollbar-color: var(--rule, #dfe2e7) transparent; } .ds-bibtex:focus-visible { outline: 2px solid var(--indigo, #1c50a7); outline-offset: 2px; } .ds-bibtex pre { margin: 0; padding: 1rem 1.1rem; color: var(--ink, #13161c); font-family: var(--font-mono, ui-monospace, 'SF Mono', Menlo, Consolas, monospace); font-size: 0.8125rem; line-height: 1.6; } .ds-bibtex code { font-family: inherit; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Collator's Page",
+    "overview": "The page is set the way a collated text is marked up: ink on white paper, annotation in indigo, and vermilion only where a mark is stamped. It inherits the visual world of the Explorer, the public site that shows every intertextual pair in its context, and carries it to the paper page, whose English and Chinese versions share one structure, one layout and one set of tokens.\n\nDensity is that of a scholarly reading page. A 45rem column carries the argument at a measured line length, and on wide screens a 17.5rem margin carries the paper's numbers. Type is the reader's own system sans at reading sizes, with weight rather than size doing most of the work of hierarchy; Songti appears only where classical Chinese is quoted. Structure is drawn with hairlines, never lifted with shadows or boxed into cards. Color carries meaning or stays out: indigo marks where the reader can act and where the reader is, vermilion is the seal and the question numerals, and everything else is ink.\n\nThe product rejects marketing rhetoric (gradients, oversized slogans, stacks of cards), false-precision numbers, and color that carries no meaning.",
+    "keyCharacteristics": [
+      "White paper, ink text, indigo annotation and vermilion marks, with a paired dark theme that follows the reader's system setting.",
+      "One platform sans for everything read or operated; Songti for classical Chinese quotations only.",
+      "A 45rem reading column beside a 17.5rem margin, with the measure set per language: 34em in English, 37em in Chinese.",
+      "Hairline rules and three flat grounds for structure; no shadows, gradients or cards.",
+      "Numbers set as text, on tabular figures wherever they are compared."
+    ],
+    "rules": [
+      {
+        "name": "The Two Marks Rule",
+        "body": "Vermilion stamps two things: the scroll seal and the question numerals. Links, emphasis, highlights, glance numbers and the page's own rules and grounds never take it. The paper's figures keep their published colors on their white plates.",
+        "section": "colors"
+      },
+      {
+        "name": "The Annotation Rule",
+        "body": "Indigo appears only where the reader can act or where the reader is: running-text links, the page list, the link row, the copy button, the focus ring, selection, hovered controls and the deployment model's row. Links that support the reading rather than lead it stay muted until pointed at, author names stay ink, and no text takes indigo for emphasis, however important it is.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paired Theme Rule",
+        "body": "Every color token except Plate White has a dark counterpart, switched by the reader's system setting, and every text pair clears WCAG AA in both themes; the closest pair, indigo on indigo wash in the dark theme, reads 5.9:1.",
+        "section": "colors"
+      },
+      {
+        "name": "The Reading Face Rule",
+        "body": "One platform sans sets the title, the headings, the reading text and every control, and weight 650 against 400 does most of the work of hierarchy. On the page the title stops at 2.3rem. The system has no display voice; a surface that needs one gets it from a change of direction, never by enlarging the platform sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Measure Rule",
+        "body": "Reading text runs to 34em in English and 37em in Chinese, counted in the em of the element that sets it: 578px for body text, 646px for a lead sentence and 476px for a caption in English, and 629px, 703px and 518px in Chinese.",
+        "section": "typography"
+      },
+      {
+        "name": "The Song Rule",
+        "body": "Classical Chinese quotations, and nothing else, are set in Songti, in the script of their source edition, inside the quotation marks of the page language: curly quotes in English prose, 「」 in Chinese prose.",
+        "section": "typography"
+      },
+      {
+        "name": "The Margin Rule",
+        "body": "The margin column holds \"At a glance\" on the first screen and lends its width to wide figures and tables below it. Nothing else goes there, and below 68rem it folds back into the column.",
+        "section": "layout"
+      },
+      {
+        "name": "The Hairline Rule",
+        "body": "Structure is drawn, never lifted: 1px rules in the hairline color separate the masthead, the page list, the margin column, table rows, the footer and every frame. The only heavier lines are the 1.5px muted-ink rules under a table's header row and under its last body row.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Quiet Secondary Rule",
+        "body": "A link that supports the reading (a source, a PDF page, a full-size image, another language) recedes in muted ink with a hairline underline and turns indigo only when pointed at.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** keep vermilion (#b2392b, dark #e87a65) to the scroll seal and the question numerals.",
+      "**Do** use indigo only where the reader can act or where the reader is: running-text links, the page list, the link row, the copy button, the focus ring, selection, hovered controls and the deployment model's row.",
+      "**Do** set reading text at 1.0625rem with a 1.65 line height and cap it at the language's measure: 34em in English, 37em in Chinese.",
+      "**Do** set classical Chinese quotations in the Songti stack, in the script of their source edition, inside the page language's quotation marks.",
+      "**Do** put compared numbers on tabular lining figures, and keep a label with its number, a statistic with its value and a number with its unit on one line.",
+      "**Do** caption figures below the plate and tables above the frame, with the label in ink at 650 and quiet links to the full-size image or the PDF page.",
+      "**Do** keep figure plates white in both themes.",
+      "**Do** name every link and control in words; the only drawn glyph is the chevron of the folded page list.",
+      "**Do** give every new color token a dark counterpart and keep every text pair at WCAG AA or better in both themes."
+    ],
+    "donts": [
+      "**Don't** use vermilion for links, emphasis, highlights, glance numbers, rules or grounds.",
+      "**Don't** add shadows, gradients, glass or cards; separate regions with 1px hairlines and the flat grounds.",
+      "**Don't** enlarge the platform sans into a display voice or a slogan; on the page the title stops at 2.3rem.",
+      "**Don't** number a section that is not a reader's question.",
+      "**Don't** give a glance number color, a box or an icon, or show it without its qualifying note.",
+      "**Don't** set anything but classical Chinese quotations in Songti, or anything but the BibTeX entry in monospace.",
+      "**Don't** round a styled corner past 8px; there are no pills, circles or card radii."
+    ]
+  }
+}
