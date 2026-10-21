@@ -238,7 +238,7 @@ function pngWords(label, bytes) {
     if (error instanceof PngFormatError) {
       exitWithSetupError(`PNG 文件无法解析：${label}（第 ${error.offset} 字节，${error.problem}）`)
     }
-    exitWithSetupError(`PNG 文件无法解析：${label}（${error instanceof Error ? error.name : '未知错误'}）`)
+    throw error
   }
 }
 
@@ -376,21 +376,33 @@ function scanForCi(ruleSets) {
   return scanTrackedFiles(ruleSets).concat(scanDirectory(dist, ruleSets))
 }
 
-const args = process.argv.slice(2)
-const statusRules = loadRules(statusRuleFile)
-let hits
-if (args[0] === '--ci') {
-  hits = scanForCi([statusRules])
-} else {
-  const ruleSets = [loadRules(privateRuleFile), statusRules]
-  hits = args[0] === '--pre-push' ? scanPrePush(ruleSets) : args.length > 0 ? scanFiles(args, ruleSets) : scanWorkingState(ruleSets)
+function main() {
+  const args = process.argv.slice(2)
+  const statusRules = loadRules(statusRuleFile)
+  let hits
+  if (args[0] === '--ci') {
+    hits = scanForCi([statusRules])
+  } else {
+    const ruleSets = [loadRules(privateRuleFile), statusRules]
+    hits = args[0] === '--pre-push' ? scanPrePush(ruleSets) : args.length > 0 ? scanFiles(args, ruleSets) : scanWorkingState(ruleSets)
+  }
+  if (hits.length > 0) {
+    console.error('公开内容检查未通过，命中位置如下（不显示命中的内容）：')
+    for (const hit of hits) {
+      console.error(`  ${hit}`)
+    }
+    process.exit(1)
+  }
+  console.log('公开内容检查通过。')
 }
 
-if (hits.length > 0) {
-  console.error('公开内容检查未通过，命中位置如下（不显示命中的内容）：')
-  for (const hit of hits) {
-    console.error(`  ${hit}`)
-  }
-  process.exit(1)
+// Exit code 1 means hits were found, so an unexpected error, a fault in this
+// script or its environment rather than in what it checks, has to end with 2.
+// The script's own messages never include bytes from the checked files, so
+// printing the message and the stack is safe.
+try {
+  main()
+} catch (error) {
+  console.error(`检查脚本出错：${error instanceof Error ? `${error.message}\n${error.stack}` : String(error)}`)
+  process.exit(2)
 }
-console.log('公开内容检查通过。')

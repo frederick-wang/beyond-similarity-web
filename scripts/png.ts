@@ -34,15 +34,19 @@ interface Chunk {
 }
 
 /**
- * Why a PNG could not be read. check-public.mjs prints these into CI logs,
- * which are public, so an error names only a category and a byte offset and
- * never repeats bytes from the file.
+ * Why a PNG could not be read. Every format failure in this module throws a
+ * PngFormatError; other errors mean a fault in the code or its environment.
+ * check-public.mjs prints these into CI logs, which are public, so an error
+ * names only a category and a byte offset and never repeats bytes from the
+ * file.
  */
 export type PngFormatProblem =
+  | 'no PNG signature'
   | 'cut off'
   | 'past the end of the file'
   | 'CRC mismatch'
   | 'no 13-byte IHDR first'
+  | 'no image data'
   | 'no IEND at the end'
   | 'IEND not empty'
   | 'trailing bytes'
@@ -110,7 +114,7 @@ export function isPng(bytes: Buffer): boolean {
  */
 function parse(png: Buffer): { readonly header: Chunk; readonly chunks: readonly Chunk[] } {
   if (!isPng(png)) {
-    throw new Error('Not a PNG file')
+    throw new PngFormatError(0, 'no PNG signature')
   }
   const found: Chunk[] = []
   // Each chunk is a 4-byte length, a 4-byte type, the data and a 4-byte CRC.
@@ -150,7 +154,7 @@ export function readPngHeader(png: Buffer): PngHeader {
   const { header, chunks: all } = parse(png)
   const imageData = all.findIndex((chunk) => chunk.type === 'IDAT')
   if (imageData === -1) {
-    throw new Error('PNG file has no image data')
+    throw new PngFormatError(header.end, 'no image data')
   }
   const colourType = header.data.readUInt8(9)
   return {
