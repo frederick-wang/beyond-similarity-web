@@ -107,6 +107,9 @@ export const authors = [
 /** The author who maintains this page. */
 export const maintainer: Author = authors[0]
 
+/** The mark after the corresponding author's name, and before the note that explains it, as the paper prints it. */
+export const correspondingMark = '*'
+
 export const paper = {
   titleEn:
     'Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories',
@@ -220,6 +223,11 @@ export function affiliationName(id: AffiliationId, lang: PageLanguage): string {
     case 'zh-Hans':
       return affiliation.nameZh
   }
+}
+
+/** The affiliation numbers after an author's name, as in "1,2". */
+export function affiliationMarks(author: Author): string {
+  return author.affiliations.join(',')
 }
 
 /** "Family, Given", the order BibTeX and citation metadata both take. */

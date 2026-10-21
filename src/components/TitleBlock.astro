@@ -1,6 +1,6 @@
 ---
 import type { PageCopy } from '../content/types'
-import { affiliationIds, affiliationName, authorName, authors, links } from '../data/paper'
+import { affiliationIds, affiliationMarks, affiliationName, authorName, authors, correspondingMark, links } from '../data/paper'
 import { punctuationFor } from '../lib/format'
 
 interface Props {
@@ -24,10 +24,10 @@ const marks = punctuationFor(copy.lang)
               {authorName(author, copy.lang)}
             </a>
           )}
-          <sup data-author-affiliations>{author.affiliations.join(',')}</sup>
+          <sup data-author-affiliations>{affiliationMarks(author)}</sup>
           {author.corresponding && (
             <sup class="corresponding" data-author-corresponding>
-              <abbr title={copy.correspondingNote}>*</abbr>
+              <abbr title={copy.correspondingNote}>{correspondingMark}</abbr>
             </sup>
           )}
           {index < authors.length - 1 && <span class="separator">{marks.authorSeparator}</span>}
@@ -44,7 +44,7 @@ const marks = punctuationFor(copy.lang)
       ))
     }
   </ul>
-  <p class="corresponding-note"><sup>*</sup> {copy.correspondingNote}</p>
+  <p class="corresponding-note"><sup>{correspondingMark}</sup> {copy.correspondingNote}</p>
   <ul class="links" data-links>
     <li><a href={links.arxivAbs}>{copy.links.arxiv}</a></li>
     <li><a href={links.pdf}>{copy.links.pdf}</a></li>
