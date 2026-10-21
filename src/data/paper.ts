@@ -1,5 +1,3 @@
-import type { ModelName } from './tables'
-
 // The single source of paper facts, following arXiv:2607.27595v1. Everything
 // the page states as a fact outside long-form section prose reads from here:
 // the title block, the finding, "At a glance", the meta description and the
@@ -86,6 +84,23 @@ export const paper = {
   published: '2026-07-30',
   bibtexKey: 'wang2026beyond',
 } as const
+
+/** The twelve models of the study, in the order of Table 2. */
+export const modelNames = [
+  'doubao-2.1-turbo',
+  'deepseek-v4-pro',
+  'glm-5-turbo',
+  'deepseek-v4-flash',
+  'doubao-2.1-pro',
+  'qwen3.7-plus',
+  'gemini-3.1-flash-lite',
+  'glm-5.2',
+  'qwen3.7-max',
+  'gpt-5.4-mini',
+  'gpt-5.5',
+  'claude-haiku-4.5',
+] as const
+export type ModelName = (typeof modelNames)[number]
 
 /** Figures quoted on the first screen beside the "At a glance" values. */
 export const stats = {
