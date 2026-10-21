@@ -21,11 +21,11 @@ const page = tablePages[table]
 // a wide table on a narrow screen.
 ---
 
-<figure class:list={['table-figure', `table-${layout}`]} id={`table-${table}`} data-table={table}>
-  <figcaption id={captionId}>
+<figure class:list={['table-figure', { 'span-margin': layout === 'wide' }]} id={`table-${table}`} data-table={table}>
+  <figcaption class="caption" id={captionId}>
     <span class="label">{label}.</span>{' '}
     <Inline text={caption} lang={copy.lang} />{' '}
-    <a class="page-link" href={pdfPageUrl(page)}>{copy.sources.pages([page])}</a>
+    <a class="quiet-link page-link" href={pdfPageUrl(page)}>{copy.sources.pages([page])}</a>
   </figcaption>
   <div class="scroll" role="region" tabindex="0" aria-label={copy.tables.scrollRegion(label)}>
     <table aria-describedby={captionId}>
@@ -39,35 +39,8 @@ const page = tablePages[table]
     margin: 2rem 0 0;
   }
 
-  /* A table too wide for the reading column uses the page margin on wide
-     screens, as the framework figure does; on narrower screens it scrolls. */
-  @media (min-width: 68rem) {
-    .table-wide {
-      width: calc(var(--column) + var(--column-gap) + var(--margin-column));
-    }
-  }
-
-  figcaption {
-    max-width: var(--measure);
-    font-size: 0.875rem;
-    line-height: 1.55;
-    color: var(--ink-muted);
-  }
-
-  .label {
-    font-weight: 650;
-    color: var(--ink);
-  }
-
   .page-link {
     white-space: nowrap;
-    color: var(--ink-muted);
-    text-decoration-color: var(--rule);
-  }
-
-  .page-link:hover {
-    color: var(--indigo);
-    text-decoration-color: currentColor;
   }
 
   .scroll {
@@ -82,10 +55,6 @@ const page = tablePages[table]
     font-size: 0.875rem;
     line-height: 1.45;
     font-variant-numeric: tabular-nums lining-nums;
-  }
-
-  table :global(caption) {
-    display: none;
   }
 
   table :global(th),
