@@ -8,8 +8,23 @@
 export const pageLanguages = ['en'] as const
 export type PageLanguage = (typeof pageLanguages)[number]
 
-/** A calendar date written YYYY-MM-DD. */
-export type IsoDate = `${number}-${number}-${number}`
+declare const isoDateBrand: unique symbol
+
+/** A real calendar date written YYYY-MM-DD. Only isoDate() makes one. */
+export type IsoDate = string & { readonly [isoDateBrand]: true }
+
+function isIsoDate(value: string): value is IsoDate {
+  const parsed = new Date(`${value}T00:00:00Z`)
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
+}
+
+/** The date, checked; anything that is not a real YYYY-MM-DD date stops the build. */
+export function isoDate(value: string): IsoDate {
+  if (!isIsoDate(value)) {
+    throw new Error(`"${value}" is not a calendar date written YYYY-MM-DD`)
+  }
+  return value
+}
 
 /** Affiliation numbers as printed in the paper; the tuple fixes their order. */
 export const affiliationIds = [1, 2] as const
@@ -92,8 +107,8 @@ export const paper = {
   arxivVersion: 'v1',
   primaryClass: 'cs.CL',
   doi: '10.48550/arXiv.2607.27595',
-  /** arXiv v1 submission date (YYYY-MM-DD). */
-  published: '2026-07-30',
+  /** arXiv v1 submission date. */
+  published: isoDate('2026-07-30'),
   /** The language the paper is written in (BCP 47), the same on every language page. */
   language: 'en',
   bibtexKey: 'wang2026beyond',
@@ -163,7 +178,7 @@ export const icpNumber = '蜀ICP备19032431号-3'
 export const copyrightYear = 2026
 
 export const pages = {
-  en: { path: '/', updated: '2026-10-21' },
+  en: { path: '/', updated: isoDate('2026-10-21') },
 } as const satisfies Readonly<Record<PageLanguage, PageFacts>>
 
 /** Resolves a site path against `site` in astro.config.mjs, the only place the origin is written. */

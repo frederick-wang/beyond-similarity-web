@@ -1,7 +1,10 @@
-import shareCard from '../assets/share-en.png'
+import shareCardImage from '../assets/share-en.png'
 import { links, paper, shareCardWords, stats } from '../data/paper'
 import { formatCount, formatIdentifier, formatList, formatYear } from '../lib/format'
+import { assertPng } from '../lib/images'
 import type { PageCopy } from './types'
+
+assertPng(shareCardImage)
 
 // First-screen copy takes its numbers from the facts module. The verbatim
 // abstract and the section prose state numbers as text; tests/prose-figures.spec.ts
@@ -21,7 +24,7 @@ export const en: PageCopy = {
   siteName: paper.shortTitle,
   openGraphLocale: 'en_US',
   shareImage: {
-    image: shareCard,
+    image: shareCardImage,
     alt: `${card.title}. ${formatList(card.authors, 'en')}. arXiv:${card.arxivId}`,
   },
   skipLink: 'Skip to content',

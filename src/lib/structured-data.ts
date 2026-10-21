@@ -5,7 +5,7 @@
 
 import { en } from '../content/en'
 import type { PageCopy } from '../content/types'
-import { affiliations, authors, links, paper, type PageLanguage } from '../data/paper'
+import { affiliations, authors, links, paper, type IsoDate, type PageLanguage } from '../data/paper'
 import { plainText } from './inline'
 
 interface OrganizationNode {
@@ -28,7 +28,7 @@ interface ScholarlyArticleNode {
   readonly name: string
   readonly headline: string
   readonly author: readonly PersonNode[]
-  readonly datePublished: string
+  readonly datePublished: IsoDate
   readonly abstract: string
   readonly inLanguage: typeof paper.language
 }

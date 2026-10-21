@@ -139,9 +139,12 @@ export interface TablesCopy {
 /** A locale as Open Graph writes it, language_TERRITORY, such as en_US. */
 export type OpenGraphLocale = `${Lowercase<string>}_${Uppercase<string>}`
 
+/** Astro's metadata for an imported image that is known to be a PNG (see assertPng in src/lib/images.ts). */
+export type PngImageMetadata = ImageMetadata & { readonly format: 'png' }
+
 /** The card that link previews show for the page (og:image), made by scripts/make-site-images.ts. */
 export interface ShareImage {
-  readonly image: ImageMetadata
+  readonly image: PngImageMetadata
   /** Text alternative built from shareCardWords() in src/data/paper.ts, the words the card shows. */
   readonly alt: string
 }
