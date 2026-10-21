@@ -26,6 +26,7 @@ const ci = process.env['CI'] !== undefined
 
 export default defineConfig({
   testDir: 'tests',
+  globalSetup: './tests/global-setup.ts',
   fullyParallel: true,
   forbidOnly: ci,
   reporter: ci ? 'github' : 'list',
@@ -46,6 +47,7 @@ export default defineConfig({
           url: baseURL,
           // A server already on the port may belong to another worktree, and
           // reusing it would test the wrong build, so a busy port fails the run.
+          // tests/global-setup.ts also checks that the server serves this build.
           reuseExistingServer: false,
         },
       ],
