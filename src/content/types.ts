@@ -155,6 +155,8 @@ export interface PageCopy {
   readonly openGraphLocale: OpenGraphLocale
   readonly shareImage: ShareImage
   readonly skipLink: string
+  /** The sentence under the title of the page's Markdown version, naming the address of the HTML page it renders. */
+  readonly markdownVersion: (pageUrl: string) => InlineMarkdown
   readonly correspondingNote: string
   readonly finding: InlineMarkdown
   /** The abstract: the arXiv abstract verbatim on the English page, a translation of it on the Chinese page. */

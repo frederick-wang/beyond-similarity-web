@@ -1,11 +1,9 @@
 ---
 import type { PageCopy } from '../content/types'
-import AgreementTable from './AgreementTable.astro'
 import Bibtex from './Bibtex.astro'
-import DiachronicTable from './DiachronicTable.astro'
 import Figure from './Figure.astro'
 import Inline from './Inline.astro'
-import ModelsTable from './ModelsTable.astro'
+import PaperTable from './PaperTable.astro'
 import SourceLinks from './SourceLinks.astro'
 import { numberQuestions } from '../lib/sections'
 
@@ -62,14 +60,7 @@ const sections = numberQuestions(copy.sections)
           case 'figure':
             return <Figure copy={copy} figure={block.figure} />
           case 'table':
-            switch (block.table) {
-              case 'agreement':
-                return <AgreementTable copy={copy} />
-              case 'models':
-                return <ModelsTable copy={copy} />
-              case 'diachronic':
-                return <DiachronicTable copy={copy} />
-            }
+            return <PaperTable copy={copy} table={block.table} />
           case 'bibtex':
             return <Bibtex copy={copy} />
         }

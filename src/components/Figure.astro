@@ -1,9 +1,10 @@
 ---
-import { getImage, Picture } from 'astro:assets'
+import { Picture } from 'astro:assets'
 import type { PageCopy } from '../content/types'
 import { figures, type FigureId } from '../data/figures'
-import { pdfPageUrl } from '../data/paper'
+import { fullSizeFigure } from '../lib/figures'
 import { punctuationFor } from '../lib/format'
+import { pageLink } from '../lib/sources'
 import Inline from './Inline.astro'
 
 interface Props {
@@ -23,12 +24,12 @@ const layout = {
   wide: { widths: [720, 1080, 1620, 2160], sizes: '(min-width: 68rem) 1080px, 100vw' },
 }[data.layout]
 
-// The full-size link opens the whole source resolution as WebP.
-const full = await getImage({ src: data.image, width: data.image.width, format: 'webp' })
+const full = await fullSizeFigure(figure)
+const pdf = pageLink(copy, data.page)
 ---
 
 <figure class:list={['figure', data.layout === 'wide' ? 'span-margin' : 'figure-column']} id={`figure-${figure}`} data-figure={figure}>
-  <a class="plate" href={full.src}>
+  <a class="plate" href={full}>
     <Picture
       src={data.image}
       formats={['avif', 'webp']}
@@ -40,9 +41,9 @@ const full = await getImage({ src: data.image, width: data.image.width, format: 
   <figcaption class="caption">
     <span class="label">{text.label}{marks.labelEnd}</span>{' '}
     <Inline text={text.caption} lang={copy.lang} />{marks.join}<span class="figure-links">
-      <a class="quiet-link" href={full.src}>{copy.figures.openFull}</a>
+      <a class="quiet-link" href={full}>{copy.figures.openFull}</a>
       <span aria-hidden="true">·</span>
-      <a class="quiet-link" href={pdfPageUrl(data.page)}>{copy.sources.pages([data.page])}</a>
+      <a class="quiet-link" href={pdf.href}>{pdf.label}</a>
     </span>
   </figcaption>
 </figure>

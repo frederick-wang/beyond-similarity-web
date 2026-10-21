@@ -10,6 +10,10 @@ import type { PageCopy } from './types'
 const firstHistory = formatYear(stats.compositionYears.first, 'en')
 const lastHistory = formatYear(stats.compositionYears.last, 'en')
 
+/** What the Explorer is, in the words that both the Using this work section and the Explorer's entry in /llms.txt use. */
+export const explorerDescription =
+  'a site in Chinese that shows every intertextual pair of the Twenty-Four Histories run in its textual context, with its spans and labels'
+
 export const en: PageCopy = {
   lang: 'en',
   title: paper.titleEn,
@@ -21,6 +25,7 @@ export const en: PageCopy = {
     alt: `${shareCard.title}. ${shareCard.byline}. arXiv:${shareCard.arxivId}`,
   },
   skipLink: 'Skip to content',
+  markdownVersion: (pageUrl) => `This is the Markdown version of <${pageUrl}>.`,
   correspondingNote: 'Corresponding author',
   finding: `We make an LLM agent ground every reuse it proposes in exact character spans and label how the source is reused, and we validate it on ${benchmarkPairs} expert-adjudicated pairs from the *Analects* and the *Book of Han*. Across official histories composed from ${firstHistory} to ${lastHistory} we detect no systematic change in the share of direct quotation or of reuse that leaves its source unmarked, while later-compiled histories tend to quote the same passage less literally.`,
   abstract:
@@ -379,7 +384,7 @@ export const en: PageCopy = {
       blocks: [
         {
           type: 'paragraph',
-          text: `Two resources are public: the paper on [arXiv](${links.arxivAbs}) and the [Explorer](${links.explorer}), a site in Chinese that shows every intertextual pair of the Twenty-Four Histories run in its textual context, with its spans and labels, and groups pairs into clusters that trace the reception of a passage.`,
+          text: `Two resources are public: the paper on [arXiv](${links.arxivAbs}) and the [Explorer](${links.explorer}), ${explorerDescription}, and groups pairs into clusters that trace the reception of a passage.`,
           sources: [],
         },
         {

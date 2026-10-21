@@ -31,9 +31,19 @@ export function isoDate(value: string): IsoDate {
 export const affiliationIds = [1, 2] as const
 export type AffiliationId = (typeof affiliationIds)[number]
 
-export interface Affiliation {
+/** A university or other body that affiliations belong to. */
+export interface Institution {
   readonly nameEn: string
   readonly nameZh: string
+  /** The city and country that an English affiliation ends with. */
+  readonly placeEn: string
+}
+
+export interface Affiliation {
+  /** The department or centre, as in "Department of Information Management". */
+  readonly unitEn: string
+  readonly unitZh: string
+  readonly institution: Institution
 }
 
 export interface Author {
@@ -67,11 +77,13 @@ export interface PageFacts {
   readonly updated: IsoDate
 }
 
+const pekingUniversity = { nameEn: 'Peking University', nameZh: '北京大学', placeEn: 'Beijing, China' } as const satisfies Institution
+
 // A Record keyed by every AffiliationId, so dropping an affiliation that an
 // author still cites fails the type check instead of rendering a dangling mark.
 export const affiliations = {
-  1: { nameEn: 'Department of Information Management, Peking University, Beijing, China', nameZh: '北京大学信息管理系' },
-  2: { nameEn: 'Research Center for Digital Humanities, Peking University, Beijing, China', nameZh: '北京大学数字人文研究中心' },
+  1: { unitEn: 'Department of Information Management', unitZh: '信息管理系', institution: pekingUniversity },
+  2: { unitEn: 'Research Center for Digital Humanities', unitZh: '数字人文研究中心', institution: pekingUniversity },
 } as const satisfies Readonly<Record<AffiliationId, Affiliation>>
 
 export const authors = [
@@ -106,6 +118,9 @@ export const authors = [
 
 /** The author who maintains this page. */
 export const maintainer: Author = authors[0]
+
+/** The mark after the corresponding author's name, and before the note that explains it, as the paper prints it. */
+export const correspondingMark = '*'
 
 export const paper = {
   titleEn:
@@ -175,6 +190,9 @@ export const links = {
   icpRegistry: 'https://beian.miit.gov.cn/',
 } as const
 
+/** The Explorer's own name, at links.explorer. */
+export const explorerName = '《论语》×二十四史互文图谱'
+
 /** A page of the arXiv v1 PDF, which has nine. */
 export type PdfPage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
@@ -191,6 +209,15 @@ export const pages = {
   en: { path: '/', languageName: 'English', updated: isoDate('2026-10-21') },
   'zh-Hans': { path: '/zh/', languageName: '中文', updated: isoDate('2026-10-22') },
 } as const satisfies Readonly<Record<PageLanguage, PageFacts>>
+
+/**
+ * The path of the page's Markdown version: index.md under the page's own
+ * path, where https://llmstxt.org/ puts the Markdown of a URL without a file
+ * name.
+ */
+export function markdownPath(lang: PageLanguage): string {
+  return `${pages[lang].path}index.md`
+}
 
 /** Resolves a site path against `site` in astro.config.mjs, the only place the origin is written. */
 export function absoluteUrl(path: string): string {
@@ -211,15 +238,30 @@ export function authorName(author: Author, lang: PageLanguage): string {
   }
 }
 
-/** The affiliation's name as the page in `lang` shows it. */
+/**
+ * The affiliation's name as the page in `lang` shows it: unit, institution
+ * and place in English, as the paper prints it; institution then unit in
+ * Chinese, as in 北京大学信息管理系.
+ */
 export function affiliationName(id: AffiliationId, lang: PageLanguage): string {
   const affiliation: Affiliation = affiliations[id]
   switch (lang) {
     case 'en':
-      return affiliation.nameEn
+      return `${affiliation.unitEn}, ${affiliation.institution.nameEn}, ${affiliation.institution.placeEn}`
     case 'zh-Hans':
-      return affiliation.nameZh
+      return `${affiliation.institution.nameZh}${affiliation.unitZh}`
   }
+}
+
+/** The institutions of the authors' affiliations, each once, in order of first mention. */
+export function institutions(): readonly Institution[] {
+  const mentioned = authors.flatMap((author) => author.affiliations.map((id): Institution => affiliations[id].institution))
+  return [...new Set(mentioned)]
+}
+
+/** The affiliation numbers after an author's name, as in "1,2". */
+export function affiliationMarks(author: Author): string {
+  return author.affiliations.join(',')
 }
 
 /** "Family, Given", the order BibTeX and citation metadata both take. */

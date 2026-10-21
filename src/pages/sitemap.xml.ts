@@ -27,5 +27,5 @@ export const GET: APIRoute = () => {
       .join('\n'),
   )
   const xml = ['<?xml version="1.0" encoding="UTF-8"?>', urlset].concat(entries, ['</urlset>', '']).join('\n')
-  return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8' } })
+  return new Response(xml)
 }

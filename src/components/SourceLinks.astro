@@ -1,7 +1,7 @@
 ---
 import type { PageCopy, SourceRef } from '../content/types'
-import { pdfPageUrl } from '../data/paper'
 import { punctuationFor } from '../lib/format'
+import { sourceLink } from '../lib/sources'
 
 interface Props {
   readonly copy: PageCopy
@@ -10,18 +10,19 @@ interface Props {
 
 const { copy, sources } = Astro.props
 const marks = punctuationFor(copy.lang)
+const links = sources.map((source) => sourceLink(copy, source))
 ---
 
 {
-  sources.length > 0 && (
+  links.length > 0 && (
     <>
     {marks.join}
     <span class="sources" data-sources>
-      {copy.sources.lead}{marks.join}{sources.map((source, index) => (
+      {copy.sources.lead}{marks.join}{links.map((link, index) => (
         <>
           {index > 0 && marks.sourceSeparator}
-          <a class="quiet-link" href={pdfPageUrl(source.pages[0])}>
-            {copy.sources.parts[source.part]} · {copy.sources.pages(source.pages)}
+          <a class="quiet-link" href={link.href}>
+            {link.label}
           </a>
         </>
       ))}

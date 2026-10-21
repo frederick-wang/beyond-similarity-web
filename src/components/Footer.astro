@@ -1,7 +1,8 @@
 ---
 import type { PageCopy } from '../content/types'
-import { authorName, authors, copyrightYear, icpNumber, links, maintainer } from '../data/paper'
-import { formatList, punctuationFor } from '../lib/format'
+import { authorName, icpNumber, links, maintainer } from '../data/paper'
+import { punctuationFor } from '../lib/format'
+import { copyrightLine } from '../lib/footer'
 
 interface Props {
   readonly copy: PageCopy
@@ -9,16 +10,12 @@ interface Props {
 
 const { copy } = Astro.props
 const marks = punctuationFor(copy.lang)
-const holders = formatList(
-  authors.map((author) => authorName(author, copy.lang)),
-  copy.lang,
-)
 const maintainerName = authorName(maintainer, copy.lang)
 ---
 
 <footer class="site-footer">
   <div class="inner page-width">
-    <p>© {copyrightYear} {holders}{marks.fullStop}{marks.join}{copy.footer.rights}</p>
+    <p>{copyrightLine(copy)}</p>
     <p>
       {copy.footer.maintainedBy}{marks.join}{
         maintainer.homepage === null ? maintainerName : <a href={maintainer.homepage}>{maintainerName}</a>

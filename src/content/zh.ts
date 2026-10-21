@@ -24,6 +24,7 @@ export const zh: PageCopy = {
     alt: `英文分享卡片。题名：${shareCard.title}。作者：${shareCard.byline}。arXiv:${shareCard.arxivId}`,
   },
   skipLink: '跳到正文',
+  markdownVersion: (pageUrl) => `这是 <${pageUrl}> 的 Markdown 版本。`,
   correspondingNote: '通讯作者',
   finding: `我们让大语言模型智能体把它提出的每处复用落地到精确字符区间，并标注来源被复用的方式，再用《论语》与《汉书》之间的 ${benchmarkPairs} 条专家仲裁互文对验证它。在成书于${firstHistory}至 ${lastHistory}的正史中，直接引用和无标记复用的占比都未检出系统性变化，而同一原文在较晚成书的史书中字面忠实度总体较低。`,
   abstract:
