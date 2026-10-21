@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.12"
+# requires-python = "==3.12.*"
 # dependencies = ["potracer==0.0.4", "pillow==13.0.0", "numpy==2.5.4"]
 # ///
 """Traces the scroll seal into the SVG favicon, public/favicon.svg.
@@ -22,6 +22,10 @@ scripts/make-site-images.ts crops the PNG favicons to the same box, so every
 icon frames the seal alike.
 
 Usage: uv run scripts/trace-seal.py
+
+uv installs the exact packages pinned in scripts/trace-seal.py.lock; after
+changing the dependencies above, refresh it with
+`uv lock --script scripts/trace-seal.py`.
 """
 
 from pathlib import Path
@@ -37,7 +41,26 @@ OUTPUT = ROOT / "public/favicon.svg"
 
 SCALE = 4
 BLUR = 0.8
-TRACE = {"turdsize": 2 * SCALE * SCALE, "alphamax": 1.2, "opttolerance": 0.4}
+
+# Levels as fractions of full intensity, so the same boundary reads alike in
+# the source's 0-255 pixels and in the blurred bands.
+# A pixel at least half opaque belongs to the stamp: the view box and the
+# silhouette share this edge.
+EDGE_ALPHA = 0.5
+# Colours are measured on pixels this opaque, so anti-aliased edges do not
+# tint the medians.
+MEASURED_ALPHA = 250 / 255
+# The green channel tells the stamp from the scroll. Vermilion sits near 0.22
+# (light theme) or 0.48 (dark theme), the scroll's white near 1; 0.61, the
+# midpoint of the light theme's two colours, splits both seals.
+SCROLL_GREEN = 0.61
+
+# potrace parameters: speckles up to two source pixels in area are dropped;
+# the corner threshold and the curve tolerance were chosen by comparing
+# traces with the PNG at 16 to 512 px.
+TURDSIZE = 2 * SCALE * SCALE
+ALPHAMAX = 1.2
+OPTTOLERANCE = 0.4
 
 
 def rgba(path: Path) -> np.ndarray:
@@ -51,10 +74,10 @@ def median_colour(pixels: np.ndarray) -> str:
 
 
 def colours(image: np.ndarray) -> tuple[str, str]:
-    """The stamp's vermilion and the scroll's white, from fully opaque pixels."""
-    opaque = image[image[..., 3] >= 250]
-    # Vermilion has a green channel near 56 (light) or 123 (dark); the scroll's is above 250.
-    return median_colour(opaque[opaque[:, 1] < 160]), median_colour(opaque[opaque[:, 1] > 200])
+    """The stamp's vermilion and the scroll's white."""
+    opaque = image[image[..., 3] / 255 >= MEASURED_ALPHA]
+    scroll = opaque[:, 1] / 255 >= SCROLL_GREEN
+    return median_colour(opaque[~scroll]), median_colour(opaque[scroll])
 
 
 def masks(image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -64,37 +87,48 @@ def masks(image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     bands = [band.filter(ImageFilter.GaussianBlur(BLUR * SCALE)) for band in upsampled.split()]
     alpha = np.asarray(bands[3]) / 255
     green = np.asarray(bands[1]) / 255
-    silhouette = alpha >= 0.5
-    # Vermilion green is about 0.22 and the scroll's about 0.99; 0.61 is the midpoint.
-    return silhouette, silhouette & (green >= 0.61)
+    silhouette = alpha >= EDGE_ALPHA
+    return silhouette, silhouette & (green >= SCROLL_GREEN)
 
 
-def number(value: float) -> str:
+def source_coordinate(value: float) -> str:
+    """A traced coordinate scaled back to source pixels, with one decimal and no trailing zero."""
     text = f"{value / SCALE:.1f}".rstrip("0").rstrip(".")
     return "0" if text == "-0" else text
 
 
 def path_data(mask: np.ndarray) -> str:
     # potracer reads dark pixels as foreground and inverts its input, so it gets the complement.
-    traced = potrace.Bitmap(~mask).trace(turnpolicy=potrace.POTRACE_TURNPOLICY_MINORITY, opticurve=True, **TRACE)
+    traced = potrace.Bitmap(~mask).trace(
+        turdsize=TURDSIZE,
+        turnpolicy=potrace.POTRACE_TURNPOLICY_MINORITY,
+        alphamax=ALPHAMAX,
+        opticurve=True,
+        opttolerance=OPTTOLERANCE,
+    )
     commands = []
     for curve in traced:
-        commands.append(f"M{number(curve.start_point.x)} {number(curve.start_point.y)}")
+        commands.append(f"M{source_coordinate(curve.start_point.x)} {source_coordinate(curve.start_point.y)}")
         for segment in curve:
             if segment.is_corner:
                 corner, end = segment.c, segment.end_point
-                commands.append(f"L{number(corner.x)} {number(corner.y)}L{number(end.x)} {number(end.y)}")
+                commands.append(
+                    f"L{source_coordinate(corner.x)} {source_coordinate(corner.y)}"
+                    f"L{source_coordinate(end.x)} {source_coordinate(end.y)}"
+                )
             else:
                 c1, c2, end = segment.c1, segment.c2, segment.end_point
                 commands.append(
-                    f"C{number(c1.x)} {number(c1.y)} {number(c2.x)} {number(c2.y)} {number(end.x)} {number(end.y)}"
+                    f"C{source_coordinate(c1.x)} {source_coordinate(c1.y)}"
+                    f" {source_coordinate(c2.x)} {source_coordinate(c2.y)}"
+                    f" {source_coordinate(end.x)} {source_coordinate(end.y)}"
                 )
         commands.append("Z")
     return "".join(commands)
 
 
 def view_box(image: np.ndarray) -> str:
-    rows, columns = np.nonzero(image[..., 3] >= 128)
+    rows, columns = np.nonzero(image[..., 3] / 255 >= EDGE_ALPHA)
     left, right, top, bottom = columns.min(), columns.max() + 1, rows.min(), rows.max() + 1
     side = max(right - left, bottom - top)
     x = round((left + right - side) / 2)
