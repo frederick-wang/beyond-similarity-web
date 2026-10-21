@@ -16,6 +16,23 @@ import {
 import { readPngHeader, readPngTexts } from '../scripts/png.ts'
 import { attributeValues, only } from './head'
 
+/** The author names of the paper in the page's JSON-LD, checked field by field. */
+function authorNames(jsonLd: unknown): string[] {
+  if (typeof jsonLd !== 'object' || jsonLd === null || !('mainEntity' in jsonLd)) {
+    throw new Error('The JSON-LD has no mainEntity')
+  }
+  const article = jsonLd.mainEntity
+  if (typeof article !== 'object' || article === null || !('author' in article) || !Array.isArray(article.author)) {
+    throw new Error('The JSON-LD mainEntity has no author list')
+  }
+  return article.author.map((author: unknown) => {
+    if (typeof author !== 'object' || author === null || !('name' in author) || typeof author.name !== 'string') {
+      throw new Error('A JSON-LD author has no name')
+    }
+    return author.name
+  })
+}
+
 test.describe('citation metadata for Google Scholar and reference managers', () => {
   test('describes the arXiv preprint with title, ordered authors, date, DOI and arXiv ID', async ({ page }) => {
     await page.goto('/')
@@ -104,18 +121,11 @@ test.describe('link previews on social platforms', () => {
     if (words === undefined || others.length > 0) {
       throw new Error('The share image must carry exactly one "Card words" text chunk')
     }
-    const headAuthors = await page.evaluate(() => {
-      const script = document.querySelector('script[type="application/ld+json"]')
-      if (script === null || script.textContent === null) {
-        throw new Error('The head has no JSON-LD')
-      }
-      const data: { mainEntity: { author: { name: string }[] } } = JSON.parse(script.textContent)
-      return data.mainEntity.author.map((author) => author.name)
-    })
+    const jsonLd: unknown = JSON.parse(only(await page.locator('script[type="application/ld+json"]').allTextContents(), 'JSON-LD block'))
     expect(JSON.parse(words.text)).toEqual({
       shortTitle: only(await attributeValues(page, 'meta[property="og:site_name"]', 'content'), 'og:site_name'),
       title: only(await attributeValues(page, 'meta[name="citation_title"]', 'content'), 'citation_title'),
-      authors: headAuthors,
+      authors: authorNames(jsonLd),
       arxivId: only(await attributeValues(page, 'meta[name="citation_arxiv_id"]', 'content'), 'citation_arxiv_id'),
     })
   })
