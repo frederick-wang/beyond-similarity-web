@@ -153,6 +153,11 @@ function withoutCommentLeaders(lines) {
  * space. A run with two or more is a paragraph break, an empty comment line
  * inside a block included, and stays a line break. A run with none becomes one
  * space.
+ *
+ * The comment rule has two known limits. Consecutive list items that open
+ * with * count as one block, so their texts join into one paragraph. An
+ * end-of-line comment (code, then //) does not open a block, so the comment
+ * line after it keeps its leader and does not join it.
  */
 function unwrap(text) {
   const stripped = withoutCommentLeaders(text.split('\n')).join('\n')
