@@ -71,6 +71,15 @@ test.describe('English page, first screen', () => {
     }
   })
 
+  test('keeps model names on one line', async ({ page }) => {
+    await page.goto('/')
+    const names = page.locator('[data-glance] code')
+    await expect(names).toHaveText(['doubao-2.1-turbo', 'deepseek-v4-flash', 'deepseek-v4-flash'])
+    for (const whiteSpace of await names.evaluateAll((elements) => elements.map((element) => getComputedStyle(element).whiteSpace))) {
+      expect(whiteSpace).toBe('nowrap')
+    }
+  })
+
   test('lists the sections on this page', async ({ page }) => {
     await page.goto('/')
     const nav = page.getByRole('navigation', { name: 'On this page' })

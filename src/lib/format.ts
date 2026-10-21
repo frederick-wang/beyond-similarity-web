@@ -17,6 +17,11 @@ export function formatCount(value: number): string {
   return value.toLocaleString('en-US')
 }
 
+/** An identifier such as a model name, as a Markdown code span; the page keeps it on one line. */
+export function formatIdentifier(name: string): string {
+  return `\`${name}\``
+}
+
 export function formatQuantity(quantity: Quantity, lang: PageLanguage): string {
   switch (quantity.kind) {
     case 'count':

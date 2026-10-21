@@ -1,5 +1,5 @@
 import { paper, stats } from '../data/paper'
-import { formatCount, formatYear } from '../lib/format'
+import { formatCount, formatIdentifier, formatYear } from '../lib/format'
 import type { PageCopy } from './types'
 
 // First-screen copy takes its numbers from the facts module; the verbatim
@@ -7,6 +7,8 @@ import type { PageCopy } from './types'
 // tests against the paper.
 const benchmarkPairs = formatCount(stats.benchmarkPairs)
 const corpusComparisons = formatCount(stats.corpusComparisons)
+const mostPreciseModel = formatIdentifier(stats.mostPreciseModel)
+const deploymentModel = formatIdentifier(stats.deploymentModel)
 const firstHistory = formatYear(stats.compositionYears.first, 'en')
 const lastHistory = formatYear(stats.compositionYears.last, 'en')
 
@@ -21,8 +23,8 @@ export const en: PageCopy = {
   glance: {
     benchmark: 'expert-adjudicated intertextual pairs between the *Analects* and the *Book of Han*',
     precision: `precision of ${stats.models} LLMs against that benchmark`,
-    costSpread: `cost per valid pair of the most precise model, \`${stats.mostPreciseModel}\`, relative to \`${stats.deploymentModel}\`, which is ${stats.precisionGapPoints} points less precise`,
-    corpusRun: `intertextual pairs that \`${stats.deploymentModel}\` extracted from ${corpusComparisons} comparisons over the Twenty-Four Histories. If its ${stats.deploymentPrecision.toFixed(1)}% precision on the *Book of Han* holds, about 1 in ${stats.expectedSpuriousOneIn} of them would be spurious.`,
+    costSpread: `cost per valid pair of the most precise model, ${mostPreciseModel}, relative to ${deploymentModel}, which is ${stats.precisionGapPoints} points less precise`,
+    corpusRun: `intertextual pairs that ${deploymentModel} extracted from ${corpusComparisons} comparisons over the Twenty-Four Histories. If its ${stats.deploymentPrecision.toFixed(1)}% precision on the *Book of Han* holds, about 1 in ${stats.expectedSpuriousOneIn} of them would be spurious.`,
   },
   navHeading: 'On this page',
   links: {
