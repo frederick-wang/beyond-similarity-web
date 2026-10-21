@@ -189,7 +189,7 @@ export const copyrightYear = 2026
 
 export const pages = {
   en: { path: '/', languageName: 'English', updated: isoDate('2026-10-21') },
-  'zh-Hans': { path: '/zh/', languageName: '中文', updated: isoDate('2026-10-21') },
+  'zh-Hans': { path: '/zh/', languageName: '中文', updated: isoDate('2026-10-22') },
 } as const satisfies Readonly<Record<PageLanguage, PageFacts>>
 
 /** Resolves a site path against `site` in astro.config.mjs, the only place the origin is written. */
