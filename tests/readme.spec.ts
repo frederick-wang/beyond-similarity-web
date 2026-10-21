@@ -2,10 +2,13 @@ import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
 import { normalize } from './paper-literals'
 
-// README.md restates the paper's title, authors, arXiv link, numbers and
-// BibTeX entry for readers of the repository. It cannot import the facts
-// module, so each restated fact is compared with what the page serves.
+// README.md restates the paper's title, authors, links, numbers and BibTeX
+// entry for readers of the repository. It cannot import the facts module, so
+// each restated fact is compared with what the page serves.
 const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8')
+
+/** The README and the page's link row use the same label for the Explorer. */
+const explorerLabel = 'Explorer (in Chinese)'
 
 /** The README up to a level-2 heading. */
 function readmeBefore(heading: string): string {
@@ -14,6 +17,16 @@ function readmeBefore(heading: string): string {
     throw new Error(`README.md has no "## ${heading}" section`)
   }
   return readme.slice(0, end)
+}
+
+/** The address in the README's link list item that starts with the label. */
+function readmeLink(label: string): string {
+  const item = readme.split('\n').find((line) => line.startsWith(`- ${label}`))
+  const address = item === undefined ? undefined : /<(https?:\/\/[^>]+)>$/.exec(item)?.[1]
+  if (address === undefined) {
+    throw new Error(`README.md lists no "${label}" link`)
+  }
+  return address
 }
 
 /** Numbers as prose writes them: 12, 2,533, 55.9%. */
@@ -34,11 +47,21 @@ test.describe('README', () => {
     expect(readmeBefore('The paper')).toContain(`by ${list}.`)
   })
 
+  test('gives the site address the page declares as canonical', async ({ page }) => {
+    await page.goto('/')
+    expect(readmeLink('Paper page')).toBe(await page.locator('link[rel="canonical"]').getAttribute('href'))
+  })
+
   test('links to the arXiv record the page links to', async ({ page }) => {
     await page.goto('/')
-    const href = await page.locator('[data-links] a[href^="https://arxiv.org/abs/"]').getAttribute('href')
-    const links = readme.match(/https:\/\/arxiv\.org\/abs\/[^\s>)}]+/g)
-    expect(new Set(links)).toEqual(new Set([href]))
+    const served = await page.locator('[data-links] a[href^="https://arxiv.org/abs/"]').getAttribute('href')
+    expect(readmeLink('arXiv record')).toBe(served)
+  })
+
+  test('links to the Explorer the page links to', async ({ page }) => {
+    await page.goto('/')
+    const served = await page.locator('[data-links]').getByRole('link', { name: explorerLabel }).getAttribute('href')
+    expect(readmeLink(explorerLabel)).toBe(served)
   })
 
   test('states only numbers that the page states', async ({ page }) => {
