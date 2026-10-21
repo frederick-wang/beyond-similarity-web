@@ -15,6 +15,18 @@ export const AFFILIATIONS = [
   'Research Center for Digital Humanities, Peking University, Beijing, China',
 ] as const
 
+/** The Chinese title, author names and affiliations, as the SPEC gives them for the Chinese page. */
+export const TITLE_ZH = '超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测'
+export const AUTHORS_ZH = ['王兆基', '司宛玉', '王军'] as const
+export const AFFILIATIONS_ZH = ['北京大学信息管理系', '北京大学数字人文研究中心'] as const
+
+/** The two language pages, as the SPEC places them, with the language each declares. */
+export const PAGES = [
+  { path: '/', lang: 'en' },
+  { path: '/zh/', lang: 'zh-Hans' },
+] as const
+export type PageLanguage = (typeof PAGES)[number]['lang']
+
 export const ABSTRACT =
   'Computational approaches to intertextuality have advanced from string matching to neural retrieval, yet their outputs, similarity scores and parallel-passage lists, identify where texts reuse one another without characterizing how or why. We recast fine-grained intertextuality extraction as an agentic task in which a large language model (LLM) reads two text units in full and, through a constrained tool interface, must ground each proposed reuse in exact character spans on both sides and label it under a five-dimension typology of reuse (form, aspect, source-marking, function, stance). We validate the approach on an exhaustive comparison of the Analects with the Book of Han, where three domain experts adjudicate a pooled multi-model candidate set into a benchmark of 2,533 intertextual pairs. Against this standard we study twelve LLMs, reporting precision (56%–93%), a 51× cost spread at comparable quality, and how well their confidence is calibrated. Expert agreement traces a reliability gradient: dimensions legible on the textual surface are annotated consistently, while those requiring inference of intent are contested, delimiting the claims such annotation supports. Scaling the validated extractor to the full Twenty-Four Histories (65,380 comparisons, 5,766 pairs) recovers corpus-level structure a similarity score cannot express. The interpretive composition of citation shows no systematic change across eighteen centuries, yet the same passage is quoted less and less literally. Stability in the aggregate with drift in the individual case is what a cultural-attraction account expects. We release the extraction protocol and the expert-adjudicated benchmark.'
 
@@ -23,6 +35,11 @@ export const BENCHMARK_PAIRS = '2,533'
 export const PRECISION_RANGE = '55.9%–92.9%'
 export const FIRST_HISTORY = '91 BCE'
 export const LAST_HISTORY = '1739 CE'
+/** The same figures as the SPEC writes them for the Chinese page. */
+export const PRECISION_RANGE_ZH = '55.9%～92.9%'
+export const COST_SPREAD_ZH = '51 倍'
+export const FIRST_HISTORY_ZH = '公元前 91 年'
+export const LAST_HISTORY_ZH = '1739 年'
 export const BIBTEX_OPENING = '@misc{wang2026beyond,'
 
 export const ARXIV_ID = '2607.27595'
@@ -128,8 +145,11 @@ export const TABLE_1_DIMENSIONS = [
 /** Dimension names of Table 3 as printed (p. 6). */
 export const TABLE_3_DIMENSIONS = ['Form', 'Aspect', 'Source-marking', 'Function', 'Stance'] as const
 
-/** Numbers that section headings state, in words or digits (the prose test reads answers and paragraphs only). */
-export const HEADING_FIGURES = { models: ['twelve LLMs'], histories: ['eighteen centuries'] } as const
+/** Numbers that section headings state, in words or digits (the prose test reads answers and paragraphs only), on each language page. */
+export const HEADING_FIGURES = {
+  en: { models: ['twelve LLMs'], histories: ['eighteen centuries'] },
+  'zh-Hans': { models: ['十二个大语言模型'], histories: ['十八个世纪'] },
+} as const satisfies Record<PageLanguage, Readonly<Record<string, readonly string[]>>>
 
 /** Grant numbers in the acknowledgments, as printed on p. 8. */
 export const GRANT_NUMBERS = ['2025YFC3309300', '72010107003'] as const
@@ -138,7 +158,8 @@ export const GRANT_NUMBERS = ['2025YFC3309300', '72010107003'] as const
  * Every number of two or more digits that the answers and paragraphs of each
  * section state, copied from the paper's text. Tables and captions are checked
  * separately. Digits read the same in both languages, so the Chinese page is
- * held to the same lists.
+ * held to the same lists, except for the one figure in
+ * SECTION_FIGURES_ZH_OVERRIDES.
  */
 export const SECTION_FIGURES = {
   gap: ['260'],
@@ -223,14 +244,33 @@ export const SECTION_FIGURES = {
 } as const
 
 /**
- * Numbers the English prose writes as words. They cannot be found
- * mechanically, so the list is kept by hand; the Chinese page lists its own
- * wording of each.
+ * The figures of SECTION_FIGURES that the Chinese page writes in another form,
+ * by section. The English "about 28.5 million characters" is 「约 2,850 万字符」
+ * in Chinese, which counts large numbers in 万 (ten thousand) rather than in
+ * millions. No other figure is converted.
+ */
+export const SECTION_FIGURES_ZH_OVERRIDES: Readonly<Partial<Record<keyof typeof SECTION_FIGURES, Readonly<Record<string, string>>>>> = {
+  histories: { '28.5': '2,850' },
+}
+
+/**
+ * Numbers the prose writes as words, on each language page. They cannot be
+ * found mechanically, so the lists are kept by hand, the Chinese list giving
+ * the Chinese page's wording of each English entry in the same position.
  */
 export const SECTION_WORD_FIGURES = {
-  method: ['a quarter', 'two-thirds', 'ninefold', 'fivefold', 'five dimensions'],
-  benchmark: ['factor of two', 'twelve models'],
-  similarity: ['a quarter', 'top ten'],
-  models: ['eight of the twelve', '51 times'],
-  histories: ['one pair in eight', 'a third', 'three quarters', 'five dimensions', 'five distinct'],
-} as const
+  en: {
+    method: ['a quarter', 'two-thirds', 'ninefold', 'fivefold', 'five dimensions'],
+    benchmark: ['factor of two', 'twelve models'],
+    similarity: ['a quarter', 'top ten'],
+    models: ['eight of the twelve', '51 times'],
+    histories: ['one pair in eight', 'a third', 'three quarters', 'five dimensions', 'five distinct'],
+  },
+  'zh-Hans': {
+    method: ['四分之一', '三分之二', '九倍', '五倍', '五个维度'],
+    benchmark: ['两倍', '十二个模型'],
+    similarity: ['四分之一', '前十'],
+    models: ['十二个模型中有八个', '51 倍'],
+    histories: ['八条中有一条', '三分之一', '四分之三', '五个维度', '五个不同'],
+  },
+} as const satisfies Record<PageLanguage, Readonly<Partial<Record<keyof typeof SECTION_FIGURES, readonly string[]>>>>
