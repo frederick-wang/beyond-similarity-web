@@ -242,14 +242,14 @@ async function writeIcons(): Promise<void> {
   }
   // iOS rounds the corners of a home-screen icon; the margin keeps the seal clear of them.
   const margin = 22
-  const paper = pageColour('--paper')
+  const paperColour = pageColour('--paper')
   await writePng(
     `public${appleTouchIcon.path}`,
     seal
       .clone()
       .resize(appleTouchIcon.size - 2 * margin, appleTouchIcon.size - 2 * margin)
-      .extend({ top: margin, bottom: margin, left: margin, right: margin, background: paper })
-      .flatten({ background: paper }),
+      .extend({ top: margin, bottom: margin, left: margin, right: margin, background: paperColour })
+      .flatten({ background: paperColour }),
     {
       method,
       description: `Apple touch icon, ${appleTouchIcon.size} px: the vermilion scroll seal of the paper page on the white paper of the page, with no transparency.`,
