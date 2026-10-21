@@ -1,8 +1,10 @@
 // The one reader and writer of PNG chunks in the repository: the header that
 // tests check, the text chunks (tEXt, zTXt, iTXt) that carry provenance and
 // that the public-content check scans, and tEXt insertion for the scripts that
-// make images. It uses erasable TypeScript only, so Node runs it as is when
-// check-public.mjs and build-figures.mjs import it.
+// make images. Node runs it as is when check-public.mjs and build-figures.mjs
+// import it, which needs erasable TypeScript only; erasableSyntaxOnly in
+// tsconfig.json makes `astro check` reject anything else, here and in every
+// module the scripts import.
 
 import { crc32, inflateSync } from 'node:zlib'
 
