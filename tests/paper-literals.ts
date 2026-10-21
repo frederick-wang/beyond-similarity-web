@@ -37,11 +37,13 @@ export type PageLanguage = (typeof PAGES)[number]['lang']
 /**
  * Each language page's Markdown version: index.md under the page's path,
  * where the llms.txt proposal (https://llmstxt.org/) puts the Markdown of a
- * URL without a file name.
+ * URL without a file name. In "At a glance" the Markdown joins each quantity
+ * to its text with `glanceJoin`, a space in English and a full-width colon in
+ * Chinese.
  */
 export const MARKDOWN_VERSIONS = [
-  { page: '/', markdown: '/index.md', lang: 'en' },
-  { page: '/zh/', markdown: '/zh/index.md', lang: 'zh-Hans' },
+  { page: '/', markdown: '/index.md', lang: 'en', glanceJoin: ' ' },
+  { page: '/zh/', markdown: '/zh/index.md', lang: 'zh-Hans', glanceJoin: '：' },
 ] as const
 
 /** The sections of each language page in the SPEC's order, by the anchor both pages give them. */
