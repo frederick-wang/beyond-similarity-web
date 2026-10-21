@@ -1,5 +1,5 @@
 import shareCard from '../assets/share-en.png'
-import { authors, links, paper, stats } from '../data/paper'
+import { links, paper, shareCardWords, stats } from '../data/paper'
 import { formatCount, formatIdentifier, formatList, formatYear } from '../lib/format'
 import type { PageCopy } from './types'
 
@@ -12,10 +12,7 @@ const mostPreciseModel = formatIdentifier(stats.mostPreciseModel)
 const deploymentModel = formatIdentifier(stats.deploymentModel)
 const firstHistory = formatYear(stats.compositionYears.first, 'en')
 const lastHistory = formatYear(stats.compositionYears.last, 'en')
-const authorNames = formatList(
-  authors.map((author) => author.nameEn),
-  'en',
-)
+const card = shareCardWords()
 
 export const en: PageCopy = {
   lang: 'en',
@@ -25,7 +22,7 @@ export const en: PageCopy = {
   openGraphLocale: 'en_US',
   shareImage: {
     image: shareCard,
-    alt: `${paper.titleEn}. ${authorNames}. arXiv:${paper.arxivId}`,
+    alt: `${card.title}. ${formatList(card.authors, 'en')}. arXiv:${card.arxivId}`,
   },
   skipLink: 'Skip to content',
   correspondingNote: 'Corresponding author',

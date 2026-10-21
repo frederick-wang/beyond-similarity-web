@@ -196,3 +196,25 @@ export function bibtex(): string {
   const body = fields.map(([name, value]) => `  ${name.padEnd(width)} = {${value}}`).join(',\n')
   return `@misc{${paper.bibtexKey},\n${body}\n}`
 }
+
+/** The words on the share card, in reading order. */
+export interface ShareCardWords {
+  readonly shortTitle: string
+  readonly title: string
+  readonly authors: readonly string[]
+  readonly arxivId: string
+}
+
+/**
+ * The one source of the share card's words: scripts/make-site-images.ts
+ * renders them and records them in the image, and each page builds the
+ * image's alt text from them, so the card and its text alternative agree.
+ */
+export function shareCardWords(): ShareCardWords {
+  return {
+    shortTitle: paper.shortTitle,
+    title: paper.titleEn,
+    authors: authors.map((author) => author.nameEn),
+    arxivId: paper.arxivId,
+  }
+}

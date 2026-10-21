@@ -142,7 +142,7 @@ export type OpenGraphLocale = `${Lowercase<string>}_${Uppercase<string>}`
 /** The card that link previews show for the page (og:image), made by scripts/make-site-images.ts. */
 export interface ShareImage {
   readonly image: ImageMetadata
-  /** The words on the card, for readers who cannot see it. */
+  /** Text alternative built from shareCardWords() in src/data/paper.ts, the words the card shows. */
   readonly alt: string
 }
 

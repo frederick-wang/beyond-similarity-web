@@ -6,10 +6,12 @@
 //   public/apple-touch-icon.png
 //
 // The card is HTML rendered by Playwright's Chromium with the site's own
-// stylesheet, so it takes the page's palette, font stack and seal; its text
-// comes from the facts module. Rendering uses the browser and the fonts of the
-// machine that runs the script, so the card's Source chunk records the
-// platform and the browser version it was rendered with.
+// stylesheet, so it takes the page's palette, font stack and seal. Its words
+// come from shareCardWords() in the facts module; the card records them as
+// JSON in a "Card words" text chunk, which tests/metadata.spec.ts compares
+// with the page head to catch a card left stale. Rendering uses the browser
+// and the fonts of the machine that runs the script, so the card's Source
+// chunk records the platform and the browser version it was rendered with.
 //
 // The PNG favicons are the seal artwork resized with sharp, cropped to the
 // view box of the traced SVG favicon so that every icon frames the seal alike.
@@ -30,8 +32,8 @@ import { arch, release, type } from 'node:os'
 import { chromium } from '@playwright/test'
 import sharp, { type Sharp } from 'sharp'
 import { appleTouchIcon, pngIcons, svgIcon } from '../src/data/icons.ts'
-import { authors, paper } from '../src/data/paper.ts'
-import { withTextChunks } from './png.ts'
+import { shareCardWords, type ShareCardWords } from '../src/data/paper.ts'
+import { withTextChunks, type PngText } from './png.ts'
 
 const root = new URL('../', import.meta.url)
 
@@ -55,10 +57,9 @@ function escapeHtml(text: string): string {
   return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
 }
 
-function shareCardHtml(): string {
+function shareCardHtml(words: ShareCardWords): string {
   const stylesheet = readFileSync(new URL('src/styles/global.css', root), 'utf8')
   const seal = readFileSync(new URL('src/assets/seal.png', root)).toString('base64')
-  const byline = authors.map((author) => author.nameEn).join(', ')
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -126,12 +127,12 @@ function shareCardHtml(): string {
     <main class="card">
       <header class="masthead">
         <img src="data:image/png;base64,${seal}" alt="" />
-        <span>${escapeHtml(paper.shortTitle)}</span>
+        <span>${escapeHtml(words.shortTitle)}</span>
       </header>
-      <h1>${escapeHtml(paper.titleEn)}</h1>
+      <h1>${escapeHtml(words.title)}</h1>
       <footer class="byline">
-        <span>${escapeHtml(byline)}</span>
-        <span>arXiv:${escapeHtml(paper.arxivId)}</span>
+        <span>${escapeHtml(words.authors.join(', '))}</span>
+        <span>arXiv:${escapeHtml(words.arxivId)}</span>
       </footer>
     </main>
   </body>
@@ -139,7 +140,7 @@ function shareCardHtml(): string {
 }
 
 /** The rendered card, and the browser and platform that rendered it. */
-async function renderShareCard(): Promise<{ readonly png: Buffer; readonly renderer: string }> {
+async function renderShareCard(words: ShareCardWords): Promise<{ readonly png: Buffer; readonly renderer: string }> {
   const browser = await chromium.launch()
   try {
     const page = await browser.newPage({
@@ -147,7 +148,7 @@ async function renderShareCard(): Promise<{ readonly png: Buffer; readonly rende
       deviceScaleFactor: 1,
       colorScheme: 'light',
     })
-    await page.setContent(shareCardHtml())
+    await page.setContent(shareCardHtml(words))
     await page.evaluate(async () => {
       await document.fonts.ready
     })
@@ -164,22 +165,23 @@ async function renderShareCard(): Promise<{ readonly png: Buffer; readonly rende
   }
 }
 
-/** Returns the PNG with tEXt chunks recording its origin, right after the IHDR chunk. */
-function withOrigin(png: Buffer, origin: Origin): Buffer {
-  return withTextChunks(png, [
+/** The tEXt chunks recording an image's origin. */
+function originTexts(origin: Origin): PngText[] {
+  return [
     { keyword: 'Source', text: origin.source },
     { keyword: 'Description', text: origin.description },
     { keyword: 'impeccable:prompt', text: `${origin.method} ${origin.description} Source: ${origin.source}.` },
-  ])
+  ]
 }
 
-async function writePng(path: string, image: Sharp, origin: Origin): Promise<void> {
+/** Writes the image as a PNG with these tEXt chunks right after its IHDR chunk. */
+async function writePng(path: string, image: Sharp, texts: readonly PngText[]): Promise<void> {
   // Every PNG here is palette-quantised: an indexed palette of at most 256
   // colours (sharp's default) holds the antialiased text and the seal, and
   // effort 10 spends the most time on choosing it. sharp drops the renderer's
   // metadata, so the origin chunks are the only text left.
   const png = await image.png({ palette: true, compressionLevel: 9, effort: 10 }).toBuffer()
-  writeFileSync(new URL(path, root), withOrigin(png, origin))
+  writeFileSync(new URL(path, root), withTextChunks(png, texts))
   console.log(`wrote ${path}`)
 }
 
@@ -219,11 +221,15 @@ async function writeIcons(): Promise<void> {
   const method = 'Resized from the seal artwork, not generated by a model.'
   const source = `scripts/make-site-images.ts, src/assets/seal.png cropped to the view box of public${svgIcon} and resized with sharp`
   for (const icon of pngIcons) {
-    await writePng(`public${icon.path}`, seal.clone().resize(icon.size, icon.size), {
-      method,
-      description: `Favicon, ${icon.size} px: the vermilion scroll seal of the paper page on a transparent background.`,
-      source,
-    })
+    await writePng(
+      `public${icon.path}`,
+      seal.clone().resize(icon.size, icon.size),
+      originTexts({
+        method,
+        description: `Favicon, ${icon.size} px: the vermilion scroll seal of the paper page on a transparent background.`,
+        source,
+      }),
+    )
   }
   // iOS rounds the corners of a home-screen icon; the margin keeps the seal clear of them.
   const margin = 22
@@ -235,18 +241,23 @@ async function writeIcons(): Promise<void> {
       .resize(appleTouchIcon.size - 2 * margin, appleTouchIcon.size - 2 * margin)
       .extend({ top: margin, bottom: margin, left: margin, right: margin, background: paperColour })
       .flatten({ background: paperColour }),
-    {
+    originTexts({
       method,
       description: `Apple touch icon, ${appleTouchIcon.size} px: the vermilion scroll seal of the paper page on the white paper of the page, with no transparency.`,
       source: `${source}, on the --paper colour of src/styles/global.css`,
-    },
+    }),
   )
 }
 
-const card = await renderShareCard()
-await writePng(shareCard.output, sharp(card.png).removeAlpha(), {
-  method: shareCard.method,
-  description: shareCard.description,
-  source: `scripts/make-site-images.ts, HTML rendered by ${card.renderer} from src/data/paper.ts (title, short title, authors, arXiv ID), src/styles/global.css and src/assets/seal.png`,
-})
+const words = shareCardWords()
+const card = await renderShareCard(words)
+await writePng(
+  shareCard.output,
+  sharp(card.png).removeAlpha(),
+  originTexts({
+    method: shareCard.method,
+    description: shareCard.description,
+    source: `scripts/make-site-images.ts, HTML rendered by ${card.renderer} from shareCardWords() in src/data/paper.ts, src/styles/global.css and src/assets/seal.png`,
+  }).concat([{ keyword: 'Card words', text: JSON.stringify(words) }]),
+)
 await writeIcons()

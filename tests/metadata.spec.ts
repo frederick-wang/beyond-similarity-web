@@ -13,7 +13,7 @@ import {
   SITE,
   TITLE,
 } from './paper-literals'
-import { readPngHeader } from '../scripts/png.ts'
+import { readPngHeader, readPngTexts } from '../scripts/png.ts'
 
 async function metaContents(page: Page, name: string): Promise<(string | null)[]> {
   return page.locator(`meta[name="${name}"]`).evaluateAll((elements) => elements.map((element) => element.getAttribute('content')))
@@ -106,6 +106,30 @@ test.describe('link previews on social platforms', () => {
     }
     expect(await metaContents(page, 'twitter:card')).toEqual(['summary_large_image'])
     expect(await metaContents(page, 'twitter:image:alt')).toEqual([alt])
+  })
+
+  test('show on the share image the words the head states, so a card left stale after a facts change fails', async ({ page, request }) => {
+    await page.goto('/')
+    const response = await request.get(new URL(await openGraph(page, 'og:image')).pathname)
+    // scripts/make-site-images.ts records the words it renders in this text chunk.
+    const [words, ...others] = readPngTexts(await response.body()).filter((chunk) => chunk.keyword === 'Card words')
+    if (words === undefined || others.length > 0) {
+      throw new Error('The share image must carry exactly one "Card words" text chunk')
+    }
+    const headAuthors = await page.evaluate(() => {
+      const script = document.querySelector('script[type="application/ld+json"]')
+      if (script === null || script.textContent === null) {
+        throw new Error('The head has no JSON-LD')
+      }
+      const data: { mainEntity: { author: { name: string }[] } } = JSON.parse(script.textContent)
+      return data.mainEntity.author.map((author) => author.name)
+    })
+    expect(JSON.parse(words.text)).toEqual({
+      shortTitle: await openGraph(page, 'og:site_name'),
+      title: (await metaContents(page, 'citation_title'))[0],
+      authors: headAuthors,
+      arxivId: (await metaContents(page, 'citation_arxiv_id'))[0],
+    })
   })
 
   test('serve the share image as a 1200×630 PNG', async ({ page, request }) => {
