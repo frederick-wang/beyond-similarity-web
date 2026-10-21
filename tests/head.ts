@@ -24,3 +24,17 @@ export function only(values: readonly string[], what: string): string {
   }
   return value
 }
+
+/** Narrows a parsed JSON value to an object whose fields can be read by name. */
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+/** The page's one JSON-LD block, parsed; anything other than exactly one JSON object fails the test. */
+export async function jsonLd(page: Page): Promise<Record<string, unknown>> {
+  const data: unknown = JSON.parse(only(await page.locator('script[type="application/ld+json"]').allTextContents(), 'JSON-LD block'))
+  if (!isRecord(data)) {
+    throw new Error('The JSON-LD block is not a JSON object')
+  }
+  return data
+}

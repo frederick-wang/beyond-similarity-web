@@ -1,29 +1,24 @@
-import shareCardImage from '../assets/share-en.png'
-import { links, paper, shareCardWords, stats } from '../data/paper'
-import { formatCount, formatIdentifier, formatYear, shareCardByline } from '../lib/format'
-import { pngImage } from '../lib/images'
+import { links, paper, stats } from '../data/paper'
+import { formatYear } from '../lib/format'
+import { benchmarkPairs, corpusComparisons, deploymentModel, mostPreciseModel, shareCard } from './shared'
 import type { PageCopy } from './types'
 
-// First-screen copy takes its numbers from the facts module. The verbatim
-// abstract and the section prose state numbers as text; tests/prose-figures.spec.ts
-// checks every number of two or more digits against literals copied from the paper.
-const benchmarkPairs = formatCount(stats.benchmarkPairs)
-const corpusComparisons = formatCount(stats.corpusComparisons)
-const mostPreciseModel = formatIdentifier(stats.mostPreciseModel)
-const deploymentModel = formatIdentifier(stats.deploymentModel)
+// The first screen takes its numbers from the facts module, through ./shared
+// for the values every page states alike; the abstract and the section prose
+// write them as the paper prints them. Numbers in this copy are checked
+// against tests/paper-literals.ts; the comments there say what each table covers.
 const firstHistory = formatYear(stats.compositionYears.first, 'en')
 const lastHistory = formatYear(stats.compositionYears.last, 'en')
-const card = shareCardWords()
 
 export const en: PageCopy = {
   lang: 'en',
   title: paper.titleEn,
   description: `An LLM agent grounds each reuse of the Analects in exact character spans and labels how it is reused, validated on ${benchmarkPairs} expert-adjudicated pairs.`,
-  siteName: paper.shortTitle,
+  siteName: paper.shortTitleEn,
   openGraphLocale: 'en_US',
   shareImage: {
-    image: pngImage(shareCardImage),
-    alt: `${card.title}. ${shareCardByline(card.authors)}. arXiv:${card.arxivId}`,
+    image: shareCard.image,
+    alt: `${shareCard.title}. ${shareCard.byline}. arXiv:${shareCard.arxivId}`,
   },
   skipLink: 'Skip to content',
   correspondingNote: 'Corresponding author',

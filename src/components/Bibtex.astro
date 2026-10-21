@@ -7,12 +7,14 @@ interface Props {
 }
 
 const { copy } = Astro.props
+// The entry is English on every page, as arXiv records the title and the
+// authors, so it carries lang="en" inside the Chinese page too.
 const entry = bibtex()
 ---
 
 <div class="bibtex" data-copy-done={copy.copyButton.done} data-copy-failed={copy.copyButton.failed}>
   <div class="entry" role="region" aria-label={copy.bibtexLabel} tabindex="0">
-    <pre><code>{entry}</code></pre>
+    <pre lang="en"><code>{entry}</code></pre>
   </div>
   <div class="actions">
     <button type="button" hidden data-copy-button>{copy.copyButton.idle}</button>

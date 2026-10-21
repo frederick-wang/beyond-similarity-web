@@ -3,16 +3,46 @@
 import type { PageLanguage, Quantity } from '../data/paper'
 
 // Per-language number typography. English ranges take an en dash and
-// multiples take "×". Counts group thousands with a comma in every language,
-// which is also the Chinese convention for numbers of five digits or more.
-const rangeSeparator: Readonly<Record<PageLanguage, string>> = { en: '–' }
-const multipleSuffix: Readonly<Record<PageLanguage, string>> = { en: '×' }
-const listLocale: Readonly<Record<PageLanguage, string>> = { en: 'en' }
+// multiples take "×"; Chinese ranges take a full-width tilde and multiples
+// 倍 after a space, as in 「51 倍」. Counts group thousands with a comma in
+// every language, which is also the Chinese convention for numbers of five
+// digits or more.
+const rangeSeparator: Readonly<Record<PageLanguage, string>> = { en: '–', 'zh-Hans': '～' }
+const multipleSuffix: Readonly<Record<PageLanguage, string>> = { en: '×', 'zh-Hans': '\u00a0倍' }
+const listLocale: Readonly<Record<PageLanguage, string>> = { en: 'en', 'zh-Hans': 'zh' }
 // Year formats differ in shape, not only in suffix (Chinese puts the era
-// first), so each language supplies a function. A no-break space keeps an
-// English year and its era on one line.
+// first), so each language supplies a function. No-break spaces keep a year
+// and its era on one line, and in Chinese keep 公元前 and 年 with the number.
 const yearFormat: Readonly<Record<PageLanguage, (year: number) => string>> = {
   en: (year) => (year < 0 ? `${-year}\u00a0BCE` : `${year}\u00a0CE`),
+  'zh-Hans': (year) => (year < 0 ? `公元前\u00a0${-year}\u00a0年` : `${year}\u00a0年`),
+}
+
+/** Punctuation that a component places between pieces of copy. */
+export interface Punctuation {
+  /** Ends a sentence the component completes, as in "Maintained by Zhaoji Wang." */
+  readonly fullStop: string
+  /**
+   * Joins a sentence, or a lead such as "Source:", to the text after it: a
+   * space in English, nothing in Chinese, whose full-width punctuation at the
+   * end of the first piece carries its own spacing.
+   */
+  readonly join: string
+  /** Separates the author names in the title block. */
+  readonly authorSeparator: string
+  /** Separates two source links after a paragraph. */
+  readonly sourceSeparator: string
+  /** Closes the label of a figure or table caption, as the period in "Figure 1.". */
+  readonly labelEnd: string
+}
+
+const punctuation: Readonly<Record<PageLanguage, Punctuation>> = {
+  en: { fullStop: '.', join: ' ', authorSeparator: ', ', sourceSeparator: '; ', labelEnd: '.' },
+  'zh-Hans': { fullStop: '。', join: '', authorSeparator: '、', sourceSeparator: '；', labelEnd: '' },
+}
+
+export function punctuationFor(lang: PageLanguage): Punctuation {
+  return punctuation[lang]
 }
 
 export function formatCount(value: number): string {
@@ -35,7 +65,7 @@ export function formatQuantity(quantity: Quantity, lang: PageLanguage): string {
   }
 }
 
-/** A calendar year with its era, as in "91 BCE" or "1739 CE"; negative years are BCE. */
+/** A calendar year with its era, as in "91 BCE" or "1739 CE", 「公元前 91 年」 or 「1739 年」; negative years are BCE. */
 export function formatYear(year: number, lang: PageLanguage): string {
   return yearFormat[lang](year)
 }

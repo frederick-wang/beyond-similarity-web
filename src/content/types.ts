@@ -150,14 +150,14 @@ export interface PageCopy {
   readonly lang: PageLanguage
   readonly title: string
   readonly description: string
-  /** The site's name in the page's language, for link previews (og:site_name). */
+  /** The site's name in the page's language: the masthead brand and og:site_name. */
   readonly siteName: string
   readonly openGraphLocale: OpenGraphLocale
   readonly shareImage: ShareImage
   readonly skipLink: string
   readonly correspondingNote: string
   readonly finding: InlineMarkdown
-  /** The arXiv abstract, verbatim. */
+  /** The abstract: the arXiv abstract verbatim on the English page, a translation of it on the Chinese page. */
   readonly abstract: InlineMarkdown
   readonly glanceHeading: string
   readonly glance: Readonly<Record<GlanceId, InlineMarkdown>>

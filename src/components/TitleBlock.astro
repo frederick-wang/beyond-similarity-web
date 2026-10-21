@@ -1,12 +1,14 @@
 ---
 import type { PageCopy } from '../content/types'
-import { affiliationIds, affiliations, authors, links } from '../data/paper'
+import { affiliationIds, affiliationName, authorName, authors, links } from '../data/paper'
+import { punctuationFor } from '../lib/format'
 
 interface Props {
   readonly copy: PageCopy
 }
 
 const { copy } = Astro.props
+const marks = punctuationFor(copy.lang)
 ---
 
 <header class="title-block">
@@ -16,10 +18,10 @@ const { copy } = Astro.props
       authors.map((author, index) => (
         <span class="author" data-author>
           {author.homepage === null ? (
-            <span data-author-name>{author.nameEn}</span>
+            <span data-author-name>{authorName(author, copy.lang)}</span>
           ) : (
             <a href={author.homepage} data-author-name>
-              {author.nameEn}
+              {authorName(author, copy.lang)}
             </a>
           )}
           <sup data-author-affiliations>{author.affiliations.join(',')}</sup>
@@ -28,7 +30,7 @@ const { copy } = Astro.props
               <abbr title={copy.correspondingNote}>*</abbr>
             </sup>
           )}
-          {index < authors.length - 1 && <span class="separator">, </span>}
+          {index < authors.length - 1 && <span class="separator">{marks.authorSeparator}</span>}
         </span>
       ))
     }
@@ -37,7 +39,7 @@ const { copy } = Astro.props
     {
       affiliationIds.map((id) => (
         <li data-affiliation>
-          <sup>{id}</sup> {affiliations[id].nameEn}
+          <sup>{id}</sup> {affiliationName(id, copy.lang)}
         </li>
       ))
     }

@@ -8,6 +8,7 @@ import { quotationIds, quotations, type Quotation, type QuotationId } from '../d
 // them, corner brackets in Chinese prose.
 const quotationMarks: Readonly<Record<PageLanguage, { readonly open: string; readonly close: string }>> = {
   en: { open: '“', close: '”' },
+  'zh-Hans': { open: '「', close: '」' },
 }
 
 const quotationToken = /\{\{([A-Za-z]+)\}\}/g

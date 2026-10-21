@@ -6,7 +6,7 @@
 // Node runs this module unbundled for scripts/make-site-images.ts; a CI step imports the image scripts to check it.
 
 /** The language pages, as BCP 47 tags. */
-export const pageLanguages = ['en'] as const
+export const pageLanguages = ['en', 'zh-Hans'] as const
 export type PageLanguage = (typeof pageLanguages)[number]
 
 declare const isoDateBrand: unique symbol
@@ -33,10 +33,12 @@ export type AffiliationId = (typeof affiliationIds)[number]
 
 export interface Affiliation {
   readonly nameEn: string
+  readonly nameZh: string
 }
 
 export interface Author {
   readonly nameEn: string
+  readonly nameZh: string
   readonly givenNameEn: string
   readonly familyNameEn: string
   readonly affiliations: readonly AffiliationId[]
@@ -55,6 +57,8 @@ export type Quantity =
 
 export interface PageFacts {
   readonly path: string
+  /** The page's language named in that language, as the language switch on the other pages shows it. */
+  readonly languageName: string
   /**
    * The date of the page's last substantive change: new or corrected text,
    * numbers, figures or tables, not styling or code. sitemap.xml gives it as
@@ -66,13 +70,14 @@ export interface PageFacts {
 // A Record keyed by every AffiliationId, so dropping an affiliation that an
 // author still cites fails the type check instead of rendering a dangling mark.
 export const affiliations = {
-  1: { nameEn: 'Department of Information Management, Peking University, Beijing, China' },
-  2: { nameEn: 'Research Center for Digital Humanities, Peking University, Beijing, China' },
+  1: { nameEn: 'Department of Information Management, Peking University, Beijing, China', nameZh: '北京大学信息管理系' },
+  2: { nameEn: 'Research Center for Digital Humanities, Peking University, Beijing, China', nameZh: '北京大学数字人文研究中心' },
 } as const satisfies Readonly<Record<AffiliationId, Affiliation>>
 
 export const authors = [
   {
     nameEn: 'Zhaoji Wang',
+    nameZh: '王兆基',
     givenNameEn: 'Zhaoji',
     familyNameEn: 'Wang',
     affiliations: [1, 2],
@@ -81,6 +86,7 @@ export const authors = [
   },
   {
     nameEn: 'Wanyu Si',
+    nameZh: '司宛玉',
     givenNameEn: 'Wanyu',
     familyNameEn: 'Si',
     affiliations: [1, 2],
@@ -89,6 +95,7 @@ export const authors = [
   },
   {
     nameEn: 'Jun Wang',
+    nameZh: '王军',
     givenNameEn: 'Jun',
     familyNameEn: 'Wang',
     affiliations: [1, 2],
@@ -103,7 +110,9 @@ export const maintainer: Author = authors[0]
 export const paper = {
   titleEn:
     'Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories',
-  shortTitle: 'Beyond Similarity',
+  shortTitleEn: 'Beyond Similarity',
+  titleZh: '超越相似度：古代中国史书互文的落地化智能体抽取与专家仲裁评测',
+  shortTitleZh: '超越相似度',
   arxivId: '2607.27595',
   arxivVersion: 'v1',
   primaryClass: 'cs.CL',
@@ -179,7 +188,8 @@ export const icpNumber = '蜀ICP备19032431号-3'
 export const copyrightYear = 2026
 
 export const pages = {
-  en: { path: '/', updated: isoDate('2026-10-21') },
+  en: { path: '/', languageName: 'English', updated: isoDate('2026-10-21') },
+  'zh-Hans': { path: '/zh/', languageName: '中文', updated: isoDate('2026-10-22') },
 } as const satisfies Readonly<Record<PageLanguage, PageFacts>>
 
 /** Resolves a site path against `site` in astro.config.mjs, the only place the origin is written. */
@@ -189,6 +199,27 @@ export function absoluteUrl(path: string): string {
     throw new Error('`site` must be set in astro.config.mjs')
   }
   return new URL(path, origin).href
+}
+
+/** The author's name as the page in `lang` shows it. */
+export function authorName(author: Author, lang: PageLanguage): string {
+  switch (lang) {
+    case 'en':
+      return author.nameEn
+    case 'zh-Hans':
+      return author.nameZh
+  }
+}
+
+/** The affiliation's name as the page in `lang` shows it. */
+export function affiliationName(id: AffiliationId, lang: PageLanguage): string {
+  const affiliation: Affiliation = affiliations[id]
+  switch (lang) {
+    case 'en':
+      return affiliation.nameEn
+    case 'zh-Hans':
+      return affiliation.nameZh
+  }
 }
 
 /** "Family, Given", the order BibTeX and citation metadata both take. */
@@ -228,7 +259,7 @@ export interface ShareCardWords {
  */
 export function shareCardWords(): ShareCardWords {
   return {
-    shortTitle: paper.shortTitle,
+    shortTitle: paper.shortTitleEn,
     title: paper.titleEn,
     authors: authors.map((author) => author.nameEn),
     arxivId: paper.arxivId,
