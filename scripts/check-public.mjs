@@ -28,7 +28,7 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { isPng, readPngTexts } from './png.ts'
+import { isPng, PngFormatError, readPngWords } from './png.ts'
 
 // Pushed blobs can be large (figures); the default 1 MB buffer is too small.
 const maxBuffer = 256 * 1024 * 1024
@@ -183,34 +183,48 @@ function scanText(label, text, ruleSets) {
 }
 
 /**
- * The text chunks of a PNG, one line each, with every field that carries
- * words: an iTXt chunk's language tag and translated keyword as well as its
- * keyword and text. A PNG that does not parse stops the check with exit code
- * 2, since its text could not all be read: reporting it as clean would hide
- * whatever the parser could not reach.
+ * The words of a PNG (see scripts/png.ts), one line each: every field of its
+ * text chunks, an iTXt chunk's language tag and translated keyword included,
+ * and the names in its iCCP and sPLT chunks. A PNG that does not parse stops
+ * the check with exit code 2, since its words could not all be read: calling
+ * it clean would hide whatever the parser could not reach. The message names
+ * only the file, the byte offset and the kind of fault, never bytes from the
+ * file, because CI logs are public.
  */
-function pngText(label, bytes) {
+function pngWords(label, bytes) {
   try {
-    return readPngTexts(bytes)
+    const words = readPngWords(bytes)
+    const lines = words.texts
       .map((chunk) =>
         chunk.type === 'iTXt'
           ? `${chunk.keyword} ${chunk.language} ${chunk.translatedKeyword}: ${chunk.text}`
           : `${chunk.keyword}: ${chunk.text}`,
       )
-      .join('\n')
+      .concat(words.names)
+    return { text: lines.join('\n'), exif: words.exif }
   } catch (error) {
-    exitWithSetupError(`PNG 文件无法解析：${label}（${error.message}）`)
+    if (error instanceof PngFormatError) {
+      exitWithSetupError(`PNG 文件无法解析：${label}（第 ${error.offset} 字节，${error.problem}）`)
+    }
+    exitWithSetupError(`PNG 文件无法解析：${label}（${error instanceof Error ? error.name : '未知错误'}）`)
   }
 }
 
 /**
- * Scans a file's bytes: text files line by line, PNG files through their text
- * chunks, and other binary files (any NUL byte in the first 8,000, as git
- * decides) not at all.
+ * Scans a file's bytes: text files line by line, PNG files through their
+ * words, and other binary files (any NUL byte in the first 8,000, as git
+ * decides) not at all. A PNG with an eXIf chunk is a hit in every mode: EXIF
+ * can hold host names, paths, device serial numbers and places, and a
+ * published image needs none of them.
  */
 function scanBytes(label, bytes, ruleSets) {
   if (isPng(bytes)) {
-    return scanText(`${label}（PNG 文本块）`, pngText(label, bytes), ruleSets)
+    const words = pngWords(label, bytes)
+    const hits = scanText(`${label}（PNG 文本块）`, words.text, ruleSets)
+    if (words.exif) {
+      hits.push(`${label}（PNG eXIf 块）：发布的 PNG 不应带 EXIF，请去掉 eXIf 块后再提交`)
+    }
+    return hits
   }
   if (bytes.subarray(0, 8000).includes(0)) {
     return []
