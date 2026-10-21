@@ -13,3 +13,6 @@ dist/
 # Playwright 产物
 /test-results/
 /playwright-report/
+
+# playwright-cli 的会话快照
+/.playwright-cli/
