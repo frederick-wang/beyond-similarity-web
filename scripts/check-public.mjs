@@ -17,12 +17,12 @@
 // Usage:
 //   node scripts/check-public.mjs              tracked files, unpushed commit messages, and dist/ if built
 //   node scripts/check-public.mjs --pre-push   git pre-push hook: every object and commit message being pushed
-//   node scripts/check-public.mjs --build      dist/ against the status rules only; CI runs this, having no private rules
+//   node scripts/check-public.mjs --ci         tracked files and dist/ against the status rules only; CI runs this, having no private rules
 //   node scripts/check-public.mjs <file>...    arbitrary files, such as an issue or PR body before posting
 //
 // Exit codes: 0 clean; 1 hits found; 2 repository not found, a rule file
 // missing, unreadable, invalid or empty, an input file missing, or no dist/
-// under --build.
+// under --ci.
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -214,7 +214,8 @@ function scanPrePush(ruleSets) {
   return hits
 }
 
-function scanWorkingState(ruleSets) {
+/** The working-tree contents of every tracked file, such as README.md, which is public without reaching dist/. */
+function scanTrackedFiles(ruleSets) {
   const hits = []
   for (const path of git(['ls-files', '-z'], checkoutRoot).split('\0').filter((entry) => entry.length > 0)) {
     const absolute = join(checkoutRoot, path)
@@ -223,6 +224,11 @@ function scanWorkingState(ruleSets) {
       hits.push(...scanBytes(path, readFileSync(absolute), ruleSetsFor(path === statusRuleFile.name, ruleSets)))
     }
   }
+  return hits
+}
+
+function scanWorkingState(ruleSets) {
+  const hits = scanTrackedFiles(ruleSets)
   hits.push(...scanCommitMessages(['HEAD', '--not', '--remotes=origin'], ruleSets))
   const dist = join(checkoutRoot, 'dist')
   if (existsSync(dist)) {
@@ -242,19 +248,19 @@ function scanFiles(paths, ruleSets) {
   return hits
 }
 
-function scanBuild(ruleSets) {
+function scanForCi(ruleSets) {
   const dist = join(checkoutRoot, 'dist')
   if (!existsSync(dist)) {
     exitWithSetupError(`构建产物不存在：${dist}。先运行 pnpm build。`)
   }
-  return scanDirectory(dist, ruleSets)
+  return scanTrackedFiles(ruleSets).concat(scanDirectory(dist, ruleSets))
 }
 
 const args = process.argv.slice(2)
 const statusRules = loadRules(statusRuleFile)
 let hits
-if (args[0] === '--build') {
-  hits = scanBuild([statusRules])
+if (args[0] === '--ci') {
+  hits = scanForCi([statusRules])
 } else {
   const ruleSets = [loadRules(privateRuleFile), statusRules]
   hits = args[0] === '--pre-push' ? scanPrePush(ruleSets) : args.length > 0 ? scanFiles(args, ruleSets) : scanWorkingState(ruleSets)

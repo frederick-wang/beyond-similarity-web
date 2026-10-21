@@ -9,7 +9,7 @@
 - 写代码、写文案、做评审之前读 `CODING_STANDARDS.md`，其中包括公开内容检查和中英文写作规范。
 - 产品事实在 `PRODUCT.md`；页面结构与视觉方向的契约在 `.impeccable/surfaces/`，改页面前先读。
 - 部署说明和公开内容检查的私有规则只存在于维护者本机的 `.private/`（被 git 忽略）。
-- 公开内容检查有两套规则：`.private/` 里的私有规则，以及随仓库提交的 `scripts/status-phrases.txt`，后者收录说明论文状态的通用措辞。工作区用 `pnpm check:public`，Issue 与 PR 正文发出前用 `node scripts/check-public.mjs <文件>`，两套规则都检查。CI 没有私有规则，构建后用 `node scripts/check-public.mjs --build` 只按状态措辞检查 `dist/`。每个克隆执行一次 `git config core.hooksPath .githooks`，推送前会自动检查。文案命中状态措辞时改写文案，不放宽规则。
+- 公开内容检查有两套规则：`.private/` 里的私有规则，以及随仓库提交的 `scripts/status-phrases.txt`，后者收录说明论文状态的通用措辞。工作区用 `pnpm check:public`，Issue 与 PR 正文发出前用 `node scripts/check-public.mjs <文件>`，两套规则都检查。CI 没有私有规则，构建后用 `node scripts/check-public.mjs --ci` 只按状态措辞检查已跟踪文件和 `dist/`。每个克隆执行一次 `git config core.hooksPath .githooks`，推送前会自动检查。文案命中状态措辞时改写文案，不放宽规则。
 - 派生图片由脚本生成，产物提交进仓库：分享图和 PNG favicon 用 `node scripts/make-site-images.ts`，SVG favicon 用 `uv run scripts/trace-seal.py` 从印章描摹。改了题名、作者、印章或配色后重跑。印章变了先跑描摹脚本，PNG favicon 的裁切框取 SVG 的 viewBox。
 - `src/data/paper.ts` 的 `pages.*.updated` 是该页最近一次实质更新（正文、数字、图表）的日期，sitemap 的 lastmod 取它，改了页面内容时一并更新。
 - 本地验证：`pnpm build`（先做类型检查）、`pnpm test`（Playwright 在 `PREVIEW_PORT` 上启动本工作区的预览，默认 4321）。几个工作区并行时各用不同的 `PREVIEW_PORT`。设置 `BASE_URL` 后，同一套测试改为访问该地址。

@@ -1,9 +1,9 @@
 # Generic wording that would state the paper's standing with a venue or
 # publisher. The site describes the paper only as an arXiv preprint, so no
 # tracked file, commit message or built page may contain any of these.
-# scripts/check-public.mjs applies the rules in every mode, and on its own in
-# CI with --build. This file is the only one exempt from them; the maintainer's
-# private rules still apply to it.
+# scripts/check-public.mjs applies the rules in every mode, and on their own
+# in CI with --ci, to the tracked files and dist/. This file is the only one
+# exempt from them; the maintainer's private rules still apply to it.
 #
 # When prose trips a rule, rephrase the prose; do not weaken the rule.
 #

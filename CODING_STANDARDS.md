@@ -7,7 +7,7 @@
 仓库、提交信息、Issue、PR 和构建产物都是公开的，只写读者能公开获取的信息。
 
 - 论文一律按 arXiv 预印本（arXiv:2607.27595）描述，出版信息以 arXiv 页面为准。
-- 托管环境的主机名、路径、配置和凭据不进仓库。公开内容检查有两套规则：维护者本机的 `.private/` 保存部署说明和私有规则，这个目录被 git 忽略；`scripts/status-phrases.txt` 随仓库提交，收录说明论文状态的通用措辞，CI 在构建后用 `node scripts/check-public.mjs --build` 按它检查 `dist/`。
+- 托管环境的主机名、路径、配置和凭据不进仓库。公开内容检查有两套规则：维护者本机的 `.private/` 保存部署说明和私有规则，这个目录被 git 忽略；`scripts/status-phrases.txt` 随仓库提交，收录说明论文状态的通用措辞，CI 在构建后用 `node scripts/check-public.mjs --ci` 按它检查已跟踪文件和 `dist/`。
 - 任何公开写入之前先跑公开内容检查：推送、创建或修改 Issue 和 PR、发评论。检查规则缺失时停止，不跳过。
 
 ## 页面文案
