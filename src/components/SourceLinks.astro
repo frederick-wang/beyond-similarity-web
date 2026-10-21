@@ -1,0 +1,49 @@
+---
+import type { PageCopy, SourceRef } from '../content/types'
+import { pdfPageUrl } from '../data/paper'
+
+interface Props {
+  readonly copy: PageCopy
+  readonly sources: readonly SourceRef[]
+}
+
+const { copy, sources } = Astro.props
+---
+
+{
+  sources.length > 0 && (
+    <>
+    {' '}
+    <span class="sources" data-sources>
+      {copy.sources.lead}{' '}
+      {sources.map((source, index) => (
+        <>
+          {index > 0 && '; '}
+          <a href={pdfPageUrl(source.pages[0])}>
+            {copy.sources.parts[source.part]} · {copy.sources.pages(source.pages)}
+          </a>
+        </>
+      ))}
+    </span>
+    </>
+  )
+}
+
+<style>
+  .sources {
+    display: inline-block;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+
+  .sources a {
+    color: var(--ink-muted);
+    text-decoration-color: var(--rule);
+  }
+
+  .sources a:hover {
+    color: var(--indigo);
+    text-decoration-color: currentColor;
+  }
+</style>

@@ -41,3 +41,25 @@ export function formatYear(year: number, lang: PageLanguage): string {
 export function formatList(items: readonly string[], lang: PageLanguage): string {
   return new Intl.ListFormat(listLocale[lang], { type: 'conjunction' }).format(items)
 }
+
+// Table cells follow the paper's typesetting in both languages: a true minus
+// sign (U+2212) for negative values and p-values without a leading zero.
+
+/** A percentage with one decimal, as in "87.3%". */
+export function formatPercent(value: number): string {
+  return `${value.toFixed(1)}%`
+}
+
+/** A number with a fixed count of decimals and a true minus sign, as in "0.71" or "−0.07". */
+export function formatDecimal(value: number, decimals: number): string {
+  const text = Math.abs(value).toFixed(decimals)
+  return value < 0 ? `−${text}` : text
+}
+
+/** A p-value with two decimals and no leading zero, as in ".73". */
+export function formatPValue(value: number): string {
+  if (value <= 0 || value >= 1) {
+    throw new Error(`p-value out of range: ${value}`)
+  }
+  return value.toFixed(2).slice(1)
+}

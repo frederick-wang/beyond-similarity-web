@@ -118,6 +118,14 @@ export const links = {
   icpRegistry: 'https://beian.miit.gov.cn/',
 } as const
 
+/** A page of the arXiv v1 PDF, which has nine. */
+export type PdfPage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+/** The arXiv v1 PDF opened at a given page, for source links after a paragraph. */
+export function pdfPageUrl(page: PdfPage): string {
+  return `${links.pdf}#page=${page}`
+}
+
 export const icpNumber = '蜀ICP备19032431号-3'
 
 export const copyrightYear = 2026

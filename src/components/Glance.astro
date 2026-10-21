@@ -19,7 +19,7 @@ const { copy } = Astro.props
         <div class="entry">
           <dt>{formatQuantity(glance[id], copy.lang)}</dt>
           <dd>
-            <Inline text={copy.glance[id]} />
+            <Inline text={copy.glance[id]} lang={copy.lang} />
           </dd>
         </div>
       ))

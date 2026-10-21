@@ -1,12 +1,14 @@
 ---
 import type { InlineMarkdown } from '../content/types'
+import type { PageLanguage } from '../data/paper'
 import { renderInline } from '../lib/inline'
 
 interface Props {
   readonly text: InlineMarkdown
+  readonly lang: PageLanguage
 }
 
-const html = renderInline(Astro.props.text)
+const html = renderInline(Astro.props.text, Astro.props.lang)
 ---
 
 <Fragment set:html={html} />

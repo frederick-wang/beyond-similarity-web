@@ -18,11 +18,11 @@ const { copy } = Astro.props
 <nav class="page-nav" aria-label={copy.navHeading}>
   <div class="wide">
     <h2>{copy.navHeading}</h2>
-    <SectionList sections={copy.sections} />
+    <SectionList sections={copy.sections} lang={copy.lang} />
   </div>
   <details class="narrow">
     <summary><h2>{copy.navHeading}</h2></summary>
-    <SectionList sections={copy.sections} />
+    <SectionList sections={copy.sections} lang={copy.lang} />
   </details>
 </nav>
 

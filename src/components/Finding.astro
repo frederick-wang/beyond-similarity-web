@@ -9,7 +9,7 @@ interface Props {
 const { copy } = Astro.props
 ---
 
-<p class="finding" data-finding><Inline text={copy.finding} /></p>
+<p class="finding" data-finding><Inline text={copy.finding} lang={copy.lang} /></p>
 
 <style>
   .finding {

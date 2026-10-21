@@ -1,27 +1,70 @@
 ---
 import type { PageCopy } from '../content/types'
+import AgreementTable from './AgreementTable.astro'
 import Bibtex from './Bibtex.astro'
+import DiachronicTable from './DiachronicTable.astro'
+import Figure from './Figure.astro'
 import Inline from './Inline.astro'
+import ModelsTable from './ModelsTable.astro'
+import SourceLinks from './SourceLinks.astro'
+import { numberQuestions } from '../lib/sections'
 
 interface Props {
   readonly copy: PageCopy
 }
 
 const { copy } = Astro.props
+
+// Question sections are numbered in reading order; the numbers carry the
+// argument's sequence, and the page navigation repeats them.
+const sections = numberQuestions(copy.sections)
 ---
 
 {
-  copy.sections.map((section) => (
-    <section id={section.id} aria-labelledby={`${section.id}-heading`}>
-      <h2 id={`${section.id}-heading`}>{section.heading}</h2>
+  sections.map(({ section, number }) => (
+    <section id={section.id} class:list={['section', `section-${section.kind}`]} aria-labelledby={`${section.id}-heading`}>
+      <h2 id={`${section.id}-heading`}>
+        {number !== null && (
+          <span class="numeral" aria-hidden="true">
+            {number}
+          </span>
+        )}
+        <span class="heading-text">
+          <Inline text={section.heading} lang={copy.lang} />
+        </span>
+      </h2>
       {section.blocks.map((block) => {
         switch (block.type) {
+          case 'answer':
+            return (
+              <p class="answer" data-answer>
+                <Inline text={block.text} lang={copy.lang} />
+              </p>
+            )
           case 'paragraph':
             return (
               <p>
-                <Inline text={block.text} />
+                <Inline text={block.text} lang={copy.lang} />
+                <SourceLinks copy={copy} sources={block.sources} />
               </p>
             )
+          case 'subheading':
+            return (
+              <h3 id={`${section.id}-${block.id}`}>
+                <Inline text={block.text} lang={copy.lang} />
+              </h3>
+            )
+          case 'figure':
+            return <Figure copy={copy} figure={block.figure} />
+          case 'table':
+            switch (block.table) {
+              case 'agreement':
+                return <AgreementTable copy={copy} />
+              case 'models':
+                return <ModelsTable copy={copy} />
+              case 'diachronic':
+                return <DiachronicTable copy={copy} />
+            }
           case 'bibtex':
             return <Bibtex copy={copy} />
         }
@@ -31,19 +74,52 @@ const { copy } = Astro.props
 }
 
 <style>
-  section {
-    margin-top: 3.25rem;
+  .section {
+    margin-top: 3.5rem;
     scroll-margin-top: 1.5rem;
   }
 
   h2 {
-    font-size: 1.375rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    font-size: 1.4375rem;
     font-weight: 650;
     letter-spacing: -0.005em;
+  }
+
+  /* The question numeral is one of the two places vermilion appears, the
+     other being the seal. */
+  .numeral {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 4px;
+    background: var(--vermilion);
+    color: var(--on-vermilion);
+    font-size: 0.875rem;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    transform: translateY(-0.12em);
+  }
+
+  h3 {
+    margin-top: 2.25rem;
+    font-size: 1.125rem;
+    font-weight: 650;
+    scroll-margin-top: 1.5rem;
   }
 
   p {
     max-width: var(--measure);
     margin-top: 0.9rem;
+  }
+
+  .answer {
+    margin-top: 1rem;
+    font-size: 1.1875rem;
+    line-height: 1.6;
   }
 </style>
