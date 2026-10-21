@@ -3,6 +3,7 @@
 This repository holds the source of the paper page for the arXiv preprint by Zhaoji Wang, Wanyu Si, and Jun Wang.
 
 - Paper page: <https://beyond-similarity.zhaoji.ac.cn/>
+- 中文页 / Chinese page: <https://beyond-similarity.zhaoji.ac.cn/zh/>
 - arXiv record: <https://arxiv.org/abs/2607.27595>
 - Explorer (in Chinese), which shows every intertextual pair from the Twenty-Four Histories run in its textual context: <https://analects-24histories-intertext.pkudh.net/>
 

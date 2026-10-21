@@ -53,6 +53,11 @@ test.describe('README', () => {
     expect(readmeLink('Paper page')).toBe(only(await attributeValues(page, 'link[rel="canonical"]', 'href'), 'canonical link'))
   })
 
+  test('gives the address the Chinese page declares as canonical', async ({ page }) => {
+    await page.goto('/zh/')
+    expect(readmeLink('中文页 / Chinese page')).toBe(only(await attributeValues(page, 'link[rel="canonical"]', 'href'), 'canonical link'))
+  })
+
   test('links to the arXiv record the page links to', async ({ page }) => {
     await page.goto('/')
     const served = await page.locator('[data-links] a[href^="https://arxiv.org/abs/"]').getAttribute('href')
