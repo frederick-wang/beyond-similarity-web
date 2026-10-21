@@ -21,6 +21,8 @@ export const en: PageCopy = {
   lang: 'en',
   title: paper.titleEn,
   description: `An LLM agent grounds each reuse of the Analects in exact character spans and labels how it is reused, validated on ${benchmarkPairs} expert-adjudicated pairs.`,
+  siteName: paper.shortTitle,
+  openGraphLocale: 'en_US',
   shareImage: {
     image: shareCard,
     alt: `${paper.titleEn}. ${authorNames}. arXiv:${paper.arxivId}`,

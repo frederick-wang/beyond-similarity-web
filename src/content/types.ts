@@ -136,6 +136,9 @@ export interface TablesCopy {
   readonly diachronic: DiachronicTableCopy
 }
 
+/** A locale as Open Graph writes it, language_TERRITORY, such as en_US. */
+export type OpenGraphLocale = `${Lowercase<string>}_${Uppercase<string>}`
+
 /** The card that link previews show for the page (og:image), made by scripts/make-site-images.ts. */
 export interface ShareImage {
   readonly image: ImageMetadata
@@ -147,6 +150,9 @@ export interface PageCopy {
   readonly lang: PageLanguage
   readonly title: string
   readonly description: string
+  /** The site's name in the page's language, for link previews (og:site_name). */
+  readonly siteName: string
+  readonly openGraphLocale: OpenGraphLocale
   readonly shareImage: ShareImage
   readonly skipLink: string
   readonly correspondingNote: string
