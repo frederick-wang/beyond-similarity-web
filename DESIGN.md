@@ -248,12 +248,12 @@ A cool collation palette: near-black ink and blue-grey hairlines on white, one b
 - **Headline** (650, clamp(1.75rem, 1.15rem + 1.9vw, 2.3rem), 1.2, -0.012em): the paper's title, once per page; 28px on a 390px screen and 36.8px from a viewport about 968px wide.
 - **Title** (650, 1.4375rem, 1.25, -0.005em): section headings, with the question numeral before the text on question sections.
 - **Subtitle** (650, 1.125rem, 1.25): subheadings within a section.
-- **Lead** (400, 1.1875rem, 1.6): the one-sentence finding on the first screen and the answer sentence that opens each question section, at the measure.
-- **Body** (400, 1.0625rem, 1.65): reading text, at the measure. Paragraphs wrap with text-wrap: pretty, headings with text-wrap: balance.
+- **Lead** (400, 1.1875rem, 1.6; 1.75 in Chinese): the one-sentence finding on the first screen and the answer sentence that opens each question section, at the measure.
+- **Body** (400, 1.0625rem, 1.65; 1.85 in Chinese, whose characters fill the em box): reading text, at the measure. Paragraphs wrap with text-wrap: pretty, headings with text-wrap: balance.
 - **Glance Number** (650, 1.6rem, 1.15, -0.01em, tabular lining figures): the quantities in "At a glance".
 - **Label** (650, 1rem, 1.25): the headings "At a glance" and "On this page".
 - **Control** (550, 0.9375rem): link-row items and the copy button. The language switch takes the same size at 400.
-- **Small** (400, 0.875rem, 1.5): affiliations and glance notes. The corresponding-author note, the copy status and the footer take the same size at the body's line height.
+- **Small** (400, 0.875rem, 1.5): affiliations and glance notes, the notes capped at the measure. The corresponding-author note, the copy status and the footer take the same size at the body's line height.
 - **Caption** (400, 0.875rem, 1.55): figure and table captions, at the measure; the label inside a caption is ink at 650.
 - **Table** (400, 0.875rem, 1.45, tabular lining figures): table cells; header cells at 600, row headers at 400.
 - **Source** (400, 0.8125rem, 1.5): the source line after a paragraph.
@@ -311,13 +311,13 @@ Two quiet controls, both named in words, neither filled at rest.
 
 ### Links
 - **Running-text links:** indigo, with a 1px underline at a 0.2em offset in indigo at 40%; the underline turns solid on hover.
-- **Quiet links** (source lines, PDF pages, full-size images, the language switch): muted ink with a hairline underline; text and underline turn indigo on hover.
+- **Quiet links** (source lines, PDF pages, full-size images): muted ink with a hairline underline; text and underline turn indigo on hover.
 - **Author names:** ink with a hairline underline that turns ink on hover, so a name reads as a name before it reads as a link.
 - **Page-list links:** indigo with no underline; hover underlines the heading text and never the numeral.
 
 ### Navigation
 - **Masthead:** one row at least 3.5rem tall on the page frame, hairline below. The brand on the left is the 28px seal (light and dark artwork switched by the color-scheme preference) beside the short title at 1.0625rem and 600 in ink, letter-spaced 0.005em, with no underline; it links to the top of the page in its own language.
-- **Language switch:** right-aligned in the masthead, a list of the other language pages, each named in its own language ("English", 「中文」) and marked with lang and hreflang, so the link reads correctly from either page. Each is a quiet link at 0.9375rem, at least 2.25rem tall, 1rem apart.
+- **Language switch:** right-aligned in the masthead, a list of the other language pages, each named in its own language ("English", 「中文」) and marked with lang and hreflang, so the link reads correctly from either page. Each is muted ink at 0.9375rem with no underline, turning indigo on hover, at least 2.25rem tall, 1rem apart. Its place in the masthead already marks it as navigation.
 - **Page list** ("On this page", 「本页内容」): after the finding on wide screens and after "At a glance" on narrow ones, hairline above, a Label heading over an ordered list of every section, items 0.4rem apart. Question items carry their numeral 0.6rem before the text; the other sections are indented 1.85rem so their text lines up with the question text. Below 48rem the list sits in a closed disclosure whose summary is the heading with the drawn chevron. CSS alone switches between the two renderings.
 
 ### Question Numerals
@@ -337,7 +337,7 @@ A printed scholarly table, kept as text.
 - **Cells:** 0.45rem by 0.75rem of padding; numbers right-aligned and never wrapped; the first column flush left with no left padding; category columns left-aligned; long row headers wrap, at least 14rem wide.
 - **Rules:** a 1px hairline under every row, and a 1.5px muted-ink rule under the header row and under the last body row. Header cells are ink at 600, aligned to the bottom; a total row is set at 600 with no rule.
 - **Highlight:** the deployment model's row takes the indigo wash, the color of the reader's position.
-- **Scrolling:** the table sits in a focusable region named after it, which scrolls sideways on narrow screens with a hairline scrollbar thumb.
+- **Scrolling:** the table sits in a focusable region named after it, which scrolls sideways on narrow screens with a hairline scrollbar thumb. The row labels stay put on the paper ground while the numbers scroll.
 
 ### At a Glance
 The paper's numbers, each beside its qualification.
@@ -347,7 +347,7 @@ The paper's numbers, each beside its qualification.
 - **Restraint:** no accent color, no box and no icon. A number never appears without the note that says what it counts and under what condition.
 
 ### BibTeX Entry
-- **Frame:** wash ground, 1px hairline border, 8px radius, a focusable region that scrolls sideways, with 1rem by 1.1rem of padding.
+- **Frame:** wash ground, 1px hairline border, 8px radius, a region named after the entry, with 1rem by 1.1rem of padding. Long fields wrap inside the frame instead of scrolling.
 - **Text:** Code type in ink, in English on both pages, as arXiv records the title and the authors. The copy button sits 0.75rem below.
 
 ### Source Lines
@@ -359,14 +359,14 @@ A source line follows the paragraph it supports, inline, in Source type and mute
 - **Skip link:** above the viewport until focused, then 0.75rem from the top on the paper ground, with a hairline border and a 6px radius.
 
 ### Named Rules
-**The Quiet Secondary Rule.** A link that supports the reading (a source, a PDF page, a full-size image, another language) recedes in muted ink with a hairline underline and turns indigo only when pointed at.
+**The Quiet Secondary Rule.** A link that supports the reading (a source, a PDF page, a full-size image) recedes in muted ink with a hairline underline and turns indigo only when pointed at. The language switch recedes the same way without the underline.
 
 ## Do's and Don'ts
 
 ### Do:
 - **Do** keep vermilion (#b2392b, dark #e87a65) to the scroll seal and the question numerals.
 - **Do** use indigo only where the reader can act or where the reader is: running-text links, the page list, the link row, the copy button, the focus ring, selection, hovered controls and the deployment model's row.
-- **Do** set reading text at 1.0625rem with a 1.65 line height and cap it at the language's measure: 34em in English, 37em in Chinese.
+- **Do** set reading text at 1.0625rem with a 1.65 line height (1.85 in Chinese) and cap it at the language's measure: 34em in English, 37em in Chinese.
 - **Do** set classical Chinese quotations in the Songti stack, in the script of their source edition, inside the page language's quotation marks.
 - **Do** put compared numbers on tabular lining figures, and keep a label with its number, a statistic with its value and a number with its unit on one line.
 - **Do** caption figures below the plate and tables above the frame, with the label in ink at 650 and quiet links to the full-size image or the PDF page.

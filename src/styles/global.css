@@ -71,6 +71,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Han characters fill the whole em box, so Chinese text needs more leading
+   than Latin text at the same size to keep lines apart. */
+html:lang(zh) body {
+  line-height: 1.85;
+}
+
 h1,
 h2,
 h3 {
