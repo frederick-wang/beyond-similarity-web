@@ -112,13 +112,13 @@ export const TABLE_1_DIMENSIONS = [
 export const TABLE_3_DIMENSIONS = ['Form', 'Aspect', 'Source-marking', 'Function', 'Stance'] as const
 
 /**
- * Figures each question section and the limitations state, copied from the
- * paper's text. Digits read the same in both languages, so the Chinese page is
- * held to the same list. Single-digit values are left out because they would
- * match by accident.
+ * Every number of two or more digits that the answers and paragraphs of each
+ * section state, copied from the paper's text. Tables and captions are checked
+ * separately. Digits read the same in both languages, so the Chinese page is
+ * held to the same lists.
  */
 export const SECTION_FIGURES = {
-  gap: ['260s'],
+  gap: ['260'],
   method: ['30', '319,465', '11', '39%', '15%', '81%'],
   benchmark: [
     '20',
@@ -134,31 +134,33 @@ export const SECTION_FIGURES = {
     '237',
     '447',
     '954',
+    '323',
+    '572',
     '55.3%',
     '99.4%',
+    '1,930',
     '1,539',
     '59.9%',
     '617',
+    '14',
     '1,214',
-    '1,930',
     '23',
     '0.94',
-    '0.71',
-    '0.77',
-    '0.32',
-    '0.27',
     '98.9%',
     '97%',
     '96.1%',
-    '323',
-    '572',
+    '18',
     '37',
+    '25',
     '43',
+    '12',
     '345',
   ],
-  similarity: ['2,533', '25.8%', '40.8%', '61.0%', '33.0%', '91.7%', '232', '470', '1,470', '2.5%', '1.1%', '0.3%'],
-  models: ['55.9%', '92.9%', '82%', '51', '4.9', '521', '37', '39', '0.85', '96.6%', '0.84', '96.1%', '88.5%', '65.1%'],
+  similarity: ['61.0%', '2,533', '25.8%', '40.8%', '13', '18', '33.0%', '91.7%', '232', '470', '1,470', '2.5%', '1.1%', '0.3%'],
+  models: ['55.9%', '92.9%', '82%', '51', '4.9', '521', '37', '39', '0.85', '0.9', '96.6%', '0.84', '96.1%', '88.5%', '65.1%'],
   histories: [
+    '91',
+    '1739',
     '65,380',
     '28.5',
     '5,766',
@@ -171,32 +173,41 @@ export const SECTION_FIGURES = {
     '945',
     '77.5%',
     '77.6%',
+    '0.05',
     '.12',
     '.28',
     '0.78',
     '0.38',
+    '10⁻³',
     '0.85',
     '0.50',
     '0.42',
     '93%',
     '283',
-    '69.3%',
     '−0.15',
+    '69.3%',
+    '95%',
     '−0.19',
     '−0.12',
+    '0.001',
     '−0.18',
     '−0.08',
-    '0.001',
+    '0.9',
     '172',
     '117',
   ],
-  limitations: ['55.3%', '96.1%'],
+  limitations: ['0.9', '55.3%', '96.1%'],
 } as const
 
-/** Figures each section writes in words, as the English page phrases them. */
+/**
+ * Numbers the English prose writes as words. They cannot be found
+ * mechanically, so the list is kept by hand; the Chinese page lists its own
+ * wording of each.
+ */
 export const SECTION_WORD_FIGURES = {
-  method: ['ninefold', 'fivefold', 'two-thirds'],
-  benchmark: ['factor of two'],
-  models: ['twelve'],
-  histories: ['eighteen centuries', 'one pair in eight', 'a third'],
+  method: ['a quarter', 'two-thirds', 'ninefold', 'fivefold', 'five dimensions'],
+  benchmark: ['factor of two', 'twelve models'],
+  similarity: ['a quarter', 'top ten'],
+  models: ['eight of the twelve', '51 times'],
+  histories: ['one pair in eight', 'a third', 'three quarters', 'five dimensions', 'five distinct'],
 } as const
