@@ -1,0 +1,44 @@
+---
+import type { PageCopy } from '../content/types'
+import { agreementRows } from '../data/tables'
+import { formatDecimal, formatPercent } from '../lib/format'
+import TableFrame from './TableFrame.astro'
+
+interface Props {
+  readonly copy: PageCopy
+}
+
+const { copy } = Astro.props
+const text = copy.tables.agreement
+---
+
+<TableFrame copy={copy} table="agreement" label={text.label} caption={text.caption}>
+  <thead>
+    <tr>
+      <th scope="col">{text.headers.dimension}</th>
+      <th scope="col">{text.headers.observed}</th>
+      <th scope="col">{text.headers.chance}</th>
+      <th scope="col">{text.headers.kappa}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      agreementRows.map((row) => (
+        <tr data-dimension={row.dimension}>
+          <th scope="row" class="wrap">
+            {text.dimensions[row.dimension]}
+          </th>
+          <td>{formatPercent(row.observed)}</td>
+          <td>{formatPercent(row.chance)}</td>
+          <td>{formatDecimal(row.kappa, 2)}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</TableFrame>
+
+<style>
+  th[scope='row'] {
+    font-weight: 400;
+  }
+</style>

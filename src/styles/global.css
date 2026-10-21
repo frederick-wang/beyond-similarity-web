@@ -1,7 +1,8 @@
 /*
  * The Explorer's collation palette: white paper, ink text, indigo annotation
- * for links and the reader's position. Values are the Explorer's oklch tokens
- * converted to sRGB. Every text pair below clears WCAG AA in both themes.
+ * for links and the reader's position, vermilion only for the seal and the
+ * question numerals. Values are the Explorer's oklch tokens converted to sRGB.
+ * Every text pair below clears WCAG AA in both themes.
  */
 :root {
   color-scheme: light dark;
@@ -13,10 +14,13 @@
   --indigo: #1c50a7;
   --indigo-wash: #e7edf7;
   --rule: #dfe2e7;
+  --vermilion: #b2392b;
+  --on-vermilion: #ffffff;
 
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC',
     'Microsoft YaHei', system-ui, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-classical: 'Songti SC', 'Songti TC', 'Noto Serif CJK SC', 'Noto Serif CJK TC', 'Source Han Serif SC', 'SimSun', serif;
 
   --column: 45rem;
   --margin-column: 17.5rem;
@@ -35,6 +39,8 @@
     --indigo: #78a5ef;
     --indigo-wash: #222935;
     --rule: #292e36;
+    --vermilion: #e87a65;
+    --on-vermilion: #0b0e14;
   }
 }
 
@@ -103,6 +109,47 @@ a:hover {
 ::selection {
   background: var(--indigo-wash);
   color: var(--ink);
+}
+
+/* Classical Chinese quotations are set in a Song face, as the paper sets them. */
+.classical {
+  font-family: var(--font-classical);
+}
+
+/* Question numerals are one of the two places vermilion appears, the other
+   being the seal. Components set the size. */
+.numeral {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  background: var(--vermilion);
+  color: var(--on-vermilion);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Captions of figures and tables, and their links to the PDF. */
+.caption {
+  max-width: var(--measure);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.caption .label {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+/* Secondary links (sources, PDF pages, full-size images) recede until hovered. */
+.quiet-link {
+  color: var(--ink-muted);
+  text-decoration-color: var(--rule);
+}
+
+.quiet-link:hover {
+  color: var(--indigo);
+  text-decoration-color: currentColor;
 }
 
 /* The shared page frame: masthead, content and footer align on one width. */

@@ -1,18 +1,33 @@
 ---
+import type { PageLanguage } from '../data/paper'
 import type { Section } from '../content/types'
+import Inline from './Inline.astro'
+import { numberQuestions } from '../lib/sections'
 
 interface Props {
   readonly sections: readonly Section[]
+  readonly lang: PageLanguage
 }
 
-const { sections } = Astro.props
+const { sections, lang } = Astro.props
+
+const items = numberQuestions(sections)
 ---
 
 <ol>
   {
-    sections.map((section) => (
-      <li>
-        <a href={`#${section.id}`}>{section.heading}</a>
+    items.map(({ section, number }) => (
+      <li class:list={{ question: number !== null }}>
+        <a href={`#${section.id}`}>
+          {number !== null && (
+            <span class="numeral" aria-hidden="true">
+              {number}
+            </span>
+          )}
+          <span>
+            <Inline text={section.heading} lang={lang} />
+          </span>
+        </a>
       </li>
     ))
   }
@@ -24,14 +39,30 @@ const { sections } = Astro.props
     padding: 0;
     list-style: none;
     display: grid;
-    gap: 0.35rem;
+    gap: 0.4rem;
   }
 
   a {
+    display: inline-flex;
+    gap: 0.6rem;
+    align-items: baseline;
     text-decoration: none;
   }
 
-  a:hover {
+  a:hover span:last-child {
     text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  li:not(.question) a {
+    padding-left: 1.85rem;
+  }
+
+  .numeral {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    transform: translateY(-0.08em);
   }
 </style>

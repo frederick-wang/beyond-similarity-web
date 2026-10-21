@@ -5,6 +5,10 @@
 // the gitignored `.private/` directory of the main checkout, so this script
 // names no sensitive string. Hits are reported by location only.
 //
+// Binary files are not scanned as text: random bytes in an image can spell a
+// rule by chance. PNG files still have their text chunks scanned, since image
+// metadata can carry paths or notes.
+//
 // Usage:
 //   node scripts/check-public.mjs              tracked files, unpushed commit messages, and dist/ if built
 //   node scripts/check-public.mjs --pre-push   git pre-push hook: every object and commit message being pushed
@@ -16,6 +20,7 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { inflateSync } from 'node:zlib'
 
 // Pushed blobs can be large (figures); the default 1 MB buffer is too small.
 const maxBuffer = 256 * 1024 * 1024
@@ -93,6 +98,49 @@ function scanText(label, text, rules) {
   return hits
 }
 
+const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+
+/** The keyword and text of every tEXt, zTXt and iTXt chunk in a PNG, one "keyword: text" string each. */
+function pngTextChunks(png) {
+  const texts = []
+  let offset = pngSignature.length
+  while (offset + 8 <= png.length) {
+    const length = png.readUInt32BE(offset)
+    const type = png.toString('latin1', offset + 4, offset + 8)
+    const data = png.subarray(offset + 8, offset + 8 + length)
+    const keywordEnd = data.indexOf(0)
+    const keyword = data.toString('latin1', 0, keywordEnd)
+    if (type === 'tEXt') {
+      texts.push(`${keyword}: ${data.toString('latin1', keywordEnd + 1)}`)
+    } else if (type === 'zTXt') {
+      texts.push(`${keyword}: ${inflateSync(data.subarray(keywordEnd + 2)).toString('latin1')}`)
+    } else if (type === 'iTXt') {
+      const compressed = data[keywordEnd + 1] === 1
+      const languageEnd = data.indexOf(0, keywordEnd + 3)
+      const translatedEnd = data.indexOf(0, languageEnd + 1)
+      const body = data.subarray(translatedEnd + 1)
+      texts.push(`${keyword}: ${(compressed ? inflateSync(body) : body).toString('utf8')}`)
+    }
+    offset += 12 + length
+  }
+  return texts
+}
+
+/**
+ * Scans a file's bytes: text files line by line, PNG files through their text
+ * chunks, and other binary files (any NUL byte in the first 8,000, as git
+ * decides) not at all.
+ */
+function scanBytes(label, bytes, rules) {
+  if (bytes.subarray(0, pngSignature.length).equals(pngSignature)) {
+    return scanText(`${label}（PNG 文本块）`, pngTextChunks(bytes).join('\n'), rules)
+  }
+  if (bytes.subarray(0, 8000).includes(0)) {
+    return []
+  }
+  return scanText(label, bytes.toString('utf8'), rules)
+}
+
 function listFiles(directory) {
   return readdirSync(directory).flatMap((entry) => {
     const path = join(directory, entry)
@@ -128,7 +176,7 @@ function scanNewObjects(revisionArgs, rules) {
       continue
     }
     const content = gitBlob(object.sha, checkoutRoot)
-    hits.push(...scanText(`${object.sha.slice(0, 7)} ${object.path}`, content.toString('utf8'), rules))
+    hits.push(...scanBytes(`${object.sha.slice(0, 7)} ${object.path}`, content, rules))
   }
   return hits
 }
@@ -155,14 +203,14 @@ function scanWorkingState(rules) {
     const absolute = join(checkoutRoot, path)
     // A tracked file deleted in the working tree has nothing left to publish.
     if (existsSync(absolute)) {
-      hits.push(...scanText(path, readFileSync(absolute).toString('utf8'), rules))
+      hits.push(...scanBytes(path, readFileSync(absolute), rules))
     }
   }
   hits.push(...scanCommitMessages(['HEAD', '--not', '--remotes=origin'], rules))
   const dist = join(checkoutRoot, 'dist')
   if (existsSync(dist)) {
     for (const file of listFiles(dist)) {
-      hits.push(...scanText(relative(checkoutRoot, file), readFileSync(file).toString('utf8'), rules))
+      hits.push(...scanBytes(relative(checkoutRoot, file), readFileSync(file), rules))
     }
   }
   return hits
@@ -174,7 +222,7 @@ function scanFiles(paths, rules) {
     if (!existsSync(path)) {
       exitWithSetupError(`文件不存在：${path}`)
     }
-    hits.push(...scanText(path, readFileSync(path).toString('utf8'), rules))
+    hits.push(...scanBytes(path, readFileSync(path), rules))
   }
   return hits
 }
