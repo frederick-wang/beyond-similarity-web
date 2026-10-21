@@ -328,7 +328,7 @@ export const en: PageCopy = {
         { type: 'subheading', id: 'function', text: 'Applied citations tend to be looser and mostly unmarked (exploratory)' },
         {
           type: 'paragraph',
-          text: 'Citations labeled support quote the canon more literally (mean literal fidelity 0.50) than citations labeled application (0.42), which repurpose it for governance and policy and leave the source unmarked 93% of the time. This is the pragmatic use native scholarship calls *tong-jing zhi-yong*, applying the classics to affairs, where a citation’s force is that the sage would have approved the decision, not its exact words. Experts agreed least on function (Table 1).',
+          text: 'Citations labeled support quote the canon more literally (mean literal fidelity 0.50) than citations labeled application (0.42), which repurpose it for governance and policy and leave the source unmarked 93% of the time. This is the pragmatic use native scholarship calls *tong-jing zhi-yong*, applying the classics to affairs, where a citation’s force is that the sage would have approved the decision, not its exact words. Function is a low-agreement dimension (Table 1).',
           sources: [{ part: 'scaling', pages: [6] }],
         },
         { type: 'subheading', id: 'fidelity', text: 'Later histories tend to quote the same passage less literally' },
