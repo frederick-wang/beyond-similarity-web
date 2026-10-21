@@ -134,14 +134,20 @@ function scanText(label, text, ruleSets) {
 }
 
 /**
- * The text chunks of a PNG, one line each. A PNG that does not parse stops the
- * check with exit code 2, since its text could not all be read: reporting it
- * as clean would hide whatever the parser could not reach.
+ * The text chunks of a PNG, one line each, with every field that carries
+ * words: an iTXt chunk's language tag and translated keyword as well as its
+ * keyword and text. A PNG that does not parse stops the check with exit code
+ * 2, since its text could not all be read: reporting it as clean would hide
+ * whatever the parser could not reach.
  */
 function pngText(label, bytes) {
   try {
     return readPngTexts(bytes)
-      .map((chunk) => `${chunk.keyword}: ${chunk.text}`)
+      .map((chunk) =>
+        chunk.type === 'iTXt'
+          ? `${chunk.keyword} ${chunk.language} ${chunk.translatedKeyword}: ${chunk.text}`
+          : `${chunk.keyword}: ${chunk.text}`,
+      )
       .join('\n')
   } catch (error) {
     exitWithSetupError(`PNG 文件无法解析：${label}（${error.message}）`)

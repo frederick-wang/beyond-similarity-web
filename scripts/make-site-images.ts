@@ -34,7 +34,7 @@ import sharp, { type Sharp } from 'sharp'
 import { appleTouchIcon, pngIcons, svgIcon } from '../src/data/icons.ts'
 import { shareCardWords, type ShareCardWords } from '../src/data/paper.ts'
 import { escapeMarkupText } from '../src/lib/escape.ts'
-import { withTextChunks, type PngText } from './png.ts'
+import { withTextChunks, type TextEntry } from './png.ts'
 
 const root = new URL('../', import.meta.url)
 
@@ -163,7 +163,7 @@ async function renderShareCard(words: ShareCardWords): Promise<{ readonly png: B
 }
 
 /** The tEXt chunks recording an image's origin. */
-function originTexts(origin: Origin): PngText[] {
+function originTexts(origin: Origin): TextEntry[] {
   return [
     { keyword: 'Source', text: origin.source },
     { keyword: 'Description', text: origin.description },
@@ -172,7 +172,7 @@ function originTexts(origin: Origin): PngText[] {
 }
 
 /** Writes the image as a PNG with these tEXt chunks right after its IHDR chunk. */
-async function writePng(path: string, image: Sharp, texts: readonly PngText[]): Promise<void> {
+async function writePng(path: string, image: Sharp, texts: readonly TextEntry[]): Promise<void> {
   // Every PNG here is palette-quantised: an indexed palette of at most 256
   // colours (sharp's default) holds the antialiased text and the seal, and
   // effort 10 spends the most time on choosing it. sharp drops the renderer's

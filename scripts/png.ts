@@ -22,10 +22,22 @@ export interface PngHeader {
   readonly transparency: boolean
 }
 
-export interface PngText {
+/** A keyword and its text: what a tEXt chunk holds, and what withTextChunks writes. */
+export interface TextEntry {
   readonly keyword: string
   readonly text: string
 }
+
+/** A text chunk as read. iTXt adds a language tag and a translated keyword to the keyword and the text. */
+export type PngText =
+  | { readonly type: 'tEXt' | 'zTXt'; readonly keyword: string; readonly text: string }
+  | {
+      readonly type: 'iTXt'
+      readonly keyword: string
+      readonly language: string
+      readonly translatedKeyword: string
+      readonly text: string
+    }
 
 export function isPng(bytes: Buffer): boolean {
   return bytes.subarray(0, signature.length).equals(signature)
@@ -93,17 +105,25 @@ export function readPngTexts(png: Buffer): PngText[] {
     const keyword = chunk.data.toString('latin1', 0, keywordEnd)
     switch (chunk.type) {
       case 'tEXt':
-        return [{ keyword, text: chunk.data.toString('latin1', keywordEnd + 1) }]
+        return [{ type: 'tEXt', keyword, text: chunk.data.toString('latin1', keywordEnd + 1) }]
       case 'zTXt':
         // keyword, NUL, compression method, compressed text
-        return [{ keyword, text: inflateSync(chunk.data.subarray(keywordEnd + 2)).toString('latin1') }]
+        return [{ type: 'zTXt', keyword, text: inflateSync(chunk.data.subarray(keywordEnd + 2)).toString('latin1') }]
       case 'iTXt': {
         // keyword, NUL, compression flag, compression method, language tag, NUL, translated keyword, NUL, text
         const compressed = chunk.data.readUInt8(keywordEnd + 1) === 1
         const languageEnd = chunk.data.indexOf(0, keywordEnd + 3)
         const translatedEnd = chunk.data.indexOf(0, languageEnd + 1)
         const text = chunk.data.subarray(translatedEnd + 1)
-        return [{ keyword, text: (compressed ? inflateSync(text) : text).toString('utf8') }]
+        return [
+          {
+            type: 'iTXt',
+            keyword,
+            language: chunk.data.toString('latin1', keywordEnd + 3, languageEnd),
+            translatedKeyword: chunk.data.toString('utf8', languageEnd + 1, translatedEnd),
+            text: (compressed ? inflateSync(text) : text).toString('utf8'),
+          },
+        ]
       }
       default:
         return []
@@ -116,7 +136,7 @@ export function readPngTexts(png: Buffer): PngText[] {
  * tEXt holds Latin-1, so keywords (1 to 79 characters) and texts are kept to
  * printable ASCII and anything else throws.
  */
-export function withTextChunks(png: Buffer, entries: readonly PngText[]): Buffer {
+export function withTextChunks(png: Buffer, entries: readonly TextEntry[]): Buffer {
   const inserted = entries.map((entry) => {
     if (!/^[\x20-\x7e]{1,79}$/.test(entry.keyword) || !/^[\x20-\x7e]*$/.test(entry.text)) {
       throw new Error(`PNG text must be printable ASCII: ${entry.keyword}`)
