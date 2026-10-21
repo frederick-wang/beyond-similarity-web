@@ -3,9 +3,10 @@
 //
 // Usage: node scripts/publish-site.mjs <build-directory> <source-sha>
 //
-// Run it inside the git checkout whose `origin` receives the branch. CI runs it
-// in the publishing job of a run on main, after the same run built and tested
-// the directory, with <source-sha> set to the commit that run checked out.
+// Run it inside the git checkout whose `origin` receives the branch; the build
+// directory may lie outside the checkout. CI runs it in the publishing job of a
+// run on main, after the same run built and tested the directory, with
+// <source-sha> set to the commit that run checked out.
 //
 // Each publish adds one commit whose tree is exactly the build directory and
 // whose parent is the previous publish; the first publish is a root commit. The
@@ -16,8 +17,8 @@
 //   exit 1  build.json names another commit than <source-sha>, the arguments or
 //           build.json are invalid, or a git step fails
 //   exit 0  `site` already holds this exact build, so nothing is pushed
-//   exit 0  origin/main is no longer <source-sha>, so this run gives up and
-//           leaves publishing to the run for the newer commit
+//   exit 0  origin/main is no longer <source-sha>, so this run gives up with a
+//           warning and leaves publishing to the run for the newer commit
 //   exit 0  published
 
 import { spawnSync } from 'node:child_process'
@@ -152,6 +153,8 @@ function publish(args) {
   }
   if (mainHead !== sourceSha) {
     console.log(`放弃发布：origin/${mainBranch} 现在是 ${mainHead}，不再是本次构建的源码 ${sourceSha}。发布留给 ${mainHead} 的运行。`)
+    // A GitHub workflow command: the run summary lists it as a warning.
+    console.log(`::warning::没有发布 ${siteBranch} 分支：origin/${mainBranch} 已不是本次构建的源码 ${sourceSha}。`)
     return
   }
 
