@@ -253,7 +253,7 @@ export function affiliationName(id: AffiliationId, lang: PageLanguage): string {
 /** The institutions of the authors' affiliations, each once, in order of first mention. */
 export function institutions(): readonly Institution[] {
   const mentioned = authors.flatMap((author) => author.affiliations.map((id): Institution => affiliations[id].institution))
-  return mentioned.filter((institution, index) => mentioned.indexOf(institution) === index)
+  return [...new Set(mentioned)]
 }
 
 /** The affiliation numbers after an author's name, as in "1,2". */
