@@ -71,14 +71,19 @@ export const TABLE_3 = [
 ] as const
 
 /**
- * Classical Chinese quotations as printed in arXiv v1, with the script of the
- * edition each comes from. 逺 (U+903A) in the edict of Emperor Wu is the Book
- * of Han's variant graph, not 遠.
+ * Classical Chinese quotations as printed in arXiv v1. 逺 (U+903A) in the edict
+ * of Emperor Wu is the Book of Han's variant graph, not 遠. The Records of the
+ * Three Kingdoms line is printed twice: traditional in the introduction
+ * (JIN_INTRO), simplified as in the source edition in the worked example
+ * (JIN_EDITION).
  */
+export const JIN_INTRO = '天祿永終，歷數在晉'
+export const JIN_EDITION = '天禄永终，历数在晋'
 export const QUOTATIONS = [
   { text: '咨爾舜，天之歷數在爾躬', lang: 'zh-Hant' },
   { text: '歷數在于予躬', lang: 'zh-Hant' },
-  { text: '天禄永终，历数在晋', lang: 'zh-Hans' },
+  { text: JIN_INTRO, lang: 'zh-Hant' },
+  { text: JIN_EDITION, lang: 'zh-Hans' },
   { text: '往悉爾心，統辟元戎，折衝綏遠，匡正庶事，允執其中。', lang: 'zh-Hant' },
   { text: '敏而好學', lang: 'zh-Hant' },
   { text: '近者說，遠者來', lang: 'zh-Hant' },

@@ -1,8 +1,10 @@
 // Classical Chinese quoted on the page, exactly as arXiv:2607.27595v1 prints
-// it. Each text keeps the script of the edition it comes from: the Book of Han
-// in traditional characters with its variant graph 逺 (U+903A) in the edict of
-// Emperor Wu, the Records of the Three Kingdoms in simplified characters.
-// Both language pages reference these by id, so a quotation is written once.
+// it. The Book of Han is quoted in traditional characters, keeping its variant
+// graph 逺 (U+903A) in the edict of Emperor Wu. The Records of the Three
+// Kingdoms line appears twice in the paper: in traditional characters in the
+// introduction, and in the simplified script of the source edition in the
+// worked example, which quotes the edition verbatim. Both language pages
+// reference these by id, so a quotation is written once.
 
 /** ISO 15924 script of the quoted edition; the page sets lang="zh-<script>" on the quotation. */
 export type Script = 'Hant' | 'Hans'
@@ -16,6 +18,7 @@ export const quotationIds = [
   'charge',
   'wangMang',
   'jinAbdication',
+  'jinAbdicationEdition',
   'patent',
   'diligent',
   'nearAndFar',
@@ -34,8 +37,10 @@ export const quotations = {
   charge: { text: '咨爾舜，天之歷數在爾躬', script: 'Hant' },
   // Book of Han, biography of Wang Mang.
   wangMang: { text: '歷數在于予躬', script: 'Hant' },
-  // Records of the Three Kingdoms, abdication edict to Jin.
-  jinAbdication: { text: '天禄永终，历数在晋', script: 'Hans' },
+  // Records of the Three Kingdoms, abdication edict to Jin, as the introduction prints it.
+  jinAbdication: { text: '天祿永終，歷數在晉', script: 'Hant' },
+  // The same line in the script of the source edition, as the worked example prints it.
+  jinAbdicationEdition: { text: '天禄永终，历数在晋', script: 'Hans' },
   // Book of Han, imperial patent appointing a commander.
   patent: { text: '往悉爾心，統辟元戎，折衝綏遠，匡正庶事，允執其中。', script: 'Hant' },
   // Analects, quoted in the Book of Han by a courtier defending the crown prince.
