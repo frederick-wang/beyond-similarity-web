@@ -10,7 +10,7 @@ export interface LlmsEntry {
   readonly notes: string
 }
 
-/** The facts the paragraph about the site states, from the facts module. */
+/** The facts from the facts module that the about paragraph and the file-list entries state. */
 export interface LlmsFacts {
   readonly arxivId: string
   /** The arXiv version that every number on the pages follows, as in "v1". */
