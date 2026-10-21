@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Astro + TypeScript, dependencies managed with pnpm, built to static files. Recommended by the agent and accepted by the user.
+Astro + TypeScript, dependencies managed with pnpm, built to static files.
 
 ## Users
 

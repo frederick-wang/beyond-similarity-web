@@ -10,10 +10,12 @@ const { copy } = Astro.props
 const entry = bibtex()
 ---
 
-<div class="bibtex" data-copy-done={copy.copy.done} data-copy-failed={copy.copy.failed}>
-  <pre tabindex="0" aria-label="BibTeX"><code>{entry}</code></pre>
+<div class="bibtex" data-copy-done={copy.copyButton.done} data-copy-failed={copy.copyButton.failed}>
+  <div class="entry" role="region" aria-label={copy.bibtexLabel} tabindex="0">
+    <pre><code>{entry}</code></pre>
+  </div>
   <div class="actions">
-    <button type="button" hidden data-copy-button>{copy.copy.idle}</button>
+    <button type="button" hidden data-copy-button>{copy.copyButton.idle}</button>
     <span class="status" role="status" aria-live="polite" data-copy-status></span>
   </div>
 </div>
@@ -55,18 +57,21 @@ const entry = bibtex()
     margin-top: 1rem;
   }
 
-  pre {
-    margin: 0;
-    padding: 1rem 1.1rem;
+  .entry {
     overflow-x: auto;
     background: var(--wash);
     border: 1px solid var(--rule);
     border-radius: 8px;
+    scrollbar-color: var(--rule) transparent;
+  }
+
+  pre {
+    margin: 0;
+    padding: 1rem 1.1rem;
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     line-height: 1.6;
     color: var(--ink);
-    scrollbar-color: var(--rule) transparent;
   }
 
   .actions {

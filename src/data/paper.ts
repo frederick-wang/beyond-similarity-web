@@ -1,14 +1,17 @@
-// The single source of paper facts. Pages, metadata, structured data and
-// machine-readable text read these values; nothing else may restate them.
-// Values follow arXiv:2607.27595v1.
+// The single source of paper facts, following arXiv:2607.27595v1. Everything
+// the page states as a fact outside long-form section prose reads from here:
+// the title block, the finding, "At a glance", the meta description, the
+// BibTeX entry, and later the metadata and machine-readable summaries.
 
-export type AffiliationId = 1 | 2
+export type PageLanguage = 'en'
+
+/** Affiliation numbers as printed in the paper; the tuple fixes their order. */
+export const affiliationIds = [1, 2] as const
+export type AffiliationId = (typeof affiliationIds)[number]
 
 export interface Affiliation {
-  readonly id: AffiliationId
   readonly nameEn: string
   readonly nameZh: string
-  readonly url: string
 }
 
 export interface Author {
@@ -21,38 +24,31 @@ export interface Author {
   readonly homepage: string | null
 }
 
-export type GlanceId = 'benchmark' | 'precision' | 'costSpread' | 'corpusRun'
+/** Numbers in "At a glance"; the tuple fixes their order on the page. */
+export const glanceIds = ['benchmark', 'precision', 'costSpread', 'corpusRun'] as const
+export type GlanceId = (typeof glanceIds)[number]
 
 export type Quantity =
   | { readonly kind: 'count'; readonly value: number }
   | { readonly kind: 'percentRange'; readonly low: number; readonly high: number; readonly decimals: number }
   | { readonly kind: 'multiple'; readonly value: number }
 
-export interface GlanceEntry {
-  readonly id: GlanceId
-  readonly quantity: Quantity
-}
-
 export interface PageFacts {
   readonly path: string
-  /** Date of the last substantive content change (YYYY-MM-DD), for sitemap and structured data. */
-  readonly updated: string
 }
 
-export const affiliations: readonly Affiliation[] = [
-  {
-    id: 1,
+// A Record keyed by every AffiliationId, so dropping an affiliation that an
+// author still cites fails the type check instead of rendering a dangling mark.
+export const affiliations = {
+  1: {
     nameEn: 'Department of Information Management, Peking University, Beijing, China',
     nameZh: '北京大学信息管理系',
-    url: 'https://im.pku.edu.cn/',
   },
-  {
-    id: 2,
+  2: {
     nameEn: 'Research Center for Digital Humanities, Peking University, Beijing, China',
     nameZh: '北京大学数字人文研究中心',
-    url: 'https://pkudh.org/',
   },
-]
+} as const satisfies Readonly<Record<AffiliationId, Affiliation>>
 
 export const authors = [
   {
@@ -95,46 +91,54 @@ export const paper = {
   arxivId: '2607.27595',
   arxivVersion: 'v1',
   primaryClass: 'cs.CL',
-  categories: ['cs.CL', 'cs.AI', 'cs.DL'],
   doi: '10.48550/arXiv.2607.27595',
   /** arXiv v1 submission date (YYYY-MM-DD). */
   published: '2026-07-30',
   bibtexKey: 'wang2026beyond',
 } as const
 
+/** Figures quoted on the first screen beside the "At a glance" values. */
+export const stats = {
+  benchmarkPairs: 2533,
+  models: 12,
+  deploymentModel: 'deepseek-v4-flash',
+  /** Precision gap, in percentage points, between the most precise model and the deployment model. */
+  precisionGapPoints: 4.9,
+  /** Deployment model precision on the Analects–Book of Han benchmark, in percent. */
+  deploymentPrecision: 88.0,
+  corpusComparisons: 65380,
+  corpusPairs: 5766,
+} as const
+
+export const glance = {
+  benchmark: { kind: 'count', value: stats.benchmarkPairs },
+  precision: { kind: 'percentRange', low: 55.9, high: 92.9, decimals: 1 },
+  costSpread: { kind: 'multiple', value: 51 },
+  corpusRun: { kind: 'count', value: stats.corpusPairs },
+} as const satisfies Readonly<Record<GlanceId, Quantity>>
+
 export const links = {
   arxivAbs: `https://arxiv.org/abs/${paper.arxivId}`,
   pdf: `https://arxiv.org/pdf/${paper.arxivId}${paper.arxivVersion}`,
-  doi: `https://doi.org/${paper.doi}`,
   explorer: 'https://analects-24histories-intertext.pkudh.net/',
   icpRegistry: 'https://beian.miit.gov.cn/',
 } as const
 
 export const icpNumber = '蜀ICP备19032431号-3'
 
-export const site = {
-  origin: 'https://beyond-similarity.zhaoji.ac.cn',
-  copyrightYear: 2026,
-} as const
+export const copyrightYear = 2026
 
 export const pages = {
-  en: { path: '/', updated: '2026-10-21' },
-} as const satisfies Record<string, PageFacts>
+  en: { path: '/' },
+} as const satisfies Readonly<Record<PageLanguage, PageFacts>>
 
-export const glance: readonly GlanceEntry[] = [
-  { id: 'benchmark', quantity: { kind: 'count', value: 2533 } },
-  { id: 'precision', quantity: { kind: 'percentRange', low: 55.9, high: 92.9, decimals: 1 } },
-  { id: 'costSpread', quantity: { kind: 'multiple', value: 51 } },
-  { id: 'corpusRun', quantity: { kind: 'count', value: 5766 } },
-]
-
+/** Resolves a site path against `site` in astro.config.mjs, the only place the origin is written. */
 export function absoluteUrl(path: string): string {
-  return new URL(path, site.origin).href
-}
-
-/** The arXiv v1 PDF opened at a given page, for source links. */
-export function pdfPageUrl(page: number): string {
-  return `${links.pdf}#page=${page}`
+  const origin = import.meta.env.SITE
+  if (origin === undefined || origin === '') {
+    throw new Error('`site` must be set in astro.config.mjs')
+  }
+  return new URL(path, origin).href
 }
 
 export function bibtex(): string {

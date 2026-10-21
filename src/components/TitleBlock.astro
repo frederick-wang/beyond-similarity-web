@@ -1,6 +1,6 @@
 ---
 import type { PageCopy } from '../content/types'
-import { affiliations, authors, links } from '../data/paper'
+import { affiliationIds, affiliations, authors, links } from '../data/paper'
 
 interface Props {
   readonly copy: PageCopy
@@ -35,9 +35,9 @@ const { copy } = Astro.props
   </p>
   <ul class="affiliations">
     {
-      affiliations.map((affiliation) => (
+      affiliationIds.map((id) => (
         <li data-affiliation>
-          <sup>{affiliation.id}</sup> {affiliation.nameEn}
+          <sup>{id}</sup> {affiliations[id].nameEn}
         </li>
       ))
     }

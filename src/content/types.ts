@@ -1,6 +1,4 @@
-import type { GlanceId } from '../data/paper'
-
-export type PageLanguage = 'en'
+import type { GlanceId, PageLanguage } from '../data/paper'
 
 /**
  * Inline Markdown: emphasis (`*Analects*`) and links (`[text](url)`) only.
@@ -28,7 +26,7 @@ export interface LinkLabels {
   readonly cite: string
 }
 
-export interface CopyLabels {
+export interface CopyButtonLabels {
   readonly idle: string
   readonly done: string
   readonly failed: string
@@ -50,7 +48,8 @@ export interface PageCopy {
   readonly glance: Readonly<Record<GlanceId, InlineMarkdown>>
   readonly navHeading: string
   readonly links: LinkLabels
-  readonly copy: CopyLabels
+  readonly copyButton: CopyButtonLabels
+  readonly bibtexLabel: string
   readonly sections: readonly Section[]
   readonly footer: FooterCopy
 }

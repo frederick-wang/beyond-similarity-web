@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config'
 
-// Canonical URLs, sitemap entries and metadata all derive from `site`.
+// `site` is the only place the public origin is written; canonical URLs and
+// other absolute links resolve against it.
 export default defineConfig({
   site: 'https://beyond-similarity.zhaoji.ac.cn',
   trailingSlash: 'always',
