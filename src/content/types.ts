@@ -1,3 +1,4 @@
+import type { ImageMetadata } from 'astro'
 import type { FigureId } from '../data/figures'
 import type { GlanceId, PageLanguage, PdfPage } from '../data/paper'
 import type { DimensionId, DominantCategoryId, TableId } from '../data/tables'
@@ -135,10 +136,18 @@ export interface TablesCopy {
   readonly diachronic: DiachronicTableCopy
 }
 
+/** The card that link previews show for the page (og:image), made by scripts/make-site-images.ts. */
+export interface ShareImage {
+  readonly image: ImageMetadata
+  /** The words on the card, for readers who cannot see it. */
+  readonly alt: string
+}
+
 export interface PageCopy {
   readonly lang: PageLanguage
   readonly title: string
   readonly description: string
+  readonly shareImage: ShareImage
   readonly skipLink: string
   readonly correspondingNote: string
   readonly finding: InlineMarkdown
