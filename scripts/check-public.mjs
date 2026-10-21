@@ -119,20 +119,45 @@ function loadRules(file) {
   return { file, rules }
 }
 
-// A line break between two of these characters joins words rather than
-// separating them: Chinese and Japanese text is wrapped without spaces.
-const cjkCharacter = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\u3000-\u303f\uff00-\uffef]/u
+// Chinese and Japanese are written without spaces between words, so a wrap
+// between two of these characters joins them: Han, Hiragana, Katakana, and
+// the CJK Symbols and Punctuation and Halfwidth and Fullwidth Forms blocks.
+// Korean separates words with spaces, so Hangul is not among them.
+const cjkCharacter = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\u3000-\u303f\uff00-\uffef]/u
+
+// The leader a comment line opens with, after its indentation.
+const commentLeader = /^[ \t]*(\/\/|#|\*|>)/u
+
+/**
+ * The lines with their comment leaders removed inside comment blocks. A
+ * comment block is a run of consecutive lines that open, after indentation,
+ * with the same leader (//, #, * or >). A line's leader counts only when the
+ * line before it opens with the same leader, so the first line of a block, a
+ * lone list item or a heading keeps what it opens with.
+ */
+function withoutCommentLeaders(lines) {
+  return lines.map((line, index) => {
+    const leader = commentLeader.exec(line)?.[1]
+    const previous = index === 0 ? undefined : commentLeader.exec(lines[index - 1])?.[1]
+    return leader !== undefined && leader === previous ? line.replace(commentLeader, '') : line
+  })
+}
 
 /**
  * The text with its hard wraps undone, and the line each of its UTF-16 code
- * units came from. A run of whitespace that holds a line break between two
- * CJK characters is removed; every other run of whitespace becomes one space.
+ * units came from. Comment leaders inside comment blocks are removed first
+ * (see withoutCommentLeaders). Then each run of whitespace is read by the line
+ * breaks it holds. A run with exactly one is a wrap: removed between two
+ * Chinese or Japanese characters, one space elsewhere. A run with two or more
+ * is a paragraph break, an empty comment line inside a block included, and
+ * stays a line break. A run with none becomes one space.
  */
 function unwrap(text) {
+  const stripped = withoutCommentLeaders(text.split('\n')).join('\n')
   let flat = ''
   const lineOf = []
   let line = 1
-  for (const piece of text.matchAll(/\s+|\S+/gu)) {
+  for (const piece of stripped.matchAll(/\s+|\S+/gu)) {
     const value = piece[0]
     if (/\S/u.test(value)) {
       flat += value
@@ -144,9 +169,12 @@ function unwrap(text) {
     const breaks = value.split('\n').length - 1
     // The start of the text has no character before it.
     const before = Array.from(flat.slice(-2)).at(-1) ?? ''
-    const next = text.codePointAt(piece.index + value.length)
+    const next = stripped.codePointAt(piece.index + value.length)
     const after = next === undefined ? '' : String.fromCodePoint(next)
-    if (breaks === 0 || !cjkCharacter.test(before) || !cjkCharacter.test(after)) {
+    if (breaks >= 2) {
+      flat += '\n'
+      lineOf.push(line)
+    } else if (breaks === 0 || !cjkCharacter.test(before) || !cjkCharacter.test(after)) {
       flat += ' '
       lineOf.push(line)
     }
@@ -157,16 +185,18 @@ function unwrap(text) {
 
 /**
  * Returns hit locations for one text as "<label>:<line>（<rule file> 第 n 行）".
- * Every rule is matched twice: against each line as written, so that a rule
- * anchored to a line keeps working, and globally against the whole text with
- * its hard wraps undone (see unwrap), so that a phrase split across lines, as
- * in a wrapped commit message, still matches. A hit names the line where its
- * match starts, once per rule and line.
+ * Every rule is matched twice. It is matched against each line as written, so
+ * that a rule anchored to a line keeps working. It is also matched globally
+ * against each paragraph of the text with its hard wraps undone (see unwrap),
+ * so that a phrase wrapped across lines matches, inside a comment block too,
+ * while no match spans a paragraph break. A hit names the line where its match
+ * starts, once per rule and line.
  */
 function scanText(label, text, ruleSets) {
   const hits = new Set()
   const hit = (line, ruleSet, rule) => hits.add(`${label}:${line}（${ruleSet.file.name} 第 ${rule.line} 行）`)
   const { flat, lineOf } = unwrap(text)
+  const paragraphs = Array.from(flat.matchAll(/[^\n]+/gu))
   for (const ruleSet of ruleSets) {
     for (const rule of ruleSet.rules) {
       text.split('\n').forEach((line, index) => {
@@ -174,8 +204,10 @@ function scanText(label, text, ruleSets) {
           hit(index + 1, ruleSet, rule)
         }
       })
-      for (const match of flat.matchAll(rule.pattern)) {
-        hit(lineOf[match.index], ruleSet, rule)
+      for (const paragraph of paragraphs) {
+        for (const match of paragraph[0].matchAll(rule.pattern)) {
+          hit(lineOf[paragraph.index + match.index], ruleSet, rule)
+        }
       }
     }
   }

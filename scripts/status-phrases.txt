@@ -9,10 +9,18 @@
 #
 # One regular expression per line. The loader adds the flags i and u, so
 # rules ignore case and read Unicode, and g to find every match; (?-i:...)
-# marks a part that must match case exactly. A rule matches each line as
-# written and also the text with its hard wraps undone, so a phrase split
-# across lines is still found. Lines starting with # and blank lines are
-# ignored.
+# marks a part that must match case exactly. Lines starting with # and blank
+# lines are ignored.
+#
+# A rule matches each line as written, and each paragraph of the text with its
+# hard wraps undone. A comment block is a run of consecutive lines that open,
+# after indentation, with the same leader: //, #, * or >. Inside a block the
+# leader is removed before lines are joined; a line's leader counts only when
+# the line before it opens with the same one. A whitespace run with exactly
+# one line break is a wrap: removed between two Chinese or Japanese
+# characters, one space elsewhere. A run with two or more line breaks, an
+# empty comment line inside a block included, is a paragraph break, and no
+# match crosses it.
 
 double[- ]blind
 camera[- ]ready
