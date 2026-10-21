@@ -18,9 +18,9 @@
 # leader is removed before lines are joined; a line's leader counts only when
 # the line before it opens with the same one. A whitespace run with exactly
 # one line break is a wrap: removed between two Chinese or Japanese
-# characters, one space elsewhere. A run with two or more line breaks, an
-# empty comment line inside a block included, is a paragraph break, and no
-# match crosses it.
+# characters and after a hyphen that follows a letter or digit, one space
+# elsewhere. A run with two or more line breaks, an empty comment line inside
+# a block included, is a paragraph break, and no match crosses it.
 
 double[- ]blind
 camera[- ]ready

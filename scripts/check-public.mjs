@@ -148,9 +148,11 @@ function withoutCommentLeaders(lines) {
  * units came from. Comment leaders inside comment blocks are removed first
  * (see withoutCommentLeaders). Then each run of whitespace is read by the line
  * breaks it holds. A run with exactly one is a wrap: removed between two
- * Chinese or Japanese characters, one space elsewhere. A run with two or more
- * is a paragraph break, an empty comment line inside a block included, and
- * stays a line break. A run with none becomes one space.
+ * Chinese or Japanese characters, and after a hyphen that follows a letter or
+ * digit (camera- / ready), one space elsewhere, so a spaced dash keeps its
+ * space. A run with two or more is a paragraph break, an empty comment line
+ * inside a block included, and stays a line break. A run with none becomes one
+ * space.
  */
 function unwrap(text) {
   const stripped = withoutCommentLeaders(text.split('\n')).join('\n')
@@ -167,14 +169,18 @@ function unwrap(text) {
       continue
     }
     const breaks = value.split('\n').length - 1
-    // The start of the text has no character before it.
-    const before = Array.from(flat.slice(-2)).at(-1) ?? ''
+    // The last two characters so far; the start of the text has none.
+    const tail = Array.from(flat.slice(-4))
+    const before = tail.at(-1) ?? ''
+    const beforeThat = tail.at(-2) ?? ''
     const next = stripped.codePointAt(piece.index + value.length)
     const after = next === undefined ? '' : String.fromCodePoint(next)
+    const joinsCjk = cjkCharacter.test(before) && cjkCharacter.test(after)
+    const joinsHyphen = before === '-' && /[\p{L}\p{N}]/u.test(beforeThat)
     if (breaks >= 2) {
       flat += '\n'
       lineOf.push(line)
-    } else if (breaks === 0 || !cjkCharacter.test(before) || !cjkCharacter.test(after)) {
+    } else if (breaks === 0 || !(joinsCjk || joinsHyphen)) {
       flat += ' '
       lineOf.push(line)
     }
