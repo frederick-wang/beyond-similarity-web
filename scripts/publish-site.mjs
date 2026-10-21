@@ -142,11 +142,11 @@ function publish(args) {
   const commit = git(['commit-tree', tree, ...parentArguments], { input: message }).trim()
 
   // origin/main is read as late as possible. It can still move between this
-  // read and the push, which is harmless: the workflow runs one publish at a
-  // time, so a run for the newer commit publishes after this one, and an older
-  // build never replaces a newer one. The push never forces: if the branch
-  // moved since it was fetched, git rejects the push instead of discarding
-  // that commit.
+  // read and the push, which is harmless: the workflow's concurrency group lets
+  // runs on main go one at a time in push order, so a run for the newer commit
+  // publishes after this one, and an older build never replaces a newer one.
+  // The push never forces: if the branch moved since it was fetched, git
+  // rejects the push instead of discarding that commit.
   const mainHead = remoteHead(mainBranch)
   if (mainHead === null) {
     throw new PublishError(`不发布：origin 上没有 ${mainBranch} 分支。`)

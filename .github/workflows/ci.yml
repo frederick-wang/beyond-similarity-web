@@ -8,8 +8,17 @@ on:
 permissions:
   contents: read
 
-# Cancels a pull-request run once a newer push supersedes it. Runs on main are
-# not cancelled; the publish job's own group below serializes publishing.
+# One group per ref. GitHub runs at most one run of a group at a time, and a
+# newly queued run replaces any run of the group that is still waiting.
+#
+# On a pull request, a newer push also cancels the run in progress.
+#
+# On main, runs therefore go one at a time in push order, and so do their
+# publishes. A newer push replacing a waiting run is safe because the newer
+# commit contains the older one. scripts/publish-site.mjs relies on this
+# ordering, so cancel-in-progress must stay false for pushes to main:
+# cancelling a running run could start the next one while its publish is still
+# pushing.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -57,14 +66,6 @@ jobs:
     # The only job that can write to the repository.
     permissions:
       contents: write # pushes the site branch
-    # The safety argument in scripts/publish-site.mjs relies on this group:
-    # publishes run one at a time, and a started one is never cancelled. It is
-    # kept apart from the workflow-level group, whose job is to cancel
-    # superseded pull-request runs, so editing one cannot silently break the
-    # other.
-    concurrency:
-      group: publish-site
-      cancel-in-progress: false
     # No actions/setup-node: the script uses only Node built-ins, which the
     # runner image's Node provides, and setup-node's token input would receive
     # this job's write token.
