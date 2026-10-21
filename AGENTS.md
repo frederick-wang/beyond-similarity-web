@@ -13,6 +13,8 @@
 - 本地验证：`pnpm build`（先做类型检查）、`pnpm test`（Playwright 在 `PREVIEW_PORT` 上启动本工作区的预览，默认 4321）。几个工作区并行时各用不同的 `PREVIEW_PORT`。设置 `BASE_URL` 后，同一套测试改为访问该地址。
 - 智能体手动运行的 `pnpm preview` 会被 Astro 转到后台，用完执行 `pnpm exec astro preview stop`。`pkill -f 'astro preview'` 匹配不到后台进程（它的命令行是 `astro.mjs preview`）。
 - 合并 PR 用 `gh pr merge <pr> --squash --delete-branch --subject "<emoji> <type>: <标题> (#<pr>)"`。不写 `--subject` 时，squash 提交的标题是 PR 标题，不符合提交约定。
+- main 上测试通过的构建由 CI 的 publish 任务交给 `scripts/publish-site.mjs`，发布为 `site` 分支（ADR 0003）。不要手动推送或改写 `site`。改发布脚本后，在本地用临时裸仓库充当 origin，逐一验证首次发布、同一构建再次发布、build.json 与源码不符、origin/main 已前进这几种情形。
+- 工作流里的 action 固定到提交 SHA，行尾注明版本。用 `gh api repos/<owner>/<repo>/git/ref/tags/<tag>` 解析；`object.type` 为 `tag` 时是附注标签，再查 `git/tags/<sha>` 取得提交。
 
 ## Agent skills
 
