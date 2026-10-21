@@ -20,6 +20,7 @@ import {
   authors,
   bibtex,
   correspondingMark,
+  explorerName,
   glance,
   glanceIds,
   institutions,
@@ -58,6 +59,7 @@ export function llmsText(): string {
       institutions().map((institution) => institution.nameEn),
       'en',
     ),
+    explorerName,
   }
   return markdownDocument([
     `# ${markdownLiteral(en.title, 'The page title')}`,
@@ -76,7 +78,7 @@ export function llmsText(): string {
       fileEntry(llms.paper.pdf, links.pdf),
       fileEntry(llms.paper.doi, links.doi),
     ]),
-    fileList(llms.data.heading, [fileEntry(llms.data.explorer, links.explorer)]),
+    fileList(llms.data.heading, [fileEntry(llms.data.explorer(facts), links.explorer)]),
     fileList(llms.optional.heading, [fileEntry(llms.optional.full, absoluteUrl('/llms-full.txt'))]),
   ])
 }

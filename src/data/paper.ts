@@ -190,6 +190,9 @@ export const links = {
   icpRegistry: 'https://beian.miit.gov.cn/',
 } as const
 
+/** The Explorer's own name, at links.explorer. */
+export const explorerName = '《论语》×二十四史互文图谱'
+
 /** A page of the arXiv v1 PDF, which has nine. */
 export type PdfPage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 

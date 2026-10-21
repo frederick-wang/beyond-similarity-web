@@ -2,6 +2,8 @@
 // site holds (https://llmstxt.org/). Facts and addresses come from the facts
 // module; src/lib/markdown.ts assembles the file.
 
+import { explorerDescription } from './en'
+
 /** An entry of a file list: the link's name, and the notes after it. */
 export interface LlmsEntry {
   readonly name: string
@@ -15,6 +17,7 @@ export interface LlmsFacts {
   readonly authors: string
   /** The authors' institutions as an English list. */
   readonly institutions: string
+  readonly explorerName: string
 }
 
 export interface LlmsCopy {
@@ -29,7 +32,7 @@ export interface LlmsCopy {
     readonly chineseMarkdown: LlmsEntry
   }
   readonly paper: { readonly heading: string; readonly arxiv: LlmsEntry; readonly pdf: LlmsEntry; readonly doi: LlmsEntry }
-  readonly data: { readonly heading: string; readonly explorer: LlmsEntry }
+  readonly data: { readonly heading: string; readonly explorer: (facts: LlmsFacts) => LlmsEntry }
   /** The proposal names the list of links a reader short of context may skip "Optional". */
   readonly optional: { readonly heading: 'Optional'; readonly full: LlmsEntry }
 }
@@ -53,11 +56,7 @@ export const llms: LlmsCopy = {
   },
   data: {
     heading: 'Data',
-    explorer: {
-      name: 'Explorer',
-      notes:
-        '《论语》×二十四史互文图谱, a site in Chinese that shows every intertextual pair of the corpus run over the Twenty-Four Histories in its textual context, with its spans and labels',
-    },
+    explorer: (facts) => ({ name: 'Explorer', notes: `${facts.explorerName}, ${explorerDescription}` }),
   },
   optional: {
     heading: 'Optional',

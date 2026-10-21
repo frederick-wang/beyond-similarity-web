@@ -10,6 +10,10 @@ import type { PageCopy } from './types'
 const firstHistory = formatYear(stats.compositionYears.first, 'en')
 const lastHistory = formatYear(stats.compositionYears.last, 'en')
 
+/** What the Explorer is, in the words that both the Using this work section and the Explorer's entry in /llms.txt use. */
+export const explorerDescription =
+  'a site in Chinese that shows every intertextual pair of the Twenty-Four Histories run in its textual context, with its spans and labels'
+
 export const en: PageCopy = {
   lang: 'en',
   title: paper.titleEn,
@@ -380,7 +384,7 @@ export const en: PageCopy = {
       blocks: [
         {
           type: 'paragraph',
-          text: `Two resources are public: the paper on [arXiv](${links.arxivAbs}) and the [Explorer](${links.explorer}), a site in Chinese that shows every intertextual pair of the Twenty-Four Histories run in its textual context, with its spans and labels, and groups pairs into clusters that trace the reception of a passage.`,
+          text: `Two resources are public: the paper on [arXiv](${links.arxivAbs}) and the [Explorer](${links.explorer}), ${explorerDescription}, and groups pairs into clusters that trace the reception of a passage.`,
           sources: [],
         },
         {
