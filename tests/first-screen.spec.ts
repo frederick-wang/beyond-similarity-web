@@ -1,5 +1,5 @@
 import { gzipSync } from 'node:zlib'
-import { expect, test } from '@playwright/test'
+import { expect, test, type Response } from '@playwright/test'
 import { PAGES } from './paper-literals'
 
 // The SPEC's budget: what a page needs for its first screen (HTML, CSS,
@@ -16,7 +16,7 @@ for (const { path } of PAGES) {
     test(`${path} needs at most 200 KB after gzip for its first screen at ${viewport.width} px`, async ({ page }) => {
       await page.setViewportSize(viewport)
       const sizes: Promise<number>[] = []
-      page.on('response', (response) => {
+      const count = (response: Response) => {
         if (response.status() >= 300 && response.status() < 400) {
           return
         }
@@ -29,8 +29,13 @@ for (const { path } of PAGES) {
             return textType.test(type) ? gzipSync(body).length : body.length
           }),
         )
-      })
+      }
+      page.on('response', count)
       await page.goto(path, { waitUntil: 'networkidle' })
+      // A response that arrives while the sizes are summed would leave its
+      // body unread when the test ends, which fails the test; the first
+      // screen has settled by now, so counting stops here.
+      page.off('response', count)
       const total = (await Promise.all(sizes)).reduce((sum, size) => sum + size, 0)
       test.info().annotations.push({ type: 'first-screen bytes', description: `${total}` })
       expect(total).toBeLessThanOrEqual(budget)
