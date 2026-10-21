@@ -4,7 +4,7 @@ import type { PageCopy } from './types'
 
 // First-screen copy takes its numbers from the facts module. The verbatim
 // abstract and the section prose state numbers as text; tests/prose-figures.spec.ts
-// checks every one of them against literals copied from the paper.
+// checks every number of two or more digits against literals copied from the paper.
 const benchmarkPairs = formatCount(stats.benchmarkPairs)
 const corpusComparisons = formatCount(stats.corpusComparisons)
 const mostPreciseModel = formatIdentifier(stats.mostPreciseModel)
@@ -77,7 +77,7 @@ export const en: PageCopy = {
         label: 'Figure 4',
         alt: 'Box plots of per-cluster Spearman correlations between literal fidelity and composition year. All pairs: mean −0.15 over 283 clusters. Direct quotation: mean −0.18 over 123 clusters. Paraphrase: mean −0.08 over 170 clusters. All three means sit left of zero and carry an asterisk for a permutation p below 0.05.',
         caption:
-          'Literal fidelity declines with the citing history’s composition date, holding the passage fixed: distribution of per-cluster Spearman correlations of fidelity against year. Boxes show the interquartile range, diamonds the mean of each stratum, an asterisk a permutation p below 0.05, and *k* the number of qualifying clusters.',
+          'Literal fidelity tends to decline with the citing history’s composition date, holding the passage fixed: distribution of per-cluster Spearman correlations of fidelity against year. Boxes show the interquartile range, diamonds the mean of each stratum, an asterisk a permutation p below 0.05, and *k* the number of qualifying clusters.',
       },
     },
   },
@@ -205,7 +205,7 @@ export const en: PageCopy = {
       kind: 'question',
       heading: 'How reliable is the expert-adjudicated benchmark?',
       answer:
-        'Reliable enough to compare models and to support claims about form and source-marking. Rescoring against the stricter of the two experts barely changes how the models rank, and the experts agree on those two labels. Function and stance, which require inferring intent, are contested.',
+        'Reliable enough to compare models and to support claims about form and source-marking. Rescoring against the stricter of the two experts barely changes how the models rank, and the experts agree on those two labels. Function and stance, which require inferring intent, are contested, so findings on them are exploratory.',
       blocks: [
         {
           type: 'paragraph',
@@ -214,7 +214,7 @@ export const en: PageCopy = {
         },
         {
           type: 'paragraph',
-          text: 'Manual enumeration offers no substitute reference. Two philological surveys counted *Analects* quotations in the *Book of Han* and arrived at 237 and 447, nearly a factor of two apart, and both authors expected to have missed cases. The experts confirm 954 marked pairs on this source pair alone, and each of the twelve models on its own commits between 323 and 572 adjudicated-valid pairs. What limits hand enumeration is sustained attention over a long text, which an exhaustive machine pass supplies.',
+          text: 'Manual enumeration offers no substitute reference. Two philological surveys counted *Analects* quotations in the *Book of Han* and arrived at 237 and 447, nearly a factor of two apart, and both authors expected to have missed cases. The experts confirm 954 marked pairs on this source pair alone, and each of the twelve models on its own commits between 323 and 572 adjudicated-valid pairs.',
           sources: [{ part: 'evaluation', pages: [4, 5] }],
         },
         {
@@ -224,7 +224,7 @@ export const en: PageCopy = {
         },
         {
           type: 'paragraph',
-          text: 'Agreement on the five labels, computed over the 1,930 candidates both experts accepted and before adjudication, follows a reliability gradient (Table 1). Form and source-marking, whose evidence sits on the surface of the text (is the wording identical, is the source named), are settled by inspection, while function and stance, which require reconstructing intent and attitude, leave room for principled disagreement between competent experts. Aspect agrees 98.9% of the time, but 97% of pairs reuse content, so chance alone predicts 96.1%: the label is reliable and almost constant. The distributions of form and source-marking can therefore be discussed with confidence, while function and stance serve only as exploratory signals.',
+          text: 'Agreement on the five labels, computed over the 1,930 candidates both experts accepted and before adjudication, follows a reliability gradient (Table 1). Form and source-marking, whose evidence sits on the surface of the text (is the wording identical, is the source named), are settled by inspection, while function and stance, which require reconstructing intent and attitude, leave room for principled disagreement between competent experts. Aspect agrees 98.9% of the time, but 97% of pairs reuse content, so chance alone predicts 96.1%: the label is reliable and almost constant.',
           sources: [{ part: 'evaluation', pages: [4] }],
         },
         { type: 'table', table: 'agreement' },
@@ -268,7 +268,7 @@ export const en: PageCopy = {
         { type: 'table', table: 'models' },
         {
           type: 'paragraph',
-          text: `Precision, cost and latency are separate axes. ${mostPreciseModel} is also the slowest model (median 521 s per task) and the most expensive per valid pair, while the fastest models, at 37 to 39 s, span a wide range of precision (Table 2).`,
+          text: `Latency varies independently of both: ${mostPreciseModel} is also the slowest model (median 521 s per task), while the fastest models, at 37 to 39 s, span a wide range of precision (Table 2).`,
           sources: [{ part: 'evaluation', pages: [5] }],
         },
         { type: 'figure', figure: 'models' },
@@ -328,13 +328,13 @@ export const en: PageCopy = {
         { type: 'subheading', id: 'function', text: 'Applied citations tend to be looser and mostly unmarked (exploratory)' },
         {
           type: 'paragraph',
-          text: 'Citations labeled support quote the canon more literally (mean literal fidelity 0.50) than citations labeled application (0.42), which repurpose it for governance and policy and leave the source unmarked 93% of the time. This is the pragmatic use native scholarship calls *tong-jing zhi-yong*, applying the classics to affairs, where a citation’s force is that the sage would have approved the decision, not its exact words. Function is a low-agreement dimension (Table 1), so this finding is exploratory.',
+          text: 'Citations labeled support quote the canon more literally (mean literal fidelity 0.50) than citations labeled application (0.42), which repurpose it for governance and policy and leave the source unmarked 93% of the time. This is the pragmatic use native scholarship calls *tong-jing zhi-yong*, applying the classics to affairs, where a citation’s force is that the sage would have approved the decision, not its exact words. Experts agreed least on function (Table 1).',
           sources: [{ part: 'scaling', pages: [6] }],
         },
         { type: 'subheading', id: 'fidelity', text: 'Later histories tend to quote the same passage less literally' },
         {
           type: 'paragraph',
-          text: 'Holding a passage fixed, later-compiled histories tend to quote it less literally (Figure 4), though the trend is far from uniform. Across 283 merged-fragment clusters spanning at least five distinct composition years, the mean per-cluster Spearman correlation between literal fidelity and composition year is −0.15 (69.3% of clusters negative; cluster-bootstrap 95% CI [−0.19, −0.12]; permutation p < 0.001). The decline is steeper for direct quotation (−0.18) than for paraphrase (−0.08) and strengthens among pairs with confidence of 0.9 or higher (172 clusters, ρ = −0.19, p < 0.001). Zhang Xuecheng observed that transmission alters wording: {{zhangTransmission}}, successive historians recast their sources’ wording not from a taste for difference but because circumstance required it.',
+          text: 'Holding a passage fixed, later-compiled histories tend to quote it less literally (Figure 4). Across 283 merged-fragment clusters spanning at least five distinct composition years, the mean per-cluster Spearman correlation between literal fidelity and composition year is −0.15 (69.3% of clusters negative; cluster-bootstrap 95% CI [−0.19, −0.12]; permutation p < 0.001). The decline is steeper for direct quotation (−0.18) than for paraphrase (−0.08) and strengthens among pairs with confidence of 0.9 or higher (172 clusters, ρ = −0.19, p < 0.001). Zhang Xuecheng observed that transmission alters wording: {{zhangTransmission}}, successive historians recast their sources’ wording not from a taste for difference but because circumstance required it.',
           sources: [{ part: 'scaling', pages: [7] }],
         },
         { type: 'figure', figure: 'fidelity' },
@@ -380,7 +380,7 @@ export const en: PageCopy = {
         },
         {
           type: 'paragraph',
-          text: 'The protocol needs only a source pair that can be segmented and a typology of reuse to annotate, and little in it is specific to the *Analects* or to Chinese: its checks apply wherever reuse must be tied to exact spans. It has been validated on the *Analects* and the *Book of Han* only.',
+          text: 'The protocol needs only a source pair that can be segmented and a typology of reuse to annotate, and little in it is specific to the *Analects* or to Chinese: its checks apply wherever reuse must be tied to exact spans.',
           sources: [{ part: 'discussion', pages: [7] }],
         },
       ],

@@ -6,7 +6,7 @@
 // worked example, which quotes the edition verbatim. Both language pages
 // reference these by id, so a quotation is written once.
 
-/** ISO 15924 script of the quoted edition; the page sets lang="zh-<script>" on the quotation. */
+/** ISO 15924 script in which the paper prints the quotation; the page sets lang="zh-<script>" on it. */
 export type Script = 'Hant' | 'Hans'
 
 export interface Quotation {

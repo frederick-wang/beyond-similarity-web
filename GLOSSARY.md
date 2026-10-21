@@ -96,6 +96,10 @@ _Avoid_: agreement gap
 **Validate-then-scale**（先验证后规模化）:
 The study design: validate extraction against the expert-adjudicated benchmark, then apply the chosen extractor to all Twenty-Four Histories.
 
+**Cultural attraction**（文化吸引）:
+An account of cultural transmission in which items change as they are passed on yet converge on a few stable forms. The paper reads its stable mix of reuse types alongside drifting individual passages in these terms.
+_Avoid_: cultural evolution, attractor theory
+
 **Deployment model**（部署模型）:
 The LLM selected on the benchmark (deepseek-v4-flash) to run extraction over the full Twenty-Four Histories.
 _Avoid_: production model, chosen LLM
