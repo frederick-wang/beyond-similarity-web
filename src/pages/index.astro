@@ -10,7 +10,7 @@ import Page from '../layouts/Page.astro'
 ---
 
 <Page copy={en} path={pages.en.path}>
-  <div class="front">
+  <div class="front page-width">
     <div class="lead">
       <TitleBlock copy={en} />
       <Finding copy={en} />
@@ -22,7 +22,7 @@ import Page from '../layouts/Page.astro'
       <PageNav copy={en} />
     </div>
   </div>
-  <div class="body">
+  <div class="body page-width">
     <div class="column">
       <Sections copy={en} />
     </div>
@@ -30,13 +30,6 @@ import Page from '../layouts/Page.astro'
 </Page>
 
 <style>
-  .front,
-  .body {
-    max-width: calc(var(--column) + var(--margin-column) + 5rem + 2 * var(--gutter));
-    margin: 0 auto;
-    padding: 0 var(--gutter);
-  }
-
   .front {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -72,7 +65,7 @@ import Page from '../layouts/Page.astro'
       grid-template-areas:
         'lead margin'
         'nav margin';
-      column-gap: 5rem;
+      column-gap: var(--column-gap);
       align-items: start;
     }
 

@@ -1,8 +1,7 @@
 /*
  * The Explorer's collation palette: white paper, ink text, indigo annotation
- * for links and the reader's position, vermilion reserved for the seal and
- * question numerals. Values are the Explorer's oklch tokens converted to sRGB.
- * Every text pair below clears WCAG AA in both themes.
+ * for links and the reader's position. Values are the Explorer's oklch tokens
+ * converted to sRGB. Every text pair below clears WCAG AA in both themes.
  */
 :root {
   color-scheme: light dark;
@@ -13,19 +12,17 @@
   --ink-muted: #525862;
   --indigo: #1c50a7;
   --indigo-wash: #e7edf7;
-  --vermilion: #b2392b;
   --rule: #dfe2e7;
-  --mark: #f6e6c7;
-  --mark-ink: #2a1c10;
 
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC',
     'Microsoft YaHei', system-ui, sans-serif;
-  --font-classical: 'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   --column: 45rem;
   --margin-column: 17.5rem;
+  --column-gap: 5rem;
   --gutter: clamp(1.25rem, 4vw, 3rem);
+  --page-width: calc(var(--column) + var(--column-gap) + var(--margin-column) + 2 * var(--gutter));
   --measure: 68ch;
 }
 
@@ -37,10 +34,7 @@
     --ink-muted: #9ca2ab;
     --indigo: #78a5ef;
     --indigo-wash: #222935;
-    --vermilion: #e87a65;
     --rule: #292e36;
-    --mark: #463518;
-    --mark-ink: #f3ebd5;
   }
 }
 
@@ -101,12 +95,11 @@ a:hover {
   color: var(--ink);
 }
 
-[lang|='zh'] {
-  font-family: var(--font-sans);
-}
-
-.classical {
-  font-family: var(--font-classical);
+/* The shared page frame: masthead, content and footer align on one width. */
+.page-width {
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 
 .skip-link {

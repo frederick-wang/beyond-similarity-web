@@ -1,5 +1,6 @@
 ---
 import type { PageCopy } from '../content/types'
+import SectionList from './SectionList.astro'
 
 interface Props {
   readonly copy: PageCopy
@@ -17,27 +18,11 @@ const { copy } = Astro.props
 <nav class="page-nav" aria-label={copy.navHeading}>
   <div class="wide">
     <h2>{copy.navHeading}</h2>
-    <ol>
-      {
-        copy.sections.map((section) => (
-          <li>
-            <a href={`#${section.id}`}>{section.heading}</a>
-          </li>
-        ))
-      }
-    </ol>
+    <SectionList sections={copy.sections} />
   </div>
   <details class="narrow">
     <summary><h2>{copy.navHeading}</h2></summary>
-    <ol>
-      {
-        copy.sections.map((section) => (
-          <li>
-            <a href={`#${section.id}`}>{section.heading}</a>
-          </li>
-        ))
-      }
-    </ol>
+    <SectionList sections={copy.sections} />
   </details>
 </nav>
 
@@ -90,21 +75,5 @@ const { copy } = Astro.props
   h2 {
     font-size: 1rem;
     font-weight: 650;
-  }
-
-  ol {
-    margin: 0.6rem 0 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 0.35rem;
-  }
-
-  ol a {
-    text-decoration: none;
-  }
-
-  ol a:hover {
-    text-decoration: underline;
   }
 </style>
