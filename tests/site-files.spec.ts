@@ -2,6 +2,9 @@ import { expect, test, type APIRequestContext, type Page } from '@playwright/tes
 import { PUBLISHED, SITE } from './paper-literals'
 import { readPngHeader, type PngHeader } from './png'
 
+/** The IndexNow key, copied from the key file's name in public/. */
+const INDEXNOW_KEY = 'c132bc6e7cb4da6c991d355d9c45f366'
+
 async function attribute(page: Page, selector: string, name: string): Promise<string> {
   const element = page.locator(selector)
   await expect(element).toHaveCount(1)
@@ -91,7 +94,11 @@ test.describe('files for crawlers', () => {
     }, await response.text())
     expect(sitemap).toMatchObject({ wellFormed: true, namespace: 'http://www.sitemaps.org/schemas/sitemap/0.9', name: 'urlset' })
     expect(sitemap.urls.map((url) => url.loc)).toEqual([SITE])
-    const { builtAt } = (await (await request.get('/build.json')).json()) as { builtAt: string }
+    const build: unknown = await (await request.get('/build.json')).json()
+    if (typeof build !== 'object' || build === null || !('builtAt' in build) || typeof build.builtAt !== 'string') {
+      throw new Error('build.json has no builtAt time')
+    }
+    const { builtAt } = build
     for (const { loc, lastmod } of sitemap.urls) {
       if (lastmod === null) {
         throw new Error(`${loc} has no lastmod`)
@@ -102,5 +109,14 @@ test.describe('files for crawlers', () => {
       expect(lastmod >= PUBLISHED, `${lastmod} precedes the arXiv v1 date`).toBe(true)
       expect(new Date(`${lastmod}T00:00:00+14:00`) <= new Date(builtAt), `${lastmod} is after the build`).toBe(true)
     }
+  })
+
+  test('the IndexNow key file sits at the site root, its content equal to its name', async ({ request }) => {
+    // IndexNow keys are 8 to 128 letters, digits and dashes (https://www.indexnow.org/documentation).
+    expect(INDEXNOW_KEY).toMatch(/^[A-Za-z0-9-]{8,128}$/)
+    const response = await request.get(`/${INDEXNOW_KEY}.txt`)
+    expect(response.status()).toBe(200)
+    expect(response.headers()['content-type']).toContain('text/plain')
+    expect(await response.text()).toBe(INDEXNOW_KEY)
   })
 })
