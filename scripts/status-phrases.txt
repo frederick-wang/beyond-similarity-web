@@ -7,9 +7,12 @@
 #
 # When prose trips a rule, rephrase the prose; do not weaken the rule.
 #
-# One regular expression per line. The loader compiles each with the flags
-# iu, so rules ignore case and read Unicode; (?-i:...) marks a part that must
-# match case exactly. Lines starting with # and blank lines are ignored.
+# One regular expression per line. The loader adds the flags i and u, so
+# rules ignore case and read Unicode, and g to find every match; (?-i:...)
+# marks a part that must match case exactly. A rule matches each line as
+# written and also the text with its hard wraps undone, so a phrase split
+# across lines is still found. Lines starting with # and blank lines are
+# ignored.
 
 double[- ]blind
 camera[- ]ready

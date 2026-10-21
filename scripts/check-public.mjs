@@ -107,7 +107,8 @@ function loadRules(file) {
       return
     }
     try {
-      rules.push({ line: index + 1, pattern: new RegExp(line, 'iu') })
+      // g lets scanText find every match in a text; search() ignores it.
+      rules.push({ line: index + 1, pattern: new RegExp(line, 'giu') })
     } catch {
       exitWithSetupError(`公开内容检查规则第 ${index + 1} 行不是合法的正则表达式：${file.path}`)
     }
@@ -118,19 +119,67 @@ function loadRules(file) {
   return { file, rules }
 }
 
-/** Returns hit locations for one text as "<label>:<line>（<rule file> 第 n 行）". */
+// A line break between two of these characters joins words rather than
+// separating them: Chinese and Japanese text is wrapped without spaces.
+const cjkCharacter = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\u3000-\u303f\uff00-\uffef]/u
+
+/**
+ * The text with its hard wraps undone, and the line each of its UTF-16 code
+ * units came from. A run of whitespace that holds a line break between two
+ * CJK characters is removed; every other run of whitespace becomes one space.
+ */
+function unwrap(text) {
+  let flat = ''
+  const lineOf = []
+  let line = 1
+  for (const piece of text.matchAll(/\s+|\S+/gu)) {
+    const value = piece[0]
+    if (/\S/u.test(value)) {
+      flat += value
+      for (let unit = 0; unit < value.length; unit += 1) {
+        lineOf.push(line)
+      }
+      continue
+    }
+    const breaks = value.split('\n').length - 1
+    // The start of the text has no character before it.
+    const before = Array.from(flat.slice(-2)).at(-1) ?? ''
+    const next = text.codePointAt(piece.index + value.length)
+    const after = next === undefined ? '' : String.fromCodePoint(next)
+    if (breaks === 0 || !cjkCharacter.test(before) || !cjkCharacter.test(after)) {
+      flat += ' '
+      lineOf.push(line)
+    }
+    line += breaks
+  }
+  return { flat, lineOf }
+}
+
+/**
+ * Returns hit locations for one text as "<label>:<line>（<rule file> 第 n 行）".
+ * Every rule is matched twice: against each line as written, so that a rule
+ * anchored to a line keeps working, and globally against the whole text with
+ * its hard wraps undone (see unwrap), so that a phrase split across lines, as
+ * in a wrapped commit message, still matches. A hit names the line where its
+ * match starts, once per rule and line.
+ */
 function scanText(label, text, ruleSets) {
-  const hits = []
-  text.split('\n').forEach((line, index) => {
-    for (const ruleSet of ruleSets) {
-      for (const rule of ruleSet.rules) {
-        if (rule.pattern.test(line)) {
-          hits.push(`${label}:${index + 1}（${ruleSet.file.name} 第 ${rule.line} 行）`)
+  const hits = new Set()
+  const hit = (line, ruleSet, rule) => hits.add(`${label}:${line}（${ruleSet.file.name} 第 ${rule.line} 行）`)
+  const { flat, lineOf } = unwrap(text)
+  for (const ruleSet of ruleSets) {
+    for (const rule of ruleSet.rules) {
+      text.split('\n').forEach((line, index) => {
+        if (line.search(rule.pattern) !== -1) {
+          hit(index + 1, ruleSet, rule)
         }
+      })
+      for (const match of flat.matchAll(rule.pattern)) {
+        hit(lineOf[match.index], ruleSet, rule)
       }
     }
-  })
-  return hits
+  }
+  return [...hits]
 }
 
 /**
