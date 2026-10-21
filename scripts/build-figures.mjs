@@ -25,6 +25,13 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { provenanceTexts, withTextChunks } from './png.ts'
 
+// import.meta.main, which keeps the work below from running when CI only
+// imports this file, exists from Node 24.2.0 on. Earlier Node leaves it
+// undefined, and the script would exit having written nothing.
+if (typeof import.meta.main !== 'boolean') {
+  throw new Error('scripts/build-figures.mjs needs Node 24.2 or later')
+}
+
 const sourcePackage = {
   url: 'https://arxiv.org/e-print/2607.27595v1',
   sha256: '4d67e38e1010f2c3c770166fa2961bde616f4bae7bde9f214cfeb650fa51eb77',

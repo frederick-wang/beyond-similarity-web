@@ -27,7 +27,7 @@ Similarity scores and parallel-passage lists show where one text reuses another 
 
 ## Development
 
-The site is built with Astro and TypeScript into static files. It needs Node.js 24 or later and pnpm.
+The site is built with Astro and TypeScript into static files. It needs Node.js 24.2 or later and pnpm.
 
 ```sh
 pnpm install

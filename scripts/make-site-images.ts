@@ -36,6 +36,13 @@ import { escapeMarkupText } from '../src/lib/escape.ts'
 import { shareCardByline } from '../src/lib/format.ts'
 import { provenanceTexts, withTextChunks, type TextEntry } from './png.ts'
 
+// import.meta.main, which keeps the work below from running when CI only
+// imports this file, exists from Node 24.2.0 on. Earlier Node leaves it
+// undefined, and the script would exit having written nothing.
+if (typeof import.meta.main !== 'boolean') {
+  throw new Error('scripts/make-site-images.ts needs Node 24.2 or later')
+}
+
 const root = new URL('../', import.meta.url)
 
 const shareCard = {
