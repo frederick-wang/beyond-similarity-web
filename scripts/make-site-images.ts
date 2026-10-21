@@ -9,9 +9,8 @@
 // stylesheet, so it takes the page's palette, font stack and seal. Its words
 // come from shareCardWords() in the facts module; the card records them as
 // JSON in a "Card words" text chunk, which tests/metadata.spec.ts compares
-// with the page head to catch a card left stale. Rendering uses the browser
-// and the fonts of the machine that runs the script, so the card's Source
-// chunk records the platform and the browser version it was rendered with.
+// with the page head to catch a card left stale. The browser and platform
+// that rendered the committed card are in its Source chunk.
 //
 // The PNG favicons are the seal artwork resized with sharp, cropped to the
 // view box of the traced SVG favicon so that every icon frames the seal alike.
