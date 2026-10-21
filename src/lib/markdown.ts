@@ -240,7 +240,12 @@ function markdownLink(label: string, url: string): string {
   return `[${markdownLiteral(label, 'A link label')}](${markdownUrl(url)})`
 }
 
-/** An address as a link destination: whitespace, parentheses and angle brackets would end it early, so they stop the build. */
+/**
+ * An address as a bare link destination. Whitespace and unbalanced
+ * parentheses cut or break a bare destination, and a leading < turns it into
+ * the angle-bracket form, so the build rejects every whitespace character,
+ * parenthesis and angle bracket, and nothing has to track their balance.
+ */
 function markdownUrl(url: string): string {
   if (/[\s()<>]/.test(url)) {
     throw new Error(`${url} cannot stand as a Markdown link destination`)

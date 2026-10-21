@@ -63,7 +63,8 @@ export function markdownText(text: InlineMarkdown, lang: PageLanguage): string {
 // a code span, emphasis or strikethrough (an underscore only at a word
 // boundary: between two letters or digits it cannot open or close emphasis,
 // as in find_position), a link or image, raw HTML or an autolink, an entity
-// reference, or a line break, which would end the block.
+// reference, or a line break, which ends a heading or a table row and can
+// start a new block.
 const markdownSyntax =
   /[\\`*~[\]\r\n]|(?<![\p{L}\p{N}])_|_(?![\p{L}\p{N}])|<(?=[A-Za-z/!?])|&(?:#\d+|#[Xx][\dA-Fa-f]+|[A-Za-z][A-Za-z\d]*);/u
 
