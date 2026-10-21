@@ -1,0 +1,76 @@
+---
+// One of the paper's tables, rendered from the table-cell model that the
+// Markdown version of the page renders too.
+import type { PageCopy } from '../content/types'
+import type { TableId } from '../data/tables'
+import { tableModel } from '../lib/table-cells'
+import TableFrame from './TableFrame.astro'
+
+interface Props {
+  readonly copy: PageCopy
+  readonly table: TableId
+}
+
+const { copy, table } = Astro.props
+const model = tableModel(copy, table)
+---
+
+<TableFrame copy={copy} table={table} label={model.label} caption={model.caption}>
+  <thead>
+    <tr>
+      {
+        model.head.map((cell) => (
+          <th scope="col" class:list={{ category: cell.kind === 'category' }}>
+            {cell.kind === 'emphasis' ? <i>{cell.text}</i> : cell.text}
+          </th>
+        ))
+      }
+    </tr>
+  </thead>
+  <tbody>
+    {
+      model.body.map((row) => (
+        <tr
+          data-dimension={row.key.kind === 'dimension' ? row.key.id : undefined}
+          data-model={row.key.kind === 'model' ? row.key.id : undefined}
+          class:list={{ deployment: row.deployment }}
+        >
+          <th scope="row" class:list={{ wrap: row.headerWraps }}>
+            {row.header.kind === 'code' ? <code>{row.header.text}</code> : row.header.text}
+          </th>
+          {row.cells.map((cell) => (
+            <td class:list={{ category: cell.kind === 'category' }}>{cell.text}</td>
+          ))}
+        </tr>
+      ))
+    }
+  </tbody>
+  {
+    model.total !== null && (
+      <tfoot>
+        <tr data-total>
+          {model.total.cells.map((cell) => (
+            <td class:list={{ category: cell.kind === 'category' }}>{cell.text}</td>
+          ))}
+        </tr>
+      </tfoot>
+    )
+  }
+</TableFrame>
+
+<style>
+  th[scope='row'] {
+    font-weight: 400;
+  }
+
+  .category {
+    text-align: left;
+  }
+
+  /* The deployment model is the one the corpus run uses; an indigo wash marks
+     its row, the color that marks the reader's position elsewhere. */
+  tr.deployment th,
+  tr.deployment td {
+    background: var(--indigo-wash);
+  }
+</style>
