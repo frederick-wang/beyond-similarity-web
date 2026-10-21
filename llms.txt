@@ -1,0 +1,41 @@
+# Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories
+
+> We make an LLM agent ground every reuse it proposes in exact character spans and label how the source is reused, and we validate it on 2,533 expert-adjudicated pairs from the *Analects* and the *Book of Han*. Across official histories composed from 91 BCE to 1739 CE we detect no systematic change in the share of direct quotation or of reuse that leaves its source unmarked, while later-compiled histories tend to quote the same passage less literally.
+
+This site is the paper page for the arXiv preprint arXiv:2607.27595 by Zhaoji Wang, Wanyu Si, and Jun Wang at Peking University. It has an English page and a Chinese counterpart. Every number on the pages follows arXiv v1, and figures, tables and most paragraphs link to the page of the v1 PDF that supports them.
+
+Cite the paper with this BibTeX entry:
+
+```bibtex
+@misc{wang2026beyond,
+  title         = {Beyond Similarity: Grounded Agentic Extraction and Expert-Adjudicated Evaluation of Intertextuality in Classical Chinese Histories},
+  author        = {Wang, Zhaoji and Si, Wanyu and Wang, Jun},
+  year          = {2026},
+  eprint        = {2607.27595},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  doi           = {10.48550/arXiv.2607.27595},
+  url           = {https://arxiv.org/abs/2607.27595}
+}
+```
+
+## Pages
+
+- [English page](https://beyond-similarity.zhaoji.ac.cn/): the findings, method and evidence of the paper, with its figures, tables and classical Chinese quotations
+- [Chinese page (中文页)](https://beyond-similarity.zhaoji.ac.cn/zh/): the page in Chinese, with the same sections, figures, tables and numbers
+- [English page in Markdown](https://beyond-similarity.zhaoji.ac.cn/index.md): the text of the English page as Markdown, with its tables and BibTeX entry
+- [Chinese page in Markdown](https://beyond-similarity.zhaoji.ac.cn/zh/index.md): the text of the Chinese page as Markdown, with its tables and BibTeX entry
+
+## Paper
+
+- [arXiv record](https://arxiv.org/abs/2607.27595): the abstract page of the preprint, which lists its versions and publication details
+- [PDF of arXiv v1](https://arxiv.org/pdf/2607.27595v1): the full text of the paper
+- [DOI](https://doi.org/10.48550/arXiv.2607.27595): the DOI that arXiv assigned to the preprint, which resolves to the arXiv record
+
+## Data
+
+- [Explorer](https://analects-24histories-intertext.pkudh.net/): 《论语》×二十四史互文图谱, a site in Chinese that shows every intertextual pair of the Twenty-Four Histories run in its textual context, with its spans and labels
+
+## Optional
+
+- [llms-full.txt](https://beyond-similarity.zhaoji.ac.cn/llms-full.txt): the English and the Chinese page in Markdown, in one file
