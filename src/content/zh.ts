@@ -58,7 +58,10 @@ export const zh: PageCopy = {
       scaling: '规模化到二十四史',
       discussion: '讨论与局限',
     },
-    pages: (pages) => (pages.length === 1 ? `PDF 第 ${pages[0]} 页` : `PDF 第 ${pages[0]}～${pages[1]} 页`),
+    // The \u00a0 escapes are no-break spaces, which AutoCorrect would read as Latin text.
+    // autocorrect-disable
+    pages: (pages) => (pages.length === 1 ? `PDF 第\u00a0${pages[0]}\u00a0页` : `PDF 第\u00a0${pages[0]}～${pages[1]}\u00a0页`),
+    // autocorrect-enable
   },
   figures: {
     openFull: '查看原图',
@@ -257,7 +260,7 @@ export const zh: PageCopy = {
         },
         {
           type: 'paragraph',
-          text: '我们给了稠密检索一个实际部署的管线都没有的优势：用专家标出的史书侧片段直接查询 BGE-M3。对没有相同连续三字的互文对，它只在 61.0% 的情况下把有重叠的源句排进前十（排在第一：33.0%），逐字锚定的互文对则为 91.7%。在 1,470 个《论语》句子单元中，那道诏书和那篇赋的来源分别排在第 232 位和第 470 位。无连续三字重合的这一层，中位排名是 4，逐字锚定的互文对是 1。这些命中率给任何先检索后判读的管线的召回率设了上限，而上限恰好落在需要解读的地方。检索的输出也既不带区间，也不带标签。',
+          text: '我们给了稠密检索一个实际部署的管线都没有的优势：用专家标出的史书侧片段直接查询 `BGE-M3`。对没有相同连续三字的互文对，它只在 61.0% 的情况下把有重叠的源句排进前十（排在第一：33.0%），逐字锚定的互文对则为 91.7%。在 1,470 个《论语》句子单元中，那道诏书和那篇赋的来源分别排在第 232 位和第 470 位。无连续三字重合的这一层，中位排名是 4，逐字锚定的互文对是 1。这些命中率给任何先检索后判读的管线的召回率设了上限，而上限恰好落在需要解读的地方。检索的输出也既不带区间，也不带标签。',
           sources: [{ part: 'evaluation', pages: [4] }],
         },
         {

@@ -59,7 +59,7 @@ export const en: PageCopy = {
       scaling: 'Scaling to the Twenty-Four Histories',
       discussion: 'Discussion and Limitations',
     },
-    pages: (pages) => (pages.length === 1 ? `PDF p. ${pages[0]}` : `PDF pp. ${pages[0]}–${pages[1]}`),
+    pages: (pages) => (pages.length === 1 ? `PDF p.\u00a0${pages[0]}` : `PDF pp.\u00a0${pages[0]}–${pages[1]}`),
   },
   figures: {
     openFull: 'Open full size',
@@ -258,7 +258,7 @@ export const en: PageCopy = {
         },
         {
           type: 'paragraph',
-          text: 'We gave dense retrieval an advantage no deployed pipeline has: BGE-M3 queried with the history-side fragment the experts identified. It ranks an overlapping source sentence in its top ten for 61.0% of the trigram-free pairs (top one: 33.0%), against 91.7% for verbatim-anchored pairs, and puts the sources of the edict and the rhapsody at 232nd and 470th among 1,470 *Analects* sentence units. The median rank in the trigram-free stratum is 4, against 1 for verbatim-anchored pairs. These hit rates cap the recall of any retrieve-then-judge pipeline exactly where interpretation begins, and retrieval output carries neither spans nor labels.',
+          text: 'We gave dense retrieval an advantage no deployed pipeline has: `BGE-M3` queried with the history-side fragment the experts identified. It ranks an overlapping source sentence in its top ten for 61.0% of the trigram-free pairs (top one: 33.0%), against 91.7% for verbatim-anchored pairs, and puts the sources of the edict and the rhapsody at 232nd and 470th among 1,470 *Analects* sentence units. The median rank in the trigram-free stratum is 4, against 1 for verbatim-anchored pairs. These hit rates cap the recall of any retrieve-then-judge pipeline exactly where interpretation begins, and retrieval output carries neither spans nor labels.',
           sources: [{ part: 'evaluation', pages: [4] }],
         },
         {

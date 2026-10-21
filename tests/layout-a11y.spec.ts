@@ -17,6 +17,8 @@ for (const { path } of PAGES) {
 
     for (const colorScheme of ['light', 'dark'] as const) {
       test(`passes axe without serious or critical issues in the ${colorScheme} theme`, async ({ page }) => {
+        // axe walks the whole page twice; under heavy machine load that alone can pass 30 s.
+        test.slow()
         await page.emulateMedia({ colorScheme })
         await page.goto(path)
         const results = await new AxeBuilder({ page }).analyze()

@@ -27,7 +27,13 @@
   --column-gap: 5rem;
   --gutter: clamp(1.25rem, 4vw, 3rem);
   --page-width: calc(var(--column) + var(--column-gap) + var(--margin-column) + 2 * var(--gutter));
-  --measure: 68ch;
+  /* The reading measure, in em of the element that uses it: about 65 to 75
+     characters a line in English. Chinese sets about 37 characters a line. */
+  --measure: 34em;
+}
+
+html:lang(zh) {
+  --measure: 37em;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -139,6 +145,7 @@ a:hover {
 .caption .label {
   font-weight: 650;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 /* Secondary links (sources, PDF pages, full-size images) recede until hovered. */
