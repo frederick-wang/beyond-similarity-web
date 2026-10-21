@@ -37,8 +37,25 @@ export const agreementRows: readonly AgreementRow[] = [
   { dimension: 'stance', observed: 77.0, chance: 68.4, kappa: 0.27 },
 ]
 
+/** The twelve models of the study, in the order of Table 2. */
+export const modelNames = [
+  'doubao-2.1-turbo',
+  'deepseek-v4-pro',
+  'glm-5-turbo',
+  'deepseek-v4-flash',
+  'doubao-2.1-pro',
+  'qwen3.7-plus',
+  'gemini-3.1-flash-lite',
+  'glm-5.2',
+  'qwen3.7-max',
+  'gpt-5.4-mini',
+  'gpt-5.5',
+  'claude-haiku-4.5',
+] as const
+export type ModelName = (typeof modelNames)[number]
+
 export interface ModelRow {
-  readonly model: string
+  readonly model: ModelName
   readonly candidates: number
   readonly valid: number
   /** Share of committed pairs judged valid, in percent. */

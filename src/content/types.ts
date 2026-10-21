@@ -11,21 +11,9 @@ import type { DimensionId, DominantCategoryId, TableId } from '../data/tables'
  */
 export type InlineMarkdown = string
 
-export type SectionId =
-  | 'abstract'
-  | 'gap'
-  | 'method'
-  | 'benchmark'
-  | 'similarity'
-  | 'models'
-  | 'histories'
-  | 'limitations'
-  | 'using'
-  | 'cite'
-  | 'acknowledgments'
-
-/** Question sections open with a direct answer; plain sections do not. */
-export type SectionKind = 'question' | 'plain'
+export type QuestionSectionId = 'gap' | 'method' | 'benchmark' | 'similarity' | 'models' | 'histories'
+export type PlainSectionId = 'abstract' | 'limitations' | 'using' | 'cite' | 'acknowledgments'
+export type SectionId = QuestionSectionId | PlainSectionId
 
 /** Sections of the paper a source link can point to; each language names them. */
 export type PaperPart = 'introduction' | 'protocol' | 'evaluation' | 'scaling' | 'discussion'
@@ -39,19 +27,30 @@ export interface SourceRef {
 export type SubsectionId = 'worked-example' | 'mix' | 'marking' | 'function' | 'fidelity' | 'asymmetric'
 
 export type Block =
-  | { readonly type: 'answer'; readonly text: InlineMarkdown }
+  | { readonly type: 'abstract' }
   | { readonly type: 'paragraph'; readonly text: InlineMarkdown; readonly sources: readonly SourceRef[] }
   | { readonly type: 'subheading'; readonly id: SubsectionId; readonly text: InlineMarkdown }
   | { readonly type: 'figure'; readonly figure: FigureId }
   | { readonly type: 'table'; readonly table: TableId }
   | { readonly type: 'bibtex' }
 
-export interface Section {
-  readonly id: SectionId
-  readonly kind: SectionKind
+/** A question section's heading is the question, and its first sentence is the answer. */
+export interface QuestionSection {
+  readonly kind: 'question'
+  readonly id: QuestionSectionId
+  readonly heading: InlineMarkdown
+  readonly answer: InlineMarkdown
+  readonly blocks: readonly Block[]
+}
+
+export interface PlainSection {
+  readonly kind: 'plain'
+  readonly id: PlainSectionId
   readonly heading: InlineMarkdown
   readonly blocks: readonly Block[]
 }
+
+export type Section = QuestionSection | PlainSection
 
 export interface LinkLabels {
   readonly arxiv: string
@@ -143,6 +142,8 @@ export interface PageCopy {
   readonly skipLink: string
   readonly correspondingNote: string
   readonly finding: InlineMarkdown
+  /** The arXiv abstract, verbatim. */
+  readonly abstract: InlineMarkdown
   readonly glanceHeading: string
   readonly glance: Readonly<Record<GlanceId, InlineMarkdown>>
   readonly navHeading: string

@@ -33,12 +33,17 @@ const sections = numberQuestions(copy.sections)
           <Inline text={section.heading} lang={copy.lang} />
         </span>
       </h2>
+      {section.kind === 'question' && (
+        <p class="answer" data-answer>
+          <Inline text={section.answer} lang={copy.lang} />
+        </p>
+      )}
       {section.blocks.map((block) => {
         switch (block.type) {
-          case 'answer':
+          case 'abstract':
             return (
-              <p class="answer" data-answer>
-                <Inline text={block.text} lang={copy.lang} />
+              <p>
+                <Inline text={copy.abstract} lang={copy.lang} />
               </p>
             )
           case 'paragraph':
@@ -88,20 +93,11 @@ const sections = numberQuestions(copy.sections)
     letter-spacing: -0.005em;
   }
 
-  /* The question numeral is one of the two places vermilion appears, the
-     other being the seal. */
-  .numeral {
-    flex: none;
-    display: inline-grid;
-    place-items: center;
+  h2 .numeral {
     width: 1.6rem;
     height: 1.6rem;
     border-radius: 4px;
-    background: var(--vermilion);
-    color: var(--on-vermilion);
     font-size: 0.875rem;
-    font-weight: 650;
-    font-variant-numeric: tabular-nums;
     transform: translateY(-0.12em);
   }
 

@@ -1,7 +1,9 @@
+import type { ModelName } from './tables'
+
 // The single source of paper facts, following arXiv:2607.27595v1. Everything
 // the page states as a fact outside long-form section prose reads from here:
-// the title block, the finding, "At a glance", the meta description, the
-// BibTeX entry, and later the metadata and machine-readable summaries.
+// the title block, the finding, "At a glance", the meta description and the
+// BibTeX entry.
 
 export type PageLanguage = 'en'
 
@@ -90,8 +92,8 @@ export const stats = {
   benchmarkPairs: 2533,
   models: 12,
   /** The most precise of the twelve models, and the most expensive per valid pair (Table 2). */
-  mostPreciseModel: 'doubao-2.1-turbo',
-  deploymentModel: 'deepseek-v4-flash',
+  mostPreciseModel: 'doubao-2.1-turbo' satisfies ModelName,
+  deploymentModel: 'deepseek-v4-flash' satisfies ModelName,
   /** Precision gap, in percentage points, between the most precise model and the deployment model. */
   precisionGapPoints: 4.9,
   /** Deployment model precision on the Analects–Book of Han benchmark, in percent. */
