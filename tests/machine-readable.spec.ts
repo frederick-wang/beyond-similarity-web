@@ -70,17 +70,27 @@ interface Reading {
 }
 
 /**
- * Where a Markdown version and its page differ by design. The readers below
- * apply exactly these and count each one, and the test requires every one to
- * apply, so a declaration cannot outlive the difference it names.
+ * Where a Markdown version and its page differ by design, and how many times
+ * each difference occurs on each page. The readers below apply exactly these
+ * and count each one, and the test requires each count exactly, so a
+ * declaration can neither outlive its difference nor cover more of the page
+ * than it names.
  */
 const KNOWN_DIFFERENCES = [
-  { name: 'canonicalSentence', why: 'The sentence that names the canonical address exists only in the Markdown.' },
-  { name: 'citeLink', why: 'The in-page Cite link exists only in the link row of the page.' },
-  { name: 'openFullSize', why: 'The “Open full size” link under a figure on the page is carried by the Markdown image URL.' },
-  { name: 'navigation', why: 'The page navigation exists only on the page.' },
-  { name: 'questionNumbers', why: 'The page sets a question’s number apart from its heading; the Markdown writes it as “1. ” before the heading.' },
-  { name: 'glanceEntries', why: 'The page sets a glance quantity and its text in dt and dd; the Markdown joins them with a separator.' },
+  { name: 'canonicalSentence', count: 1, why: 'The paragraph right after the title, which names the canonical address, exists only in the Markdown.' },
+  { name: 'citeLink', count: 1, why: 'The in-page Cite link exists only in the link row of the page.' },
+  {
+    name: 'openFullSize',
+    count: 4,
+    why: 'The “Open full size” link under each of the four figures, with the “·” that separates it from the PDF link, is carried by the Markdown image URL.',
+  },
+  { name: 'navigation', count: 24, why: 'The page navigation, the heading and eleven items of both its wide and its narrow list, exists only on the page.' },
+  {
+    name: 'questionNumbers',
+    count: 6,
+    why: 'The page sets each question’s number apart from its heading; the Markdown writes it as “1. ” before the heading.',
+  },
+  { name: 'glanceEntries', count: 4, why: 'The page sets each glance quantity and its text in dt and dd; the Markdown joins them with a separator.' },
 ] as const
 
 /**
@@ -136,16 +146,24 @@ async function readPage(page: Page, glanceJoin: string): Promise<Reading> {
           if (!(caption instanceof Element)) {
             throw new Error('A caption did not clone as an element')
           }
+          // A figure's caption ends with "Open full size · PDF p. 2". The
+          // full-size link and the "·" before the PDF link go together; a
+          // table's caption has neither, so nothing is taken from it.
           const plate = required(element.closest('figure'), 'figure around a caption').querySelector('a.plate')
-          for (const full of caption.querySelectorAll('a[href^="/_astro/"]')) {
-            if (plate === null || full.getAttribute('href') !== plate.getAttribute('href')) {
+          if (plate !== null) {
+            const fullSize = caption.querySelectorAll('a[href^="/_astro/"]')
+            const separators = caption.querySelectorAll('.figure-links [aria-hidden="true"]')
+            const link = fullSize.item(0)
+            const separator = separators.item(0)
+            if (fullSize.length !== 1 || separators.length !== 1 || link === null || separator === null) {
+              throw new Error('A figure caption should hold one “Open full size” link and one separator')
+            }
+            if (link.getAttribute('href') !== plate.getAttribute('href')) {
               throw new Error('An “Open full size” link does not open its figure’s image')
             }
-            full.remove()
-            applied.openFullSize += 1
-          }
-          for (const separator of caption.querySelectorAll('.figure-links [aria-hidden="true"]')) {
+            link.remove()
             separator.remove()
+            applied.openFullSize += 1
           }
           blocks.push({ kind: 'paragraph', text: textOf(caption), links: linksOf(caption) })
         } else if (element.matches('th, td')) {
@@ -164,12 +182,17 @@ async function readPage(page: Page, glanceJoin: string): Promise<Reading> {
   )
 }
 
-/** The Markdown rendered by marked and read in the browser as blocks, the sentence that names `canonical` set aside. */
-async function readMarkdown(page: Page, markdown: string, canonical: string): Promise<Reading> {
+/** The Markdown side: its blocks, and the paragraph right after the title, which the page does not have. */
+interface MarkdownReading extends Reading {
+  readonly afterTitle: Block
+}
+
+/** The Markdown rendered by marked and read in the browser as blocks, the paragraph right after the h1 set aside. */
+async function readMarkdown(page: Page, markdown: string): Promise<MarkdownReading> {
   // The rendered images point at the public site; reading them loads nothing.
   await page.route('**/*', (route) => route.abort())
   await page.setContent(marked.parse(markdown, { async: false }))
-  return page.evaluate((canonical) => {
+  return page.evaluate(() => {
     const required = <T,>(value: T | null | undefined, what: string): T => {
       if (value === null || value === undefined) {
         throw new Error(`The Markdown has no ${what}`)
@@ -182,8 +205,14 @@ async function readMarkdown(page: Page, markdown: string, canonical: string): Pr
       Array.from(element.querySelectorAll('a'), (anchor): [string, string] => [textOf(anchor), required(anchor.getAttribute('href'), 'link address')])
     const applied = { canonicalSentence: 0 }
     const blocks: Block[] = []
+    const afterTitle = required(required(document.body.querySelector('h1'), 'h1').nextElementSibling, 'block after the h1')
+    if (afterTitle.localName !== 'p') {
+      throw new Error(`The block after the h1 is a ${afterTitle.localName}, not a paragraph`)
+    }
     for (const element of document.body.querySelectorAll('h1, h2, h3, p, li, th, td, pre')) {
-      if (element.matches('h1, h2, h3')) {
+      if (element === afterTitle) {
+        applied.canonicalSentence += 1
+      } else if (element.matches('h1, h2, h3')) {
         blocks.push({ kind: 'heading', text: textOf(element), links: linksOf(element) })
       } else if (element.matches('li')) {
         blocks.push({ kind: 'item', text: textOf(element), links: linksOf(element) })
@@ -192,24 +221,21 @@ async function readMarkdown(page: Page, markdown: string, canonical: string): Pr
       } else if (element.matches('pre')) {
         blocks.push({ kind: 'code', text: required(element.textContent, 'code').trimEnd(), links: [] })
       } else {
-        const links = linksOf(element)
-        const [firstLink, ...otherLinks] = links
         const image = element.querySelector(':scope > img')
         if (image !== null && element.childElementCount === 1 && textOf(element) === '') {
           const alternative = normalize(required(image.getAttribute('alt'), 'image text alternative'))
           blocks.push({ kind: 'image', text: alternative, links: [['', required(image.getAttribute('src'), 'image address')]] })
-        } else if (firstLink !== undefined && otherLinks.length === 0 && firstLink[1] === canonical) {
-          applied.canonicalSentence += 1
         } else {
-          blocks.push({ kind: 'paragraph', text: textOf(element), links })
+          blocks.push({ kind: 'paragraph', text: textOf(element), links: linksOf(element) })
         }
       }
     }
-    return { blocks, applied }
-  }, canonical)
+    const setAside: Block = { kind: 'paragraph', text: textOf(afterTitle), links: linksOf(afterTitle) }
+    return { blocks, applied, afterTitle: setAside }
+  })
 }
 
-for (const { page: path, markdown: markdownPath, glanceJoin } of MARKDOWN_VERSIONS) {
+for (const { page: path, markdown: markdownPath, glanceJoin, canonicalSentence } of MARKDOWN_VERSIONS) {
   test.describe(`${markdownPath}, the Markdown version of ${path}`, () => {
     test('starts with the page title and names the page it renders', async ({ page, request }) => {
       const markdown = await fetchMarkdown(request, markdownPath)
@@ -224,12 +250,10 @@ for (const { page: path, markdown: markdownPath, glanceJoin } of MARKDOWN_VERSIO
       await page.goto(path)
       const canonical = only(await attributeValues(page, 'link[rel="canonical"]', 'href'), 'canonical link')
       const served = await readPage(page, glanceJoin)
-      const rendered = await readMarkdown(page, markdown, canonical)
-      const applied = new Map(Object.entries(served.applied).concat(Object.entries(rendered.applied)))
-      expect([...applied.keys()].sort()).toEqual(KNOWN_DIFFERENCES.map((difference) => difference.name).sort())
-      for (const difference of KNOWN_DIFFERENCES) {
-        expect(applied.get(difference.name), `${difference.name}: ${difference.why}`).toBeGreaterThan(0)
-      }
+      const rendered = await readMarkdown(page, markdown)
+      expect(rendered.afterTitle).toEqual({ kind: 'paragraph', text: canonicalSentence, links: [[canonical, canonical]] })
+      const applied = Object.entries(served.applied).concat(Object.entries(rendered.applied))
+      expect(applied.sort()).toEqual(KNOWN_DIFFERENCES.map((difference): [string, number] => [difference.name, difference.count]).sort())
       expect(served.blocks.length).toBeGreaterThan(100)
       expect(rendered.blocks).toEqual(served.blocks)
     })

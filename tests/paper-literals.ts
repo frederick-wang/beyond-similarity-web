@@ -39,11 +39,25 @@ export type PageLanguage = (typeof PAGES)[number]['lang']
  * where the llms.txt proposal (https://llmstxt.org/) puts the Markdown of a
  * URL without a file name. In "At a glance" the Markdown joins each quantity
  * to its text with `glanceJoin`, a space in English and a full-width colon in
- * Chinese.
+ * Chinese. `canonicalSentence` is the paragraph right after the title, copied
+ * from the served Markdown as it reads once rendered: the served Markdown
+ * writes the page's canonical address as an autolink, <…>.
  */
 export const MARKDOWN_VERSIONS = [
-  { page: '/', markdown: '/index.md', lang: 'en', glanceJoin: ' ' },
-  { page: '/zh/', markdown: '/zh/index.md', lang: 'zh-Hans', glanceJoin: '：' },
+  {
+    page: '/',
+    markdown: '/index.md',
+    lang: 'en',
+    glanceJoin: ' ',
+    canonicalSentence: 'This is the Markdown version of https://beyond-similarity.zhaoji.ac.cn/.',
+  },
+  {
+    page: '/zh/',
+    markdown: '/zh/index.md',
+    lang: 'zh-Hans',
+    glanceJoin: '：',
+    canonicalSentence: '这是 https://beyond-similarity.zhaoji.ac.cn/zh/ 的 Markdown 版本。',
+  },
 ] as const
 
 /** The sections of each language page in the SPEC's order, by the anchor both pages give them. */
