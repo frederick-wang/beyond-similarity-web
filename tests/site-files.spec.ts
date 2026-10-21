@@ -1,19 +1,10 @@
-import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
-import { PUBLISHED, SITE } from './paper-literals'
+import { expect, test, type APIRequestContext } from '@playwright/test'
 import { readPngHeader, type PngHeader } from '../scripts/png.ts'
+import { attributeValues, only } from './head'
+import { PUBLISHED, SITE } from './paper-literals'
 
 /** The IndexNow key, copied from the key file's name in public/. */
 const INDEXNOW_KEY = 'c132bc6e7cb4da6c991d355d9c45f366'
-
-async function attribute(page: Page, selector: string, name: string): Promise<string> {
-  const element = page.locator(selector)
-  await expect(element).toHaveCount(1)
-  const value = await element.getAttribute(name)
-  if (value === null) {
-    throw new Error(`${selector} has no ${name} attribute`)
-  }
-  return value
-}
 
 async function fetchPng(request: APIRequestContext, path: string): Promise<PngHeader> {
   const response = await request.get(path)
@@ -25,7 +16,7 @@ async function fetchPng(request: APIRequestContext, path: string): Promise<PngHe
 test.describe('favicons drawn from the scroll seal', () => {
   test('include a square SVG icon', async ({ page, request }) => {
     await page.goto('/')
-    const href = await attribute(page, 'link[rel="icon"][type="image/svg+xml"]', 'href')
+    const href = only(await attributeValues(page, 'link[rel="icon"][type="image/svg+xml"]', 'href'), 'SVG icon')
     const response = await request.get(href)
     expect(response.status()).toBe(200)
     expect(response.headers()['content-type']).toContain('image/svg+xml')
@@ -46,22 +37,19 @@ test.describe('favicons drawn from the scroll seal', () => {
 
   test('include PNG icons at 16, 32 and 192 px whose files match their declared sizes', async ({ page, request }) => {
     await page.goto('/')
-    const icons = await page
-      .locator('link[rel="icon"][type="image/png"]')
-      .evaluateAll((links) => links.map((link) => ({ href: link.getAttribute('href'), sizes: link.getAttribute('sizes') })))
-    expect(icons.map((icon) => icon.sizes).sort()).toEqual(['16x16', '192x192', '32x32'])
-    for (const { href, sizes } of icons) {
-      if (href === null) {
-        throw new Error('A PNG icon link has no href')
-      }
+    const selector = 'link[rel="icon"][type="image/png"]'
+    const hrefs = await attributeValues(page, selector, 'href')
+    const sizes = await attributeValues(page, selector, 'sizes')
+    expect([...sizes].sort()).toEqual(['16x16', '192x192', '32x32'])
+    for (const [index, href] of hrefs.entries()) {
       const header = await fetchPng(request, href)
-      expect(`${header.width}x${header.height}`, href).toBe(sizes)
+      expect(`${header.width}x${header.height}`, href).toBe(sizes[index])
     }
   })
 
   test('include a 180 px apple-touch-icon without transparency, which iOS would fill with black', async ({ page, request }) => {
     await page.goto('/')
-    const header = await fetchPng(request, await attribute(page, 'link[rel="apple-touch-icon"]', 'href'))
+    const header = await fetchPng(request, only(await attributeValues(page, 'link[rel="apple-touch-icon"]', 'href'), 'apple-touch-icon'))
     expect(header).toEqual({ width: 180, height: 180, transparency: false })
   })
 })

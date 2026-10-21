@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
+import { attributeValues, only } from './head'
 import { normalize } from './paper-literals'
 
 // README.md restates the paper's title, authors, links, numbers and BibTeX
@@ -49,7 +50,7 @@ test.describe('README', () => {
 
   test('gives the site address the page declares as canonical', async ({ page }) => {
     await page.goto('/')
-    expect(readmeLink('Paper page')).toBe(await page.locator('link[rel="canonical"]').getAttribute('href'))
+    expect(readmeLink('Paper page')).toBe(only(await attributeValues(page, 'link[rel="canonical"]', 'href'), 'canonical link'))
   })
 
   test('links to the arXiv record the page links to', async ({ page }) => {

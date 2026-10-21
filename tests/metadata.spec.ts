@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
   ABSTRACT,
   AFFILIATIONS,
@@ -14,30 +14,16 @@ import {
   TITLE,
 } from './paper-literals'
 import { readPngHeader, readPngTexts } from '../scripts/png.ts'
-
-async function metaContents(page: Page, name: string): Promise<(string | null)[]> {
-  return page.locator(`meta[name="${name}"]`).evaluateAll((elements) => elements.map((element) => element.getAttribute('content')))
-}
-
-/** The content of the one Open Graph tag with this property. */
-async function openGraph(page: Page, property: string): Promise<string> {
-  const tag = page.locator(`meta[property="${property}"]`)
-  await expect(tag).toHaveCount(1)
-  const content = await tag.getAttribute('content')
-  if (content === null) {
-    throw new Error(`${property} has no content attribute`)
-  }
-  return content
-}
+import { attributeValues, only } from './head'
 
 test.describe('citation metadata for Google Scholar and reference managers', () => {
   test('describes the arXiv preprint with title, ordered authors, date, DOI and arXiv ID', async ({ page }) => {
     await page.goto('/')
-    expect(await metaContents(page, 'citation_title')).toEqual([TITLE])
-    expect(await metaContents(page, 'citation_author')).toEqual([...AUTHORS_FAMILY_FIRST])
-    expect(await metaContents(page, 'citation_publication_date')).toEqual([PUBLISHED_SLASHED])
-    expect(await metaContents(page, 'citation_doi')).toEqual([DOI])
-    expect(await metaContents(page, 'citation_arxiv_id')).toEqual([ARXIV_ID])
+    expect(await attributeValues(page, 'meta[name="citation_title"]', 'content')).toEqual([TITLE])
+    expect(await attributeValues(page, 'meta[name="citation_author"]', 'content')).toEqual([...AUTHORS_FAMILY_FIRST])
+    expect(await attributeValues(page, 'meta[name="citation_publication_date"]', 'content')).toEqual([PUBLISHED_SLASHED])
+    expect(await attributeValues(page, 'meta[name="citation_doi"]', 'content')).toEqual([DOI])
+    expect(await attributeValues(page, 'meta[name="citation_arxiv_id"]', 'content')).toEqual([ARXIV_ID])
   })
 
   test('offers no citation_pdf_url, since Google Scholar wants the PDF in the same directory as the page', async ({ page }) => {
@@ -52,7 +38,7 @@ test.describe('structured data', () => {
     const blocks = await page.locator('script[type="application/ld+json"]').allTextContents()
     expect(blocks).toHaveLength(1)
     const data: unknown = JSON.parse(blocks.join(''))
-    const description = await page.locator('meta[name="description"]').getAttribute('content')
+    const description = only(await attributeValues(page, 'meta[name="description"]', 'content'), 'description')
     expect(data).toMatchObject({
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -84,33 +70,35 @@ test.describe('structured data', () => {
 test.describe('link previews on social platforms', () => {
   test('give the title, description, address and a large image', async ({ page }) => {
     await page.goto('/')
-    const description = await page.locator('meta[name="description"]').getAttribute('content')
+    const openGraph = async (property: string) => attributeValues(page, `meta[property="${property}"]`, 'content')
+    const description = only(await attributeValues(page, 'meta[name="description"]', 'content'), 'description')
     // "article" lets Zotero save a journal article with its DOI; "website" would make it a web page.
-    expect(await openGraph(page, 'og:type')).toBe('article')
-    expect(await openGraph(page, 'article:published_time')).toBe(PUBLISHED)
-    expect(await openGraph(page, 'og:site_name')).toBe('Beyond Similarity')
-    expect(await openGraph(page, 'og:title')).toBe(TITLE)
-    expect(await openGraph(page, 'og:description')).toBe(description)
-    expect(await openGraph(page, 'og:url')).toBe(SITE)
-    expect(await openGraph(page, 'og:locale')).toBe('en_US')
-    const image = await openGraph(page, 'og:image')
+    expect(await openGraph('og:type')).toEqual(['article'])
+    expect(await openGraph('article:published_time')).toEqual([PUBLISHED])
+    expect(await openGraph('og:site_name')).toEqual(['Beyond Similarity'])
+    expect(await openGraph('og:title')).toEqual([TITLE])
+    expect(await openGraph('og:description')).toEqual([description])
+    expect(await openGraph('og:url')).toEqual([SITE])
+    expect(await openGraph('og:locale')).toEqual(['en_US'])
+    const image = only(await openGraph('og:image'), 'og:image')
     expect(image.startsWith(SITE), image).toBe(true)
     expect(image).toMatch(/\.png$/)
-    expect(await openGraph(page, 'og:image:type')).toBe('image/png')
-    expect(await openGraph(page, 'og:image:width')).toBe('1200')
-    expect(await openGraph(page, 'og:image:height')).toBe('630')
+    expect(await openGraph('og:image:type')).toEqual(['image/png'])
+    expect(await openGraph('og:image:width')).toEqual(['1200'])
+    expect(await openGraph('og:image:height')).toEqual(['630'])
     // The card shows the title and the authors, so its text alternative gives them.
-    const alt = await openGraph(page, 'og:image:alt')
+    const alt = only(await openGraph('og:image:alt'), 'og:image:alt')
     for (const words of [TITLE, ...AUTHORS]) {
       expect(alt).toContain(words)
     }
-    expect(await metaContents(page, 'twitter:card')).toEqual(['summary_large_image'])
-    expect(await metaContents(page, 'twitter:image:alt')).toEqual([alt])
+    expect(await attributeValues(page, 'meta[name="twitter:card"]', 'content')).toEqual(['summary_large_image'])
+    expect(await attributeValues(page, 'meta[name="twitter:image:alt"]', 'content')).toEqual([alt])
   })
 
   test('show on the share image the words the head states, so a card left stale after a facts change fails', async ({ page, request }) => {
     await page.goto('/')
-    const response = await request.get(new URL(await openGraph(page, 'og:image')).pathname)
+    const image = only(await attributeValues(page, 'meta[property="og:image"]', 'content'), 'og:image')
+    const response = await request.get(new URL(image).pathname)
     // scripts/make-site-images.ts records the words it renders in this text chunk.
     const [words, ...others] = readPngTexts(await response.body()).filter((chunk) => chunk.keyword === 'Card words')
     if (words === undefined || others.length > 0) {
@@ -125,16 +113,16 @@ test.describe('link previews on social platforms', () => {
       return data.mainEntity.author.map((author) => author.name)
     })
     expect(JSON.parse(words.text)).toEqual({
-      shortTitle: await openGraph(page, 'og:site_name'),
-      title: (await metaContents(page, 'citation_title'))[0],
+      shortTitle: only(await attributeValues(page, 'meta[property="og:site_name"]', 'content'), 'og:site_name'),
+      title: only(await attributeValues(page, 'meta[name="citation_title"]', 'content'), 'citation_title'),
       authors: headAuthors,
-      arxivId: (await metaContents(page, 'citation_arxiv_id'))[0],
+      arxivId: only(await attributeValues(page, 'meta[name="citation_arxiv_id"]', 'content'), 'citation_arxiv_id'),
     })
   })
 
   test('serve the share image as a 1200×630 PNG', async ({ page, request }) => {
     await page.goto('/')
-    const image = await openGraph(page, 'og:image')
+    const image = only(await attributeValues(page, 'meta[property="og:image"]', 'content'), 'og:image')
     // og:image names the public origin; fetch the same path from the server under test.
     const response = await request.get(new URL(image).pathname)
     expect(response.status()).toBe(200)
