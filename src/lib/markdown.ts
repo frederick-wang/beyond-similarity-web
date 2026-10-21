@@ -1,11 +1,15 @@
-// The Markdown version of each language page, rendered at build time from the
+// The Markdown version of each language page, and the llms.txt files built
+// from it (https://llmstxt.org/). Both are rendered at build time from the
 // copy, facts and table model that the HTML pages render, through the same
 // functions wherever the two share a formatting rule, so editing the copy
-// updates it with the page. Only the HTML has the masthead, the skip link,
+// updates them with the page. Only the HTML has the masthead, the skip link,
 // the page navigation, the copy button and the footer's maintainer and ICP
 // lines; the Markdown ends with the copyright line.
 
+import { en } from '../content/en'
+import { llms, type LlmsEntry } from '../content/llms'
 import type { Block, InlineMarkdown, PageCopy, SourceRef } from '../content/types'
+import { zh } from '../content/zh'
 import { figures, type FigureId } from '../data/figures'
 import {
   absoluteUrl,
@@ -18,15 +22,18 @@ import {
   correspondingMark,
   glance,
   glanceIds,
+  institutions,
   links,
+  markdownPath,
   pages,
+  paper,
   pdfPageUrl,
   type PdfPage,
 } from '../data/paper'
 import { tablePages, type TableId } from '../data/tables'
 import { fullSizeFigure } from './figures'
 import { copyrightLine } from './footer'
-import { formatIdentifier, formatQuantity, punctuationFor } from './format'
+import { formatIdentifier, formatList, formatQuantity, punctuationFor } from './format'
 import { markdownLiteral, markdownText } from './inline'
 import { numberQuestions } from './sections'
 import { sourceLink } from './sources'
@@ -35,6 +42,46 @@ import { tableModel, type Cell } from './table-cells'
 /** The Markdown version of the page in the copy's language. */
 export async function pageMarkdown(copy: PageCopy): Promise<string> {
   return markdownDocument(await pageBlocks(copy))
+}
+
+/** /llms-full.txt: the English page's Markdown, a thematic break, then the Chinese page's. */
+export async function llmsFullText(): Promise<string> {
+  return markdownDocument((await pageBlocks(en)).concat(['---'], await pageBlocks(zh)))
+}
+
+/** /llms.txt in the order the proposal sets: title, summary, details, then the file lists. */
+export function llmsText(): string {
+  const facts = {
+    arxivId: paper.arxivId,
+    authors: formatList(
+      authors.map((author) => authorName(author, 'en')),
+      'en',
+    ),
+    institutions: formatList(
+      institutions().map((institution) => institution.nameEn),
+      'en',
+    ),
+  }
+  return markdownDocument([
+    `# ${markdownLiteral(en.title, 'The page title')}`,
+    `> ${markdownText(en.finding, en.lang)}`,
+    markdownLiteral(llms.about(facts), 'The paragraph about the site'),
+    markdownLiteral(llms.citeAs, 'The line before the BibTeX entry'),
+    bibtexBlock(),
+    fileList(llms.pages.heading, [
+      fileEntry(llms.pages.english, absoluteUrl(pages.en.path)),
+      fileEntry(llms.pages.chinese, absoluteUrl(pages['zh-Hans'].path)),
+      fileEntry(llms.pages.englishMarkdown, absoluteUrl(markdownPath('en'))),
+      fileEntry(llms.pages.chineseMarkdown, absoluteUrl(markdownPath('zh-Hans'))),
+    ]),
+    fileList(llms.paper.heading, [
+      fileEntry(llms.paper.arxiv, links.arxivAbs),
+      fileEntry(llms.paper.pdf, links.pdf),
+      fileEntry(llms.paper.doi, links.doi),
+    ]),
+    fileList(llms.data.heading, [fileEntry(llms.data.explorer, links.explorer)]),
+    fileList(llms.optional.heading, [fileEntry(llms.optional.full, absoluteUrl('/llms-full.txt'))]),
+  ])
 }
 
 /** Blocks separated by blank lines, ending with a newline. */
@@ -177,6 +224,15 @@ function escapePipes(text: string): string {
 /** The entry exactly as the page serves it. */
 function bibtexBlock(): string {
   return ['```bibtex', bibtex(), '```'].join('\n')
+}
+
+function fileList(heading: string, entries: readonly string[]): string {
+  return `## ${markdownLiteral(heading, 'A file list heading')}\n\n${entries.join('\n')}`
+}
+
+/** A file list entry in the proposal's form: `- [name](url): notes`. */
+function fileEntry(entry: LlmsEntry, url: string): string {
+  return `- ${markdownLink(entry.name, url)}: ${markdownLiteral(entry.notes, `The notes on ${entry.name}`)}`
 }
 
 function markdownList(items: readonly string[]): string {

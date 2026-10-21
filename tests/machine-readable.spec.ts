@@ -1,9 +1,10 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
-import { attributeValues, only } from './head'
+import { attributeValues, isRecord, jsonLd, only } from './head'
 import { multiDigitNumbers } from './numbers'
-import { ABSTRACT, MARKDOWN_VERSIONS, PAGE_TEXT, SITE, normalize } from './paper-literals'
+import { ABSTRACT, ARXIV_ABS, EXPLORER, MARKDOWN_VERSIONS, PAGE_TEXT, SITE, TITLE, normalize } from './paper-literals'
 
-// Each language page's Markdown version, read as served. Expected values come
+// The machine-readable versions of the site, read as served: each language
+// page's Markdown version, /llms.txt and /llms-full.txt. Expected values come
 // from the paper, the SPEC, or the HTML page the Markdown renders.
 
 /** A Markdown document as served; anything other than a 200 Markdown response fails. */
@@ -11,6 +12,13 @@ async function fetchMarkdown(request: APIRequestContext, path: string): Promise<
   const response = await request.get(path)
   expect(response.status(), path).toBe(200)
   expect(response.headers()['content-type'], path).toMatch(/^text\/markdown/)
+  return response.text()
+}
+
+async function fetchText(request: APIRequestContext, path: string): Promise<string> {
+  const response = await request.get(path)
+  expect(response.status(), path).toBe(200)
+  expect(response.headers()['content-type'], path).toContain('text/plain')
   return response.text()
 }
 
@@ -141,6 +149,14 @@ test('/index.md gives the arXiv abstract word for word', async ({ request }) => 
   expect(abstract.replace(/\*([^*]+)\*/g, '$1')).toBe(ABSTRACT)
 })
 
+test('/llms-full.txt is the English Markdown, a thematic break, then the Chinese Markdown', async ({ request }) => {
+  const [english, chinese] = await Promise.all(MARKDOWN_VERSIONS.map(({ markdown }) => fetchMarkdown(request, markdown)))
+  if (english === undefined || chinese === undefined) {
+    throw new Error('Expected the English and the Chinese Markdown version')
+  }
+  expect(await fetchText(request, '/llms-full.txt')).toBe(`${english.replace(/\n$/, '')}\n\n---\n\n${chinese}`)
+})
+
 for (const { page: path, markdown } of MARKDOWN_VERSIONS) {
   test(`${path} names its Markdown version in the head`, async ({ page, request }) => {
     await page.goto(path)
@@ -151,3 +167,52 @@ for (const { page: path, markdown } of MARKDOWN_VERSIONS) {
   })
 }
 
+test.describe('/llms.txt', () => {
+  /** The file's list entries outside fenced code: `- [name](url): notes`. */
+  function entries(text: string): { readonly line: string; readonly url: string | null }[] {
+    return blocks(text)
+      .filter((block) => !block.startsWith('```'))
+      .flatMap((block) => block.split('\n'))
+      .filter((line) => line.startsWith('- '))
+      .map((line) => ({ line, url: /^- \[[^\]]+\]\(([^)\s]+)\): \S/.exec(line)?.[1] ?? null }))
+  }
+
+  test('opens with the English title and a blockquote summary', async ({ request }) => {
+    const text = await fetchText(request, '/llms.txt')
+    expect(text.split('\n')[0]).toBe(`# ${TITLE}`)
+    expect(blocks(text)[1]).toMatch(/^> \S/)
+  })
+
+  test('lists every file as a link with notes, the pages, their Markdown versions, arXiv and the Explorer among them', async ({ request }) => {
+    const listed = entries(await fetchText(request, '/llms.txt'))
+    expect(listed.filter((entry) => entry.url === null).map((entry) => entry.line)).toEqual([])
+    const urls = listed.map((entry) => entry.url)
+    for (const required of [SITE, new URL('zh/', SITE).href, ...MARKDOWN_VERSIONS.map(({ markdown }) => new URL(markdown, SITE).href), ARXIV_ABS, EXPLORER]) {
+      expect(urls).toContain(required)
+    }
+  })
+
+  test('links only to files the site serves', async ({ request }) => {
+    const urls = entries(await fetchText(request, '/llms.txt')).flatMap((entry) => (entry.url === null ? [] : [entry.url]))
+    const own = urls.filter((url) => url.startsWith(SITE))
+    expect(own.length).toBeGreaterThan(0)
+    for (const url of own) {
+      const response = await request.get(new URL(url).pathname)
+      expect(response.status(), url).toBe(200)
+    }
+  })
+
+  test('links outside the site only where the English page does', async ({ page, request }) => {
+    const urls = entries(await fetchText(request, '/llms.txt')).flatMap((entry) => (entry.url === null ? [] : [entry.url]))
+    await page.goto('/')
+    // The page links to arXiv, the PDF and the Explorer from its title block.
+    // It gives the DOI as the paper's identifier in its structured data rather
+    // than as a link, so the identifier counts as the page's DOI link.
+    const titleLinks = await page.locator('[data-links] a[href^="https://"]').evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href') ?? ''))
+    const article = (await jsonLd(page))['mainEntity']
+    if (!isRecord(article) || typeof article['@id'] !== 'string') {
+      throw new Error('The JSON-LD names no paper identifier')
+    }
+    expect(urls.filter((url) => !url.startsWith(SITE)).sort()).toEqual([...titleLinks, article['@id']].sort())
+  })
+})
