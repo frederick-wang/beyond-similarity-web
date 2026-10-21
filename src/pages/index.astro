@@ -55,6 +55,12 @@ import Page from '../layouts/Page.astro'
     grid-area: nav;
   }
 
+  /* The query container for .span-margin, which may reach past the column
+     into the page margin but never past this box. */
+  .body {
+    container-type: inline-size;
+  }
+
   .column {
     max-width: var(--column);
   }

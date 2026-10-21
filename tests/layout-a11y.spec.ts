@@ -1,7 +1,9 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
-for (const width of [390, 1440]) {
+// The widths around 68rem (1088 px) matter: there the page switches to two
+// columns while the gutters still leave less room than column, gap and margin.
+for (const width of [360, 390, 768, 1024, 1088, 1100, 1280, 1440, 1920]) {
   test(`has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/')
