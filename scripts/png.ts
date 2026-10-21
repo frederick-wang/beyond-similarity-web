@@ -31,32 +31,49 @@ export function isPng(bytes: Buffer): boolean {
   return bytes.subarray(0, signature.length).equals(signature)
 }
 
-function chunks(png: Buffer): Chunk[] {
+/**
+ * Every chunk in file order. A file that does not parse cleanly throws, so a
+ * reader never skips bytes it could not account for: each chunk has to fit in
+ * the file and match its CRC, IHDR has to come first with its fixed 13 bytes
+ * of data, and the chunks have to end with IEND exactly at the end of the file.
+ * Without those checks a chunk with an enlarged length could swallow the text
+ * chunk after it, and the text would never be read.
+ */
+function parse(png: Buffer): { readonly header: Chunk; readonly chunks: readonly Chunk[] } {
   if (!isPng(png)) {
     throw new Error('Not a PNG file')
   }
   const found: Chunk[] = []
   // Each chunk is a 4-byte length, a 4-byte type, the data and a 4-byte CRC.
-  for (let start = signature.length; start + 8 <= png.length; ) {
+  for (let start = signature.length; start < png.length; ) {
+    if (start + 12 > png.length) {
+      throw new Error(`PNG chunk at byte ${start} is cut off`)
+    }
     const length = png.readUInt32BE(start)
+    const type = png.toString('latin1', start + 4, start + 8)
     const end = start + 12 + length
-    found.push({ type: png.toString('latin1', start + 4, start + 8), data: png.subarray(start + 8, start + 8 + length), end })
+    if (end > png.length) {
+      throw new Error(`PNG chunk ${type} at byte ${start} declares ${length} bytes, past the end of the file`)
+    }
+    const data = png.subarray(start + 8, end - 4)
+    if (crc32(png.subarray(start + 4, end - 4)) !== png.readUInt32BE(end - 4)) {
+      throw new Error(`PNG chunk ${type} at byte ${start} fails its CRC check`)
+    }
+    found.push({ type, data, end })
     start = end
   }
-  return found
-}
-
-function headerChunk(all: readonly Chunk[]): Chunk {
-  const header = all[0]
-  if (header?.type !== 'IHDR') {
-    throw new Error('PNG file does not start with an IHDR chunk')
+  const header = found[0]
+  if (header?.type !== 'IHDR' || header.data.length !== 13) {
+    throw new Error('PNG file does not start with a 13-byte IHDR chunk')
   }
-  return header
+  if (found.at(-1)?.type !== 'IEND') {
+    throw new Error('PNG file does not end with an IEND chunk')
+  }
+  return { header, chunks: found }
 }
 
 export function readPngHeader(png: Buffer): PngHeader {
-  const all = chunks(png)
-  const header = headerChunk(all)
+  const { header, chunks: all } = parse(png)
   const imageData = all.findIndex((chunk) => chunk.type === 'IDAT')
   if (imageData === -1) {
     throw new Error('PNG file has no image data')
@@ -71,7 +88,7 @@ export function readPngHeader(png: Buffer): PngHeader {
 
 /** Every tEXt, zTXt and iTXt chunk in file order, compressed text inflated. */
 export function readPngTexts(png: Buffer): PngText[] {
-  return chunks(png).flatMap((chunk): PngText[] => {
+  return parse(png).chunks.flatMap((chunk): PngText[] => {
     const keywordEnd = chunk.data.indexOf(0)
     const keyword = chunk.data.toString('latin1', 0, keywordEnd)
     switch (chunk.type) {
@@ -112,6 +129,6 @@ export function withTextChunks(png: Buffer, entries: readonly PngText[]): Buffer
     crc.writeUInt32BE(crc32(Buffer.concat([type, data])))
     return Buffer.concat([length, type, data, crc])
   })
-  const afterHeader = headerChunk(chunks(png)).end
+  const afterHeader = parse(png).header.end
   return Buffer.concat([png.subarray(0, afterHeader), ...inserted, png.subarray(afterHeader)])
 }

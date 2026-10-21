@@ -21,8 +21,8 @@
 //   node scripts/check-public.mjs <file>...    arbitrary files, such as an issue or PR body before posting
 //
 // Exit codes: 0 clean; 1 hits found; 2 repository not found, a rule file
-// missing, unreadable, invalid or empty, an input file missing, or no dist/
-// under --ci.
+// missing, unreadable, invalid or empty, an input file missing, a PNG that
+// does not parse, or no dist/ under --ci.
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -134,14 +134,28 @@ function scanText(label, text, ruleSets) {
 }
 
 /**
+ * The text chunks of a PNG, one line each. A PNG that does not parse stops the
+ * check with exit code 2, since its text could not all be read: reporting it
+ * as clean would hide whatever the parser could not reach.
+ */
+function pngText(label, bytes) {
+  try {
+    return readPngTexts(bytes)
+      .map((chunk) => `${chunk.keyword}: ${chunk.text}`)
+      .join('\n')
+  } catch (error) {
+    exitWithSetupError(`PNG 文件无法解析：${label}（${error.message}）`)
+  }
+}
+
+/**
  * Scans a file's bytes: text files line by line, PNG files through their text
  * chunks, and other binary files (any NUL byte in the first 8,000, as git
  * decides) not at all.
  */
 function scanBytes(label, bytes, ruleSets) {
   if (isPng(bytes)) {
-    const texts = readPngTexts(bytes).map((chunk) => `${chunk.keyword}: ${chunk.text}`)
-    return scanText(`${label}（PNG 文本块）`, texts.join('\n'), ruleSets)
+    return scanText(`${label}（PNG 文本块）`, pngText(label, bytes), ruleSets)
   }
   if (bytes.subarray(0, 8000).includes(0)) {
     return []
