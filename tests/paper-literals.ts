@@ -35,6 +35,14 @@ export const PUBLISHED = '2026-07-30'
 export const PUBLISHED_SLASHED = '2026/07/30'
 export const EXPLORER = 'https://analects-24histories-intertext.pkudh.net/'
 export const SITE = 'https://beyond-similarity.zhaoji.ac.cn/'
+
+/**
+ * The date of each page's last substantive change, by path, as the sitemap
+ * gives it in lastmod. Each language page adds its entry here.
+ */
+export const PAGE_UPDATED: Readonly<Record<string, string>> = {
+  '/': '2026-10-21',
+}
 export const ICP_NUMBER = '蜀ICP备19032431号-3'
 export const ICP_REGISTRY = 'https://beian.miit.gov.cn/'
 

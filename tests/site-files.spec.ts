@@ -1,7 +1,7 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
 import { readPngHeader, type PngHeader } from '../scripts/png.ts'
 import { attributeValues, only } from './head'
-import { PUBLISHED, SITE } from './paper-literals'
+import { PAGE_UPDATED, PUBLISHED, SITE } from './paper-literals'
 
 /** The IndexNow key, copied from the key file's name in public/. */
 const INDEXNOW_KEY = 'c132bc6e7cb4da6c991d355d9c45f366'
@@ -98,10 +98,12 @@ test.describe('files for crawlers', () => {
     expect(lines).toContain(`Sitemap: ${SITE}sitemap.xml`)
   })
 
-  test('sitemap.xml lists the page with the date of its last substantive update', async ({ page, request }) => {
+  test('sitemap.xml lists each page with the date of its last substantive update', async ({ page, request }) => {
     const sitemap = await readSitemap(page, request)
     expect(sitemap).toMatchObject({ wellFormed: true, namespace: sitemapNamespace, name: 'urlset' })
-    expect(sitemap.urls.map((url) => url.loc)).toEqual([SITE])
+    const byLoc = (a: { readonly loc: string | null }, b: { readonly loc: string | null }) => `${a.loc}`.localeCompare(`${b.loc}`)
+    const expected = Object.entries(PAGE_UPDATED).map(([path, date]) => ({ loc: new URL(path, SITE).href, lastmod: date }))
+    expect(sitemap.urls.map(({ loc, lastmod }) => ({ loc, lastmod })).sort(byLoc)).toEqual(expected.sort(byLoc))
     const build: unknown = await (await request.get('/build.json')).json()
     if (typeof build !== 'object' || build === null || !('builtAt' in build) || typeof build.builtAt !== 'string') {
       throw new Error('build.json has no builtAt time')
