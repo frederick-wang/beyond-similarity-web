@@ -6,8 +6,8 @@ import type { PageCopy } from './types'
 // The first screen takes its numbers from the facts module, through ./shared
 // for the values every page states alike; the abstract, a translation of the
 // arXiv abstract, and the section prose write them as the paper prints them,
-// except 28.5 million characters, written 「约 2,850 万字符」 because Chinese
-// counts in 万. Numbers in this copy are checked against
+// except 28.5 million characters, written as 2,850 units of ten thousand, the
+// way Chinese counts. Numbers in this copy are checked against
 // tests/paper-literals.ts, which declares that change; the comments there say
 // what each table covers.
 const firstHistory = formatYear(stats.compositionYears.first, 'zh-Hans')
