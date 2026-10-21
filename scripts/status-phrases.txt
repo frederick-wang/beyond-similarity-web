@@ -7,8 +7,9 @@
 #
 # When prose trips a rule, rephrase the prose; do not weaken the rule.
 #
-# One case-insensitive regular expression per line. Lines starting with # and
-# blank lines are ignored.
+# One regular expression per line. The loader compiles each with the flags
+# iu, so rules ignore case and read Unicode; (?-i:...) marks a part that must
+# match case exactly. Lines starting with # and blank lines are ignored.
 
 double[- ]blind
 camera[- ]ready
@@ -21,7 +22,8 @@ submitted for publication
 conditionally accepted
 accepted for publication
 \baccepted (at|to)\b
-to appear in
+\baccepted by (the )?(?-i:[A-Z])
+to appear (in|at)
 forthcoming (in|at)
 \bin press\b
 main conference
@@ -31,5 +33,6 @@ main conference
 在审
 录用
 已接收
+被.{0,20}接收
 即将(发表|刊出)
 待发表
