@@ -5,7 +5,7 @@
 // Chinese pages describe the same paper.
 import type { PageCopy } from '../content/types'
 import { appleTouchIcon, pngIcons, svgIcon } from '../data/icons'
-import { absoluteUrl, authors, familyFirst, pages, paper } from '../data/paper'
+import { absoluteUrl, authors, familyFirst, markdownPath, pages, paper } from '../data/paper'
 import { languageAlternates } from '../lib/alternates'
 import { serializeJsonLd, webPage } from '../lib/structured-data'
 
@@ -25,6 +25,7 @@ const share = copy.shareImage
 <meta name="description" content={copy.description} />
 <link rel="canonical" href={canonical} />
 {languageAlternates().map((alternate) => <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />)}
+<link rel="alternate" type="text/markdown" href={absoluteUrl(markdownPath(copy.lang))} />
 
 <link rel="icon" href={svgIcon} type="image/svg+xml" />
 {pngIcons.map((icon) => <link rel="icon" href={icon.path} type="image/png" sizes={`${icon.size}x${icon.size}`} />)}

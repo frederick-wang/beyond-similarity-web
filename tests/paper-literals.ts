@@ -34,6 +34,16 @@ export const PAGES = [
 ] as const
 export type PageLanguage = (typeof PAGES)[number]['lang']
 
+/**
+ * Each language page's Markdown version: index.md under the page's path,
+ * where the llms.txt proposal (https://llmstxt.org/) puts the Markdown of a
+ * URL without a file name.
+ */
+export const MARKDOWN_VERSIONS = [
+  { page: '/', markdown: '/index.md', lang: 'en' },
+  { page: '/zh/', markdown: '/zh/index.md', lang: 'zh-Hans' },
+] as const
+
 /** The sections of each language page in the SPEC's order, by the anchor both pages give them. */
 export const SECTION_IDS = [
   'abstract',

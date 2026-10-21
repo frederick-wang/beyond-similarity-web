@@ -21,6 +21,7 @@ export const en: PageCopy = {
     alt: `${shareCard.title}. ${shareCard.byline}. arXiv:${shareCard.arxivId}`,
   },
   skipLink: 'Skip to content',
+  markdownVersion: (pageUrl) => `This is the Markdown version of <${pageUrl}>.`,
   correspondingNote: 'Corresponding author',
   finding: `We make an LLM agent ground every reuse it proposes in exact character spans and label how the source is reused, and we validate it on ${benchmarkPairs} expert-adjudicated pairs from the *Analects* and the *Book of Han*. Across official histories composed from ${firstHistory} to ${lastHistory} we detect no systematic change in the share of direct quotation or of reuse that leaves its source unmarked, while later-compiled histories tend to quote the same passage less literally.`,
   abstract:

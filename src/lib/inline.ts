@@ -50,6 +50,38 @@ export function renderInline(text: InlineMarkdown, lang: PageLanguage): string {
 }
 
 /**
+ * The same inline Markdown for the Markdown version of the page. Emphasis,
+ * links and code spans stay as written; a quotation becomes its text in the
+ * page language's quotation marks, as on the page. A quotation that Markdown
+ * would read as syntax stops the build.
+ */
+export function markdownText(text: InlineMarkdown, lang: PageLanguage): string {
+  return replaceQuotations(text, lang, (id, quotation) => markdownLiteral(quotation.text, `Quotation "${id}"`))
+}
+
+// What Markdown can read as syntax inside a line of text: a backslash escape,
+// a code span, emphasis or strikethrough (an underscore only at a word
+// boundary: between two letters or digits it cannot open or close emphasis,
+// as in find_position), a link or image, raw HTML or an autolink, an entity
+// reference, or a line break, which would end the block.
+const markdownSyntax =
+  /[\\`*~[\]\r\n]|(?<![\p{L}\p{N}])_|_(?![\p{L}\p{N}])|<(?=[A-Za-z/!?])|&(?:#\d+|#[Xx][\dA-Fa-f]+|[A-Za-z][A-Za-z\d]*);/u
+
+/**
+ * Text that goes into Markdown as it stands, such as a quotation, a label or a
+ * figure's text alternative, returned unchanged. Text that Markdown would read
+ * as syntax throws, naming `what`, so the Markdown never renders other words
+ * than the page.
+ */
+export function markdownLiteral(text: string, what: string): string {
+  const syntax = markdownSyntax.exec(text)
+  if (syntax !== null) {
+    throw new Error(`${what} contains ${JSON.stringify(syntax[0])}, which Markdown would read as syntax: ${text}`)
+  }
+  return text
+}
+
+/**
  * The same inline Markdown as plain text, for places that cannot carry markup,
  * such as the abstract in the structured data. Emphasis and link markup drop
  * away and their text stays; a quotation becomes its text in quotation marks,

@@ -207,6 +207,15 @@ export const pages = {
   'zh-Hans': { path: '/zh/', languageName: '中文', updated: isoDate('2026-10-22') },
 } as const satisfies Readonly<Record<PageLanguage, PageFacts>>
 
+/**
+ * The path of the page's Markdown version: index.md under the page's own
+ * path, where https://llmstxt.org/ puts the Markdown of a URL without a file
+ * name.
+ */
+export function markdownPath(lang: PageLanguage): string {
+  return `${pages[lang].path}index.md`
+}
+
 /** Resolves a site path against `site` in astro.config.mjs, the only place the origin is written. */
 export function absoluteUrl(path: string): string {
   const origin = import.meta.env.SITE
