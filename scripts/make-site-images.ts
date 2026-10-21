@@ -34,16 +34,9 @@ import sharp, { type Sharp } from 'sharp'
 import { appleTouchIcon, pngIcons, svgIcon } from '../src/data/icons.ts'
 import { shareCardWords, type ShareCardWords } from '../src/data/paper.ts'
 import { escapeMarkupText } from '../src/lib/escape.ts'
-import { withTextChunks, type TextEntry } from './png.ts'
+import { provenanceTexts, withTextChunks, type TextEntry } from './png.ts'
 
 const root = new URL('../', import.meta.url)
-
-interface Origin {
-  /** How the image was made, opening the impeccable record. */
-  readonly method: string
-  readonly description: string
-  readonly source: string
-}
 
 const shareCard = {
   output: 'src/assets/share-en.png',
@@ -162,15 +155,6 @@ async function renderShareCard(words: ShareCardWords): Promise<{ readonly png: B
   }
 }
 
-/** The tEXt chunks recording an image's origin. */
-function originTexts(origin: Origin): TextEntry[] {
-  return [
-    { keyword: 'Source', text: origin.source },
-    { keyword: 'Description', text: origin.description },
-    { keyword: 'impeccable:prompt', text: `${origin.method} ${origin.description} Source: ${origin.source}.` },
-  ]
-}
-
 /** Writes the image as a PNG with these tEXt chunks right after its IHDR chunk. */
 async function writePng(path: string, image: Sharp, texts: readonly TextEntry[]): Promise<void> {
   // Every PNG here is palette-quantised: an indexed palette of at most 256
@@ -221,7 +205,7 @@ async function writeIcons(): Promise<void> {
     await writePng(
       `public${icon.path}`,
       seal.clone().resize(icon.size, icon.size),
-      originTexts({
+      provenanceTexts({
         method,
         description: `Favicon, ${icon.size} px: the vermilion scroll seal of the paper page on a transparent background.`,
         source,
@@ -238,7 +222,7 @@ async function writeIcons(): Promise<void> {
       .resize(appleTouchIcon.size - 2 * margin, appleTouchIcon.size - 2 * margin)
       .extend({ top: margin, bottom: margin, left: margin, right: margin, background: paperColour })
       .flatten({ background: paperColour }),
-    originTexts({
+    provenanceTexts({
       method,
       description: `Apple touch icon, ${appleTouchIcon.size} px: the vermilion scroll seal of the paper page on the white paper of the page, with no transparency.`,
       source: `${source}, on the --paper colour of src/styles/global.css`,
@@ -251,7 +235,7 @@ const card = await renderShareCard(words)
 await writePng(
   shareCard.output,
   sharp(card.png).removeAlpha(),
-  originTexts({
+  provenanceTexts({
     method: shareCard.method,
     description: shareCard.description,
     source: `scripts/make-site-images.ts, HTML rendered by ${card.renderer} from shareCardWords() in src/data/paper.ts, src/styles/global.css and src/assets/seal.png`,

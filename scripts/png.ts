@@ -133,6 +133,27 @@ export function readPngTexts(png: Buffer): PngText[] {
   })
 }
 
+/** Where an image came from, as its provenance chunks record it. */
+export interface Provenance {
+  /** How the image was made, opening the impeccable record, such as "Sourced, not generated." */
+  readonly method: string
+  readonly description: string
+  readonly source: string
+}
+
+/**
+ * The tEXt entries that record an image's provenance: Source and Description
+ * (registered PNG keywords) and impeccable:prompt, which the design tooling
+ * reads when it checks that every shipped raster records where it came from.
+ */
+export function provenanceTexts(provenance: Provenance): TextEntry[] {
+  return [
+    { keyword: 'Source', text: provenance.source },
+    { keyword: 'Description', text: provenance.description },
+    { keyword: 'impeccable:prompt', text: `${provenance.method} ${provenance.description} Source: ${provenance.source}.` },
+  ]
+}
+
 /**
  * The PNG with one tEXt chunk per entry inserted right after IHDR, in order.
  * tEXt holds Latin-1, so keywords (1 to 79 characters) and texts are kept to

@@ -23,7 +23,7 @@ import { createHash } from 'node:crypto'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { withTextChunks } from './png.ts'
+import { provenanceTexts, withTextChunks } from './png.ts'
 
 const sourcePackage = {
   url: 'https://arxiv.org/e-print/2607.27595v1',
@@ -83,11 +83,10 @@ function renderPage(pdfPath, outputBase, options) {
 }
 
 function writeFigure(renderedPath, outputName, origin) {
-  const png = withTextChunks(readFileSync(renderedPath), [
-    { keyword: 'Source', text: origin.source },
-    { keyword: 'Description', text: origin.description },
-    { keyword: 'impeccable:prompt', text: `Sourced, not generated. ${origin.description} Source: ${origin.source}.` },
-  ])
+  const png = withTextChunks(
+    readFileSync(renderedPath),
+    provenanceTexts({ method: 'Sourced, not generated.', description: origin.description, source: origin.source }),
+  )
   writeFileSync(new URL(outputName, outputDirectory), png)
   console.log(`wrote src/assets/figures/${outputName}`)
 }
