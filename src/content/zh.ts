@@ -1,20 +1,15 @@
-import shareCardImage from '../assets/share-en.png'
-import { links, paper, shareCardWords, stats } from '../data/paper'
-import { formatCount, formatIdentifier, formatYear, shareCardByline } from '../lib/format'
-import { pngImage } from '../lib/images'
+import { links, paper, stats } from '../data/paper'
+import { formatYear } from '../lib/format'
+import { benchmarkPairs, corpusComparisons, deploymentModel, mostPreciseModel, shareCard } from './shared'
 import type { PageCopy } from './types'
 
-// First-screen copy takes its numbers from the facts module. The abstract,
-// translated from the arXiv abstract, and the section prose state numbers as
-// text; tests/prose-figures.spec.ts checks every number of two or more digits
+// First-screen copy takes its numbers from the facts module, through ./shared
+// for the values every page states alike. The abstract, translated from the
+// arXiv abstract, and the section prose state numbers as text;
+// tests/prose-figures.spec.ts checks every number of two or more digits
 // against literals copied from the paper.
-const benchmarkPairs = formatCount(stats.benchmarkPairs)
-const corpusComparisons = formatCount(stats.corpusComparisons)
-const mostPreciseModel = formatIdentifier(stats.mostPreciseModel)
-const deploymentModel = formatIdentifier(stats.deploymentModel)
 const firstHistory = formatYear(stats.compositionYears.first, 'zh-Hans')
 const lastHistory = formatYear(stats.compositionYears.last, 'zh-Hans')
-const card = shareCardWords()
 
 export const zh: PageCopy = {
   lang: 'zh-Hans',
@@ -23,8 +18,8 @@ export const zh: PageCopy = {
   siteName: paper.shortTitleZh,
   openGraphLocale: 'zh_CN',
   shareImage: {
-    image: pngImage(shareCardImage),
-    alt: `英文分享卡片。题名：${card.title}。作者：${shareCardByline(card.authors)}。arXiv:${card.arxivId}`,
+    image: shareCard.image,
+    alt: `英文分享卡片。题名：${shareCard.title}。作者：${shareCard.byline}。arXiv:${shareCard.arxivId}`,
   },
   skipLink: '跳到正文',
   correspondingNote: '通讯作者',
