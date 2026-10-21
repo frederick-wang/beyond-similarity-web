@@ -10,12 +10,19 @@
 // keyword), iCCP (the name of its colour profile) and sPLT (the name of its
 // palette). eXIf carries EXIF, which can hold host names, paths, device serial
 // numbers and places; it is reported, not read. Every other chunk the
-// specification defines holds binary or numeric data. Private chunks could
-// hold anything, and none of the repository's images has one.
+// specification defines holds binary or numeric data. A chunk type outside
+// the specification could hold anything, so check-public.mjs reports it too.
 
 import { crc32, inflateSync } from 'node:zlib'
 
 const signature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+
+// The chunk types the PNG specification (third edition) defines, except eXIf,
+// which has a report of its own.
+const standardChunkTypes: ReadonlySet<string> = new Set([
+  'IHDR', 'PLTE', 'IDAT', 'IEND', 'tRNS', 'cHRM', 'gAMA', 'iCCP', 'sBIT', 'sRGB', 'cICP', 'mDCV',
+  'cLLI', 'tEXt', 'zTXt', 'iTXt', 'bKGD', 'hIST', 'pHYs', 'sPLT', 'tIME', 'acTL', 'fcTL', 'fdAT',
+])
 
 interface Chunk {
   readonly type: string
@@ -37,6 +44,7 @@ export type PngFormatProblem =
   | 'CRC mismatch'
   | 'no 13-byte IHDR first'
   | 'no IEND at the end'
+  | 'IEND not empty'
   | 'trailing bytes'
   | 'malformed text field'
   | 'compressed text cannot be inflated'
@@ -84,6 +92,8 @@ export interface PngWords {
   readonly names: readonly string[]
   /** Whether the file has an eXIf chunk. */
   readonly exif: boolean
+  /** Byte offsets of chunks whose type the specification does not define. */
+  readonly nonstandard: readonly number[]
 }
 
 export function isPng(bytes: Buffer): boolean {
@@ -121,6 +131,10 @@ function parse(png: Buffer): { readonly header: Chunk; readonly chunks: readonly
     }
     found.push({ type: png.toString('latin1', start + 4, start + 8), data: png.subarray(start + 8, end - 4), start, end })
     start = end
+  }
+  const last = found.at(-1)
+  if (last !== undefined && last.data.length > 0) {
+    throw new PngFormatError(last.start, 'IEND not empty')
   }
   if (start !== png.length) {
     throw new PngFormatError(start, 'trailing bytes')
@@ -226,10 +240,11 @@ function textChunk(chunk: Chunk): PngText | null {
   }
 }
 
-/** Every word a PNG carries: its text chunks, its iCCP and sPLT names, and whether it has EXIF. */
+/** Every word a PNG carries: its text chunks, its iCCP and sPLT names, whether it has EXIF, and where any nonstandard chunk sits. */
 export function readPngWords(png: Buffer): PngWords {
   const texts: PngText[] = []
   const names: string[] = []
+  const nonstandard: number[] = []
   let exif = false
   for (const chunk of parse(png).chunks) {
     const text = textChunk(chunk)
@@ -240,9 +255,11 @@ export function readPngWords(png: Buffer): PngWords {
       names.push(chunk.data.toString('latin1', 0, fieldEnd(chunk, 0)))
     } else if (chunk.type === 'eXIf') {
       exif = true
+    } else if (!standardChunkTypes.has(chunk.type)) {
+      nonstandard.push(chunk.start)
     }
   }
-  return { texts, names, exif }
+  return { texts, names, exif, nonstandard }
 }
 
 /** Every tEXt, zTXt and iTXt chunk in file order, compressed text inflated. */

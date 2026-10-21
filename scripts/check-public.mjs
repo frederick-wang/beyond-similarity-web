@@ -233,7 +233,7 @@ function pngWords(label, bytes) {
           : `${chunk.keyword}: ${chunk.text}`,
       )
       .concat(words.names)
-    return { text: lines.join('\n'), exif: words.exif }
+    return { text: lines.join('\n'), exif: words.exif, nonstandard: words.nonstandard }
   } catch (error) {
     if (error instanceof PngFormatError) {
       exitWithSetupError(`PNG 文件无法解析：${label}（第 ${error.offset} 字节，${error.problem}）`)
@@ -245,9 +245,11 @@ function pngWords(label, bytes) {
 /**
  * Scans a file's bytes: text files line by line, PNG files through their
  * words, and other binary files (any NUL byte in the first 8,000, as git
- * decides) not at all. A PNG with an eXIf chunk is a hit in every mode: EXIF
- * can hold host names, paths, device serial numbers and places, and a
- * published image needs none of them.
+ * decides) not at all. In every mode a PNG is also a hit when it has an eXIf
+ * chunk, since EXIF can hold host names, paths, device serial numbers and
+ * places, or a chunk type the PNG specification does not define, which could
+ * hold anything. Such a chunk is reported by its byte offset only: its type is
+ * four bytes of the file.
  */
 function scanBytes(label, bytes, ruleSets) {
   if (isPng(bytes)) {
@@ -255,6 +257,9 @@ function scanBytes(label, bytes, ruleSets) {
     const hits = scanText(`${label}（PNG 文本块）`, words.text, ruleSets)
     if (words.exif) {
       hits.push(`${label}（PNG eXIf 块）：发布的 PNG 不应带 EXIF，请去掉 eXIf 块后再提交`)
+    }
+    for (const offset of words.nonstandard) {
+      hits.push(`${label}（PNG 第 ${offset} 字节，nonstandard chunk）：发布的 PNG 只应含 PNG 规范定义的块`)
     }
     return hits
   }
