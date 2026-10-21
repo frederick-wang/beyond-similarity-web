@@ -173,9 +173,9 @@ _Avoid_: dataset, ground truth, corpus, 金标 or 仲裁金标
 **Valid pair**（有效互文对）:
 A candidate that expert adjudication accepts; precision and cost per valid pair count these.
 
-**Threshold**（门槛）:
-The level at which a candidate is accepted: an expert's strictness on validity, or a minimum stated confidence.
-_Avoid_: 阈值
+**Threshold**（阈值）:
+The level at which a candidate is accepted: an expert's strictness on validity, or a minimum stated confidence. The author's translation and the SPEC use 阈值.
+_Avoid_: 门槛
 
 **Agreement**（一致性）:
 How often the two experts give the same judgement, measured before adjudication.
