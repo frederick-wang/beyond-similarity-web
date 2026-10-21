@@ -1,9 +1,10 @@
 import type { GlanceId, PageLanguage } from '../data/paper'
 
 /**
- * Inline Markdown: emphasis (`*Analects*`) and links (`[text](url)`) only.
- * Kept as Markdown so the same string can feed both the HTML page and the
- * Markdown mirror without a second copy of the prose.
+ * Inline Markdown: emphasis (`*Analects*`), links (`[text](url)`) and code
+ * spans for identifiers such as model names. Kept as Markdown so the same
+ * string can feed both the HTML page and the Markdown mirror without a second
+ * copy of the prose.
  */
 export type InlineMarkdown = string
 

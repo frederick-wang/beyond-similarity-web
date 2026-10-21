@@ -90,6 +90,16 @@ a:hover {
   border-radius: 2px;
 }
 
+/*
+ * Identifiers in running text, such as model names, are code spans. They keep
+ * the reading face and never break at their hyphens ("deepseek-v4-flash").
+ */
+:not(pre) > code {
+  font-family: inherit;
+  font-size: inherit;
+  white-space: nowrap;
+}
+
 ::selection {
   background: var(--indigo-wash);
   color: var(--ink);

@@ -21,8 +21,8 @@ export const en: PageCopy = {
   glance: {
     benchmark: 'expert-adjudicated intertextual pairs between the *Analects* and the *Book of Han*',
     precision: `precision of ${stats.models} LLMs against that benchmark`,
-    costSpread: `cost per valid pair of the most precise model, ${stats.mostPreciseModel}, relative to ${stats.deploymentModel}, which is ${stats.precisionGapPoints} points less precise`,
-    corpusRun: `intertextual pairs that ${stats.deploymentModel} extracted from ${corpusComparisons} comparisons over the Twenty-Four Histories. If its ${stats.deploymentPrecision.toFixed(1)}% precision on the *Book of Han* holds, about 1 in ${stats.expectedSpuriousOneIn} of them would be spurious.`,
+    costSpread: `cost per valid pair of the most precise model, \`${stats.mostPreciseModel}\`, relative to \`${stats.deploymentModel}\`, which is ${stats.precisionGapPoints} points less precise`,
+    corpusRun: `intertextual pairs that \`${stats.deploymentModel}\` extracted from ${corpusComparisons} comparisons over the Twenty-Four Histories. If its ${stats.deploymentPrecision.toFixed(1)}% precision on the *Book of Han* holds, about 1 in ${stats.expectedSpuriousOneIn} of them would be spurious.`,
   },
   navHeading: 'On this page',
   links: {
