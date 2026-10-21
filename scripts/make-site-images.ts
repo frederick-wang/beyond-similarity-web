@@ -33,6 +33,7 @@ import { chromium } from '@playwright/test'
 import sharp, { type Sharp } from 'sharp'
 import { appleTouchIcon, pngIcons, svgIcon } from '../src/data/icons.ts'
 import { shareCardWords, type ShareCardWords } from '../src/data/paper.ts'
+import { escapeMarkupText } from '../src/lib/escape.ts'
 import { withTextChunks, type PngText } from './png.ts'
 
 const root = new URL('../', import.meta.url)
@@ -52,10 +53,6 @@ const shareCard = {
   description:
     'Share card for link previews of the paper page: the scroll seal and the short title, the full paper title, the authors and the arXiv ID, on the white paper of the page.',
 } as const
-
-function escapeHtml(text: string): string {
-  return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
-}
 
 function shareCardHtml(words: ShareCardWords): string {
   const stylesheet = readFileSync(new URL('src/styles/global.css', root), 'utf8')
@@ -127,12 +124,12 @@ function shareCardHtml(words: ShareCardWords): string {
     <main class="card">
       <header class="masthead">
         <img src="data:image/png;base64,${seal}" alt="" />
-        <span>${escapeHtml(words.shortTitle)}</span>
+        <span>${escapeMarkupText(words.shortTitle)}</span>
       </header>
-      <h1>${escapeHtml(words.title)}</h1>
+      <h1>${escapeMarkupText(words.title)}</h1>
       <footer class="byline">
-        <span>${escapeHtml(words.authors.join(', '))}</span>
-        <span>arXiv:${escapeHtml(words.arxivId)}</span>
+        <span>${escapeMarkupText(words.authors.join(', '))}</span>
+        <span>arXiv:${escapeMarkupText(words.arxivId)}</span>
       </footer>
     </main>
   </body>

@@ -1,19 +1,16 @@
 import type { APIRoute } from 'astro'
 import { absoluteUrl, pageLanguages, pages } from '../data/paper'
 import { languageAlternates } from '../lib/alternates'
-
-function escapeXml(text: string): string {
-  return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;')
-}
+import { escapeMarkupText } from '../lib/escape'
 
 // One <url> per language page. Each entry lists every language version
 // (https://developers.google.com/search/docs/specialty/international/localized-versions#sitemap).
 export const GET: APIRoute = () => {
   const alternates = languageAlternates().map(
-    (alternate) => `    <xhtml:link rel="alternate" hreflang="${alternate.hreflang}" href="${escapeXml(alternate.href)}"/>`,
+    (alternate) => `    <xhtml:link rel="alternate" hreflang="${alternate.hreflang}" href="${escapeMarkupText(alternate.href)}"/>`,
   )
   const entries = pageLanguages.map((lang) =>
-    ['  <url>', `    <loc>${escapeXml(absoluteUrl(pages[lang].path))}</loc>`, `    <lastmod>${pages[lang].updated}</lastmod>`]
+    ['  <url>', `    <loc>${escapeMarkupText(absoluteUrl(pages[lang].path))}</loc>`, `    <lastmod>${pages[lang].updated}</lastmod>`]
       .concat(alternates, ['  </url>'])
       .join('\n'),
   )
