@@ -19,7 +19,7 @@ const { copy } = Astro.props
   </head>
   <body>
     <a class="skip-link" href="#main">{copy.skipLink}</a>
-    <Masthead />
+    <Masthead copy={copy} />
     <main id="main">
       <slot />
     </main>

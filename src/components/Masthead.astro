@@ -2,7 +2,18 @@
 import { getImage } from 'astro:assets'
 import seal from '../assets/seal.png'
 import sealDark from '../assets/seal-dark.png'
-import { paper } from '../data/paper'
+import type { PageCopy } from '../content/types'
+import { pageLanguages, pages } from '../data/paper'
+
+interface Props {
+  readonly copy: PageCopy
+}
+
+const { copy } = Astro.props
+
+// The language switch links to every other language page, named in its own
+// language and marked as such, so the link reads correctly in either page.
+const otherLanguages = pageLanguages.filter((lang) => lang !== copy.lang)
 
 // The seal is the Explorer's mark: a vermilion square with a white handscroll.
 // It renders at 28 CSS px; 1x and 2x files cover standard and dense screens.
@@ -15,13 +26,24 @@ const dark2x = await getImage({ src: sealDark, width: size * 2, format: 'webp' }
 
 <header class="masthead">
   <div class="masthead-inner page-width">
-    <a class="brand" href="/">
+    <a class="brand" href={pages[copy.lang].path}>
       <picture>
         <source media="(prefers-color-scheme: dark)" srcset={`${dark1x.src} 1x, ${dark2x.src} 2x`} />
         <img src={light1x.src} srcset={`${light1x.src} 1x, ${light2x.src} 2x`} width={size} height={size} alt="" />
       </picture>
-      <span>{paper.shortTitle}</span>
+      <span>{copy.siteName}</span>
     </a>
+    <ul class="languages">
+      {
+        otherLanguages.map((lang) => (
+          <li>
+            <a href={pages[lang].path} hreflang={lang} lang={lang}>
+              {pages[lang].languageName}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </header>
 
@@ -51,5 +73,27 @@ const dark2x = await getImage({ src: sealDark, width: size * 2, format: 'webp' }
   .brand img {
     display: block;
     transform: translateY(1px);
+  }
+
+  .languages {
+    display: flex;
+    gap: 1rem;
+    margin: 0 0 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  .languages a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    font-size: 0.9375rem;
+    color: var(--ink-muted);
+    text-decoration-color: var(--rule);
+  }
+
+  .languages a:hover {
+    color: var(--indigo);
+    text-decoration-color: currentColor;
   }
 </style>

@@ -1,6 +1,6 @@
 ---
 import type { PageCopy } from '../content/types'
-import { authors, copyrightYear, icpNumber, links, maintainer } from '../data/paper'
+import { authorName, authors, copyrightYear, icpNumber, links, maintainer } from '../data/paper'
 import { formatList, punctuationFor } from '../lib/format'
 
 interface Props {
@@ -10,9 +10,10 @@ interface Props {
 const { copy } = Astro.props
 const marks = punctuationFor(copy.lang)
 const holders = formatList(
-  authors.map((author) => author.nameEn),
+  authors.map((author) => authorName(author, copy.lang)),
   copy.lang,
 )
+const maintainerName = authorName(maintainer, copy.lang)
 ---
 
 <footer class="site-footer">
@@ -20,7 +21,7 @@ const holders = formatList(
     <p>© {copyrightYear} {holders}{marks.fullStop}{marks.join}{copy.footer.rights}</p>
     <p>
       {copy.footer.maintainedBy}{marks.join}{
-        maintainer.homepage === null ? maintainer.nameEn : <a href={maintainer.homepage}>{maintainer.nameEn}</a>
+        maintainer.homepage === null ? maintainerName : <a href={maintainer.homepage}>{maintainerName}</a>
       }{marks.fullStop}
     </p>
     <p><a href={links.icpRegistry} rel="nofollow" lang="zh-Hans">{icpNumber}</a></p>

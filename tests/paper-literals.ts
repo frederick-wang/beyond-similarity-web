@@ -42,6 +42,7 @@ export const SITE = 'https://beyond-similarity.zhaoji.ac.cn/'
  */
 export const PAGE_UPDATED = {
   '/': '2026-10-21',
+  '/zh/': '2026-10-21',
 } as const
 export const ICP_NUMBER = '蜀ICP备19032431号-3'
 export const ICP_REGISTRY = 'https://beian.miit.gov.cn/'
